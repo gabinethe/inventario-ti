@@ -17,7 +17,7 @@ import {
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EquipamentoComResponsavel } from "@/services/equipamentos.service";
+import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { StatusEquipamento } from "@/types";
 
 interface DashboardViewProps {
@@ -31,9 +31,27 @@ interface DashboardViewProps {
   };
 }
 
-export function DashboardView({ notebooksIniciais, metricas }: DashboardViewProps) {
+export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }: DashboardViewProps) {
+  const [notebooks, setNotebooks] = useState<EquipamentoComResponsavel[]>(notebooksIniciais);
+  const [metricas, setMetricas] = useState(metricasIniciais);
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipamento | "todos">("todos");
+
+  React.useEffect(() => {
+    async function sincronizar() {
+      const [lista, met] = await Promise.all([
+        equipamentosService.listar(),
+        equipamentosService.obterMetricas(),
+      ]);
+      setNotebooks(lista);
+      setMetricas(met);
+    }
+    sincronizar();
+
+    const handleAtualizacao = () => sincronizar();
+    window.addEventListener("inventario_alterado", handleAtualizacao);
+    return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
+  }, []);
 
   // Formatação de moeda BRL
   const valorFormatado = new Intl.NumberFormat("pt-BR", {
@@ -43,7 +61,7 @@ export function DashboardView({ notebooksIniciais, metricas }: DashboardViewProp
 
   // Filtragem na tabela do dashboard
   const equipamentosFiltrados = useMemo(() => {
-    return notebooksIniciais.filter((eq) => {
+    return notebooks.filter((eq) => {
       const termo = busca.toLowerCase();
       const matchBusca =
         !busca ||
@@ -57,7 +75,7 @@ export function DashboardView({ notebooksIniciais, metricas }: DashboardViewProp
 
       return matchBusca && matchStatus;
     });
-  }, [notebooksIniciais, busca, filtroStatus]);
+  }, [notebooks, busca, filtroStatus]);
 
   return (
     <div className="space-y-8">

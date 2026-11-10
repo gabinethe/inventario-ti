@@ -1,11 +1,40 @@
 import { Equipamento, Responsavel, Movimentacao, StatusEquipamento } from "@/types";
 import { MOCK_EQUIPAMENTOS, MOCK_RESPONSAVEIS, MOCK_MOVIMENTACOES } from "./mock-data";
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 
-// Dados em memória para fallback/modo offline
-let equipamentosMemoria: Equipamento[] = [...MOCK_EQUIPAMENTOS];
-let movimentacoesMemoria: Movimentacao[] = [...MOCK_MOVIMENTACOES];
-let responsaveisMemoria: Responsavel[] = [...MOCK_RESPONSAVEIS];
+const STORAGE_KEY_EQ = "inventario_ti_equipamentos";
+const STORAGE_KEY_RESP = "inventario_ti_responsaveis";
+
+// Recupera dados salvos localmente para garantir persistência mesmo em modo offline/fallback
+function getMemoria(): { eq: Equipamento[]; resp: Responsavel[]; mov: Movimentacao[] } {
+  if (typeof window !== "undefined") {
+    try {
+      const salvoEq = localStorage.getItem(STORAGE_KEY_EQ);
+      const salvoResp = localStorage.getItem(STORAGE_KEY_RESP);
+      return {
+        eq: salvoEq ? JSON.parse(salvoEq) : [...MOCK_EQUIPAMENTOS],
+        resp: salvoResp ? JSON.parse(salvoResp) : [...MOCK_RESPONSAVEIS],
+        mov: [...MOCK_MOVIMENTACOES],
+      };
+    } catch {
+      return { eq: [...MOCK_EQUIPAMENTOS], resp: [...MOCK_RESPONSAVEIS], mov: [...MOCK_MOVIMENTACOES] };
+    }
+  }
+  return { eq: [...MOCK_EQUIPAMENTOS], resp: [...MOCK_RESPONSAVEIS], mov: [...MOCK_MOVIMENTACOES] };
+}
+
+function salvarMemoria(eq: Equipamento[], resp?: Responsavel[]) {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem(STORAGE_KEY_EQ, JSON.stringify(eq));
+      if (resp) localStorage.setItem(STORAGE_KEY_RESP, JSON.stringify(resp));
+      window.dispatchEvent(new Event("inventario_alterado"));
+    } catch (e) {
+      console.error("Erro ao salvar dados localmente:", e);
+    }
+  }
+}
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -13,7 +42,11 @@ function getSupabase() {
   if (!url || !key || url.includes("seu-projeto")) {
     return null;
   }
-  return createClient(url, key);
+  if (typeof window !== "undefined") {
+    // No navegador, usa o cliente SSR que carrega os cookies de sessão de login
+    return createBrowserClient(url, key);
+  }
+  return createSupabaseJsClient(url, key);
 }
 
 export interface EquipamentoComResponsavel extends Equipamento {
@@ -86,10 +119,11 @@ export const equipamentosService = {
       }
     }
 
-    // Fallback: Modo memória
-    let resultado = equipamentosMemoria.map((item) => ({
+    // Fallback com persistência local
+    const memoria = getMemoria();
+    let resultado = memoria.eq.map((item) => ({
       ...item,
-      responsavel: responsaveisMemoria.find((r) => r.id === item.responsavelId),
+      responsavel: memoria.resp.find((r) => r.id === item.responsavelId),
     }));
 
     if (filtros?.busca) {
@@ -156,21 +190,23 @@ export const equipamentosService = {
           };
         }
       } catch (err) {
-        console.error("Erro ao buscar equipamento do Supabase:", err);
+        console.error("Erro ao buscar equipamento no Supabase:", err);
       }
     }
 
-    const item = equipamentosMemoria.find((eq) => eq.id === id);
-    if (!item) return null;
+    const memoria = getMemoria();
+    const equipamento = memoria.eq.find((e) => e.id === id);
+    if (!equipamento) return null;
 
+    const responsavel = memoria.resp.find((r) => r.id === equipamento.responsavelId);
     return {
-      ...item,
-      responsavel: responsaveisMemoria.find((r) => r.id === item.responsavelId),
+      ...equipamento,
+      responsavel,
     };
   },
 
   /**
-   * Cadastra um novo equipamento (Notebook).
+   * Cadastra um novo equipamento no inventário.
    */
   async criar(dados: Omit<Equipamento, "id" | "criadoEm" | "atualizadoEm">): Promise<Equipamento> {
     const supabase = getSupabase();
@@ -181,7 +217,7 @@ export const equipamentosService = {
           .from("equipamentos")
           .insert({
             patrimonio: dados.patrimonio,
-            tipo: dados.tipo,
+            tipo: dados.tipo || "notebook",
             marca: dados.marca,
             modelo: dados.modelo,
             numero_serie: dados.numeroSerie,
@@ -198,18 +234,22 @@ export const equipamentosService = {
           .single();
 
         if (!error && data) {
-          return {
+          const novoEq: Equipamento = {
             ...dados,
             id: data.id,
             criadoEm: data.criado_em,
             atualizadoEm: data.atualizado_em,
           };
+          const memoria = getMemoria();
+          salvarMemoria([novoEq, ...memoria.eq]);
+          return novoEq;
         }
       } catch (err) {
         console.error("Erro ao criar equipamento no Supabase:", err);
       }
     }
 
+    const memoria = getMemoria();
     const novoEquipamento: Equipamento = {
       ...dados,
       id: `eq-${Date.now()}`,
@@ -217,7 +257,7 @@ export const equipamentosService = {
       atualizadoEm: new Date().toISOString(),
     };
 
-    equipamentosMemoria.unshift(novoEquipamento);
+    salvarMemoria([novoEquipamento, ...memoria.eq]);
     return novoEquipamento;
   },
 
@@ -265,7 +305,7 @@ export const equipamentosService = {
       }
     }
 
-    return [...responsaveisMemoria];
+    return getMemoria().resp;
   },
 
   /**
@@ -288,24 +328,28 @@ export const equipamentosService = {
           .single();
 
         if (!error && data) {
-          return {
+          const novoResp: Responsavel = {
             id: data.id,
             nome: data.nome,
             email: data.email,
             departamento: data.departamento,
             cargo: data.cargo,
           };
+          const memoria = getMemoria();
+          salvarMemoria(memoria.eq, [novoResp, ...memoria.resp]);
+          return novoResp;
         }
       } catch (err) {
         console.error("Erro ao criar responsável no Supabase:", err);
       }
     }
 
+    const memoria = getMemoria();
     const novoResp: Responsavel = {
       ...dados,
       id: `resp-${Date.now()}`,
     };
-    responsaveisMemoria.push(novoResp);
+    salvarMemoria(memoria.eq, [novoResp, ...memoria.resp]);
     return novoResp;
   },
 
@@ -340,28 +384,26 @@ export const equipamentosService = {
       }
     }
 
-    return movimentacoesMemoria.filter((m) => m.equipamentoId === equipamentoId);
+    return getMemoria().mov.filter((m) => m.equipamentoId === equipamentoId);
   },
 
   /**
-   * Exclui um equipamento com segurança.
+   * Exclui um equipamento com segurança (Supabase + Persistência local).
    */
   async excluirEquipamento(id: string): Promise<boolean> {
     const supabase = getSupabase();
 
     if (supabase) {
       try {
-        const { error } = await supabase.from("equipamentos").delete().eq("id", id);
-        if (!error) {
-          equipamentosMemoria = equipamentosMemoria.filter((e) => e.id !== id);
-          return true;
-        }
+        await supabase.from("equipamentos").delete().eq("id", id);
       } catch (err) {
         console.error("Erro ao excluir equipamento do Supabase:", err);
       }
     }
 
-    equipamentosMemoria = equipamentosMemoria.filter((e) => e.id !== id);
+    const memoria = getMemoria();
+    const novaLista = memoria.eq.filter((e) => e.id !== id);
+    salvarMemoria(novaLista, memoria.resp);
     return true;
   },
 
@@ -379,23 +421,18 @@ export const equipamentosService = {
           .update({ responsavel_id: null, status: "disponivel" })
           .eq("responsavel_id", id);
 
-        const { error } = await supabase.from("responsaveis").delete().eq("id", id);
-        if (!error) {
-          responsaveisMemoria = responsaveisMemoria.filter((r) => r.id !== id);
-          equipamentosMemoria = equipamentosMemoria.map((e) =>
-            e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" } : e
-          );
-          return true;
-        }
+        await supabase.from("responsaveis").delete().eq("id", id);
       } catch (err) {
         console.error("Erro ao excluir responsável do Supabase:", err);
       }
     }
 
-    responsaveisMemoria = responsaveisMemoria.filter((r) => r.id !== id);
-    equipamentosMemoria = equipamentosMemoria.map((e) =>
-      e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" } : e
+    const memoria = getMemoria();
+    const novaListaResp = memoria.resp.filter((r) => r.id !== id);
+    const novaListaEq = memoria.eq.map((e) =>
+      e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" as StatusEquipamento } : e
     );
+    salvarMemoria(novaListaEq, novaListaResp);
     return true;
   },
 };

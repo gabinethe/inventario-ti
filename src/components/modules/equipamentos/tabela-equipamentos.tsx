@@ -26,6 +26,19 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipamento | "todos">("todos");
   
+  // Sincroniza dados com o serviço para refletir exclusões mesmo após F5
+  React.useEffect(() => {
+    async function sincronizar() {
+      const dados = await equipamentosService.listar();
+      setEquipamentos(dados);
+    }
+    sincronizar();
+
+    const handleAtualizacao = () => sincronizar();
+    window.addEventListener("inventario_alterado", handleAtualizacao);
+    return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
+  }, []);
+
   // Estado para exclusão segura
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   const [equipamentoParaExcluir, setEquipamentoParaExcluir] = useState<EquipamentoComResponsavel | null>(null);

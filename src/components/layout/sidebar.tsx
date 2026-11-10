@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -13,6 +13,7 @@ import {
   Box
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { equipamentosService } from "@/services/equipamentos.service";
 
 const navItems = [
   {
@@ -24,13 +25,13 @@ const navItems = [
     name: "Equipamentos",
     href: "/equipamentos",
     icon: Laptop,
-    badge: "5",
+    isEquipmentBadge: true,
   },
   {
     name: "Colaboradores",
     href: "/responsaveis",
     icon: Users,
-    badge: "4",
+    isCollaboratorBadge: true,
   },
   {
     name: "Movimentações",
@@ -46,6 +47,30 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [totalEquipamentos, setTotalEquipamentos] = useState<number | null>(null);
+  const [totalColaboradores, setTotalColaboradores] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function carregarTotais() {
+      try {
+        const [eqs, resps] = await Promise.all([
+          equipamentosService.listar(),
+          equipamentosService.listarResponsaveis(),
+        ]);
+        setTotalEquipamentos(eqs.length);
+        setTotalColaboradores(resps.length);
+      } catch (err) {
+        console.error("Erro ao carregar totais da sidebar:", err);
+      }
+    }
+
+    carregarTotais();
+
+    // Sincroniza em tempo real sempre que um item for criado ou excluído
+    const handleAtualizacao = () => carregarTotais();
+    window.addEventListener("inventario_alterado", handleAtualizacao);
+    return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
+  }, [pathname]);
 
   // Oculta a barra lateral na tela de login
   if (pathname === "/login") {
@@ -83,6 +108,13 @@ export function Sidebar() {
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
 
+            const badge =
+              item.isEquipmentBadge && totalEquipamentos !== null
+                ? String(totalEquipamentos)
+                : item.isCollaboratorBadge && totalColaboradores !== null
+                ? String(totalColaboradores)
+                : null;
+
             return (
               <Link
                 key={item.href}
@@ -104,7 +136,7 @@ export function Sidebar() {
                   />
                   <span>{item.name}</span>
                 </div>
-                {item.badge && (
+                {badge !== null && (
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-[11px] font-semibold transition-colors",
@@ -113,7 +145,7 @@ export function Sidebar() {
                         : "bg-indigo-950/80 text-indigo-300 border border-indigo-800/40"
                     )}
                   >
-                    {item.badge}
+                    {badge}
                   </span>
                 )}
               </Link>
