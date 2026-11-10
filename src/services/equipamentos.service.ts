@@ -723,6 +723,33 @@ export const equipamentosService = {
       periferico: lista.filter((e) => e.tipo === "periferico").length,
     };
 
+    const porTipoDetalhado = {
+      notebook: {
+        total: lista.filter((e) => e.tipo === "notebook").length,
+        disponivel: lista.filter((e) => e.tipo === "notebook" && e.status === "disponivel").length,
+        emUso: lista.filter((e) => e.tipo === "notebook" && e.status === "em_uso").length,
+        manutencao: lista.filter((e) => e.tipo === "notebook" && e.status === "manutencao").length,
+      },
+      monitor: {
+        total: lista.filter((e) => e.tipo === "monitor").length,
+        disponivel: lista.filter((e) => e.tipo === "monitor" && e.status === "disponivel").length,
+        emUso: lista.filter((e) => e.tipo === "monitor" && e.status === "em_uso").length,
+        manutencao: lista.filter((e) => e.tipo === "monitor" && e.status === "manutencao").length,
+      },
+      smartphone: {
+        total: lista.filter((e) => e.tipo === "smartphone").length,
+        disponivel: lista.filter((e) => e.tipo === "smartphone" && e.status === "disponivel").length,
+        emUso: lista.filter((e) => e.tipo === "smartphone" && e.status === "em_uso").length,
+        manutencao: lista.filter((e) => e.tipo === "smartphone" && e.status === "manutencao").length,
+      },
+      periferico: {
+        total: lista.filter((e) => e.tipo === "periferico").length,
+        disponivel: lista.filter((e) => e.tipo === "periferico" && e.status === "disponivel").length,
+        emUso: lista.filter((e) => e.tipo === "periferico" && e.status === "em_uso").length,
+        manutencao: lista.filter((e) => e.tipo === "periferico" && e.status === "manutencao").length,
+      },
+    };
+
     return {
       total,
       emUso,
@@ -730,6 +757,7 @@ export const equipamentosService = {
       emManutencao,
       valorTotalParque,
       porTipo,
+      porTipoDetalhado,
       totalColaboradores: resps.length,
       totalMovimentacoes: movs.length,
     };

@@ -35,7 +35,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
 
   const [equipamentos, setEquipamentos] = useState<EquipamentoComResponsavel[]>(equipamentosIniciais);
   const [busca, setBusca] = useState("");
-  const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">(tipoParam || "todos");
+  const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">(tipoParam || "notebook");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipamento | "todos">("todos");
 
   // Sincroniza com parâmetros de URL (caso mude na sidebar)
@@ -43,7 +43,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
     if (tipoParam) {
       setFiltroTipo(tipoParam);
     } else {
-      setFiltroTipo("todos");
+      setFiltroTipo("notebook");
     }
   }, [tipoParam]);
 
@@ -163,18 +163,6 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
       {/* 1. Barra de Seleção de Categorias de Equipamento */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
         <button
-          onClick={() => setFiltroTipo("todos")}
-          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
-            filtroTipo === "todos"
-              ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          <Boxes className="w-4 h-4" />
-          Todos os Ativos ({contadoresTipo.todos})
-        </button>
-
-        <button
           onClick={() => setFiltroTipo("notebook")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "notebook"
@@ -220,6 +208,18 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         >
           <Headphones className="w-4 h-4" />
           Periféricos ({contadoresTipo.periferico})
+        </button>
+
+        <button
+          onClick={() => setFiltroTipo("todos")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
+            filtroTipo === "todos"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-500 hover:bg-slate-100"
+          }`}
+        >
+          <Boxes className="w-4 h-4" />
+          Todos os Ativos ({contadoresTipo.todos})
         </button>
       </div>
 
@@ -360,20 +360,30 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                       <StatusBadge status={item.status} />
                     </td>
 
-                    {/* Responsável */}
-                    <td className="px-6 py-4 text-xs">
+                    {/* Responsável / Custódia */}
+                    <td className="px-6 py-3.5 text-xs">
                       {item.responsavel ? (
-                        <div>
-                          <p className="font-bold text-slate-800">
-                            {item.responsavel.nome}
-                          </p>
-                          <p className="text-slate-400">
-                            {item.responsavel.departamento}
-                          </p>
+                        <div className="flex items-center gap-2.5 bg-indigo-50/70 border border-indigo-100/90 rounded-xl p-2 max-w-[260px] shadow-2xs">
+                          <div className="h-7 w-7 rounded-lg bg-indigo-600 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 shadow-2xs">
+                            {item.responsavel.nome
+                              .split(" ")
+                              .map((n) => n[0])
+                              .slice(0, 2)
+                              .join("")}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-900 text-xs truncate">
+                              {item.responsavel.nome}
+                            </p>
+                            <p className="text-[11px] text-indigo-700 truncate font-medium">
+                              {item.responsavel.departamento}
+                            </p>
+                          </div>
                         </div>
                       ) : (
-                        <span className="text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100">
-                          Estoque de TI
+                        <span className="inline-flex items-center gap-1.5 text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200/80 text-[11px]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          Estoque Disponível
                         </span>
                       )}
                     </td>
