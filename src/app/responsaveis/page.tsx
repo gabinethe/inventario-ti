@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Users, Mail, Laptop, Building2 } from "lucide-react";
+import { Users, Mail, Laptop, Building2, UserPlus } from "lucide-react";
 import { Header } from "@/components/layout/header";
+import { Button } from "@/components/ui/button";
 import { MOCK_RESPONSAVEIS, MOCK_EQUIPAMENTOS } from "@/services/mock-data";
 
 export default function ResponsaveisPage() {
@@ -18,14 +19,23 @@ export default function ResponsaveisPage() {
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-6xl">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-            <Users className="h-6 w-6 text-blue-600" />
-            Usuários e Posse de Ativos
-          </h1>
-          <p className="text-sm text-slate-500 font-medium">
-            Relação de colaboradores e os equipamentos corporativos sob sua responsabilidade.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
+              <Users className="h-6 w-6 text-blue-600" />
+              Usuários e Posse de Ativos
+            </h1>
+            <p className="text-sm text-slate-500 font-medium">
+              Relação de colaboradores e os equipamentos corporativos sob sua responsabilidade.
+            </p>
+          </div>
+
+          <Link href="/responsaveis/novo">
+            <Button size="sm">
+              <UserPlus className="w-4 h-4" />
+              Novo Colaborador
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

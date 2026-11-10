@@ -47,6 +47,11 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
 
+  // Oculta a barra lateral na tela de login
+  if (pathname === "/login") {
+    return null;
+  }
+
   return (
     <aside className="w-64 flex-shrink-0 bg-slate-900 text-slate-300 flex flex-col justify-between border-r border-slate-800 min-h-screen">
       <div>
