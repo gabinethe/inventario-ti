@@ -15,10 +15,23 @@ function getMemoria(): { eq: Equipamento[]; resp: Responsavel[]; mov: Movimentac
       const salvoResp = localStorage.getItem(STORAGE_KEY_RESP);
       const salvoMov = localStorage.getItem(STORAGE_KEY_MOV);
 
+      // Limpa movimentações legadas de ilustração (mov-1 a mov-7) que possam ter ficado no browser
+      const MOCK_IDS_LEGADOS = new Set(["mov-1", "mov-2", "mov-3", "mov-4", "mov-5", "mov-6", "mov-7"]);
+      let listaMov: Movimentacao[] = salvoMov ? JSON.parse(salvoMov) : [...MOCK_MOVIMENTACOES];
+      if (Array.isArray(listaMov)) {
+        const filtrada = listaMov.filter((m) => !MOCK_IDS_LEGADOS.has(m.id));
+        if (filtrada.length !== listaMov.length) {
+          localStorage.setItem(STORAGE_KEY_MOV, JSON.stringify(filtrada));
+        }
+        listaMov = filtrada;
+      } else {
+        listaMov = [];
+      }
+
       return {
         eq: salvoEq ? JSON.parse(salvoEq) : [...MOCK_EQUIPAMENTOS],
         resp: salvoResp ? JSON.parse(salvoResp) : [...MOCK_RESPONSAVEIS],
-        mov: salvoMov ? JSON.parse(salvoMov) : [...MOCK_MOVIMENTACOES],
+        mov: listaMov,
       };
     } catch {
       return { eq: [...MOCK_EQUIPAMENTOS], resp: [...MOCK_RESPONSAVEIS], mov: [...MOCK_MOVIMENTACOES] };
@@ -574,38 +587,6 @@ export const equipamentosService = {
    * Retorna a lista completa de movimentações de auditoria em ordem cronológica decrescente.
    */
   async listarMovimentacoes(filtros?: { tipo?: TipoMovimentacao | "todos"; busca?: string }): Promise<Movimentacao[]> {
-    const supabase = getSupabase();
-
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from("movimentacoes")
-          .select("*")
-          .order("data", { ascending: false });
-
-        if (!error && data && data.length > 0) {
-          let resultado: Movimentacao[] = data.map((item: any) => ({
-            id: item.id,
-            equipamentoId: item.equipamento_id,
-            tipo: item.tipo as TipoMovimentacao,
-            responsavelOrigemId: item.responsavel_origem_id,
-            responsavelDestinoId: item.responsavel_destino_id,
-            data: item.data,
-            motivo: item.motivo,
-            registradoPor: item.registrado_por,
-          }));
-
-          if (filtros?.tipo && filtros.tipo !== "todos") {
-            resultado = resultado.filter((m) => m.tipo === filtros.tipo);
-          }
-
-          return resultado;
-        }
-      } catch (err) {
-        console.error("Erro ao listar movimentações do Supabase:", err);
-      }
-    }
-
     const memoria = getMemoria();
     let lista = [...memoria.mov].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
@@ -625,6 +606,16 @@ export const equipamentosService = {
     }
 
     return lista;
+  },
+
+  /**
+   * Limpa o histórico de movimentações para iniciar novos testes do zero.
+   */
+  async limparMovimentacoes(): Promise<void> {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_MOV, JSON.stringify([]));
+      window.dispatchEvent(new Event("inventario_alterado"));
+    }
   },
 
   /**
