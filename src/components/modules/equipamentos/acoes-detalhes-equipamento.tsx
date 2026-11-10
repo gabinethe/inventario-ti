@@ -92,7 +92,7 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
         aberto={modalExclusaoAberto}
         titulo="Excluir Equipamento"
         descricao="Tem certeza que deseja excluir este ativo permanentemente do inventário?"
-        itemIdentificador={`${equipamento.marca} ${equipamento.modelo} (Patrimônio: ${equipamento.patrimonio} • S/N: ${equipamento.numeroSerie})`}
+        itemIdentificador={`${equipamento.marca} ${equipamento.modelo} (S/N: ${equipamento.numeroSerie})`}
         onFechar={() => setModalExclusaoAberto(false)}
         onConfirmar={confirmarExclusao}
         processando={excluindo}

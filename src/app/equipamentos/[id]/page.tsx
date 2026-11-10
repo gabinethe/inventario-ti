@@ -1,9 +1,15 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
   Laptop, 
+  Monitor, 
+  Smartphone, 
+  Headphones, 
+  Boxes,
   Cpu, 
   HardDrive, 
   MemoryStick, 
@@ -12,42 +18,121 @@ import {
   DollarSign, 
   User, 
   Clock, 
-  ArrowLeftRight,
-  CheckCircle,
-  Building2,
-  Mail
+  CheckCircle, 
+  Building2, 
+  Mail,
+  Layers,
+  Sparkles
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { equipamentosService } from "@/services/equipamentos.service";
+import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
 import { AcoesDetalhesEquipamento } from "@/components/modules/equipamentos/acoes-detalhes-equipamento";
+import { Movimentacao } from "@/types";
 
-interface DetalhesPageProps {
-  params: Promise<{ id: string }>;
-}
+export default function DetalhesEquipamentoPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
 
-export default async function DetalhesEquipamentoPage({ params }: DetalhesPageProps) {
-  const { id } = await params;
-  const notebook = await equipamentosService.buscarPorId(id);
+  const [equipamento, setEquipamento] = useState<EquipamentoComResponsavel | null>(null);
+  const [historico, setHistorico] = useState<Movimentacao[]>([]);
+  const [carregando, setCarregando] = useState(true);
 
-  if (!notebook) {
-    notFound();
+  const carregarDados = async () => {
+    if (!id) return;
+    try {
+      const item = await equipamentosService.buscarPorId(id);
+      if (item) {
+        setEquipamento(item);
+        const movs = await equipamentosService.listarHistorico(item.id);
+        setHistorico(movs);
+      } else {
+        setEquipamento(null);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar detalhes:", err);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  useEffect(() => {
+    carregarDados();
+
+    const handleAtualizacao = () => carregarDados();
+    window.addEventListener("inventario_alterado", handleAtualizacao);
+    return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
+  }, [id]);
+
+  if (carregando) {
+    return (
+      <>
+        <Header title="Carregando Detalhes..." subtitle="Consultando base de ativos corporativos" />
+        <main className="flex-1 p-8 max-w-6xl">
+          <div className="p-12 text-center text-slate-400 text-sm">
+            Buscando dados do ativo...
+          </div>
+        </main>
+      </>
+    );
   }
 
-  const historico = await equipamentosService.listarHistorico(notebook.id);
+  if (!equipamento) {
+    return (
+      <>
+        <Header title="Ativo não Encontrado" subtitle="O equipamento consultado não foi localizado" />
+        <main className="flex-1 p-8 space-y-6 max-w-6xl">
+          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center space-y-4 shadow-xs">
+            <Boxes className="w-12 h-12 mx-auto text-slate-300" />
+            <h2 className="text-lg font-bold text-slate-900">Equipamento não encontrado</h2>
+            <p className="text-sm text-slate-500 max-w-md mx-auto">
+              O ativo pode ter sido excluído ou transferido. Retorne à listagem de ativos para consultar o estoque atual.
+            </p>
+            <Link href="/equipamentos">
+              <Button size="md" className="mt-2">
+                <ArrowLeft className="w-4 h-4" />
+                Voltar ao Inventário
+              </Button>
+            </Link>
+          </div>
+        </main>
+      </>
+    );
+  }
 
-  const valorFormatado = notebook.valorAquisicao
-    ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-        notebook.valorAquisicao
-      )
-    : "Não informado";
+  const getIconeTipo = (tipo: string) => {
+    switch (tipo) {
+      case "monitor":
+        return <Monitor className="w-8 h-8" />;
+      case "smartphone":
+        return <Smartphone className="w-8 h-8" />;
+      case "periferico":
+        return <Headphones className="w-8 h-8" />;
+      default:
+        return <Laptop className="w-8 h-8" />;
+    }
+  };
+
+  const getNomeTipo = (tipo: string) => {
+    switch (tipo) {
+      case "monitor":
+        return "Monitor";
+      case "smartphone":
+        return "Celular Corporativo";
+      case "periferico":
+        return equipamento.subtipo ? `Periférico (${equipamento.subtipo})` : "Periférico";
+      default:
+        return "Notebook Corporativo";
+    }
+  };
 
   return (
     <>
       <Header
-        title={`Equipamento ${notebook.patrimonio}`}
-        subtitle={`${notebook.marca} ${notebook.modelo}`}
+        title={`${equipamento.marca} ${equipamento.modelo}`}
+        subtitle={getNomeTipo(equipamento.tipo)}
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-6xl">
@@ -55,7 +140,7 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
         <div>
           <Link
             href="/equipamentos"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar para lista de equipamentos
@@ -63,26 +148,38 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
         </div>
 
         {/* Banner do Equipamento */}
-        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
-              <Laptop className="w-8 h-8" />
+            <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+              {getIconeTipo(equipamento.tipo)}
             </div>
             <div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                  {notebook.marca} {notebook.modelo}
+                  {equipamento.marca} {equipamento.modelo}
                 </h1>
-                <StatusBadge status={notebook.status} />
+                <StatusBadge status={equipamento.status} />
+                {equipamento.subtipo && (
+                  <span className="text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full border border-slate-200">
+                    {equipamento.subtipo}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-slate-500 font-mono mt-1">
-                Patrimônio: <span className="font-bold text-slate-800">{notebook.patrimonio}</span> • Serial: {notebook.numeroSerie}
-              </p>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+                {equipamento.quantidadeDisponivel !== undefined ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Estoque: {equipamento.quantidadeDisponivel} disponíveis {equipamento.quantidadeTotal ? `de ${equipamento.quantidadeTotal}` : ""}
+                  </span>
+                ) : (
+                  <span>Serial (S/N): <strong className="font-mono text-slate-800">{equipamento.numeroSerie}</strong></span>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <AcoesDetalhesEquipamento equipamento={notebook} />
+            <AcoesDetalhesEquipamento equipamento={equipamento} />
           </div>
         </div>
 
@@ -90,85 +187,119 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Coluna 1 e 2: Especificações Técnicas */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
-                Especificações Técnicas
+                Especificações & Detalhes Técnicos
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <Cpu className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Processador</p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {notebook.processador}
-                    </p>
-                  </div>
-                </div>
+                {/* Se for notebook */}
+                {equipamento.tipo === "notebook" && (
+                  <>
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <Cpu className="w-5 h-5 text-indigo-600" />
+                      <div>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Processador</p>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {equipamento.processador || "Padrão"}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <MemoryStick className="w-5 h-5 text-purple-600" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Memória RAM</p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {notebook.memoriaRam}
-                    </p>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <MemoryStick className="w-5 h-5 text-indigo-600" />
+                      <div>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Memória RAM</p>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {equipamento.memoriaRam || "Padrão"}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <HardDrive className="w-5 h-5 text-emerald-600" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Armazenamento</p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {notebook.armazenamento}
-                    </p>
-                  </div>
-                </div>
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                      <HardDrive className="w-5 h-5 text-emerald-600" />
+                      <div>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold">Armazenamento</p>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {equipamento.armazenamento || "Padrão"}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
 
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+                {/* Se for smartphone */}
+                {equipamento.tipo === "smartphone" && equipamento.armazenamento && (
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <HardDrive className="w-5 h-5 text-emerald-600" />
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">Armazenamento Interno</p>
+                      <p className="text-sm font-semibold text-slate-800">
+                        {equipamento.armazenamento}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Se for periférico em lote */}
+                {equipamento.tipo === "periferico" && equipamento.quantidadeDisponivel !== undefined && (
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                    <Layers className="w-5 h-5 text-emerald-600" />
+                    <div>
+                      <p className="text-[10px] text-emerald-700 uppercase font-bold">Estoque do Lote</p>
+                      <p className="text-sm font-bold text-emerald-900">
+                        {equipamento.quantidadeDisponivel} unidades disponíveis
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Especificações Livres */}
+                {equipamento.especificacoes && (
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100 sm:col-span-2">
+                    <Sparkles className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold">Configuração & Recursos</p>
+                      <p className="text-sm font-medium text-slate-800">
+                        {equipamento.especificacoes}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                   <Calendar className="w-5 h-5 text-amber-600" />
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Data de Compra</p>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Data de Aquisição</p>
                     <p className="text-sm font-semibold text-slate-800">
-                      {new Date(notebook.dataAquisicao).toLocaleDateString("pt-BR")}
+                      {new Date(equipamento.dataAquisicao).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
-                  <DollarSign className="w-5 h-5 text-slate-600" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Valor de Aquisição</p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {valorFormatado}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3.5 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
                   <Barcode className="w-5 h-5 text-slate-600" />
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Número de Série</p>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold">Número de Série / Lote</p>
                     <p className="text-sm font-semibold text-slate-800 font-mono">
-                      {notebook.numeroSerie}
+                      {equipamento.numeroSerie}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {notebook.observacoes && (
-                <div className="mt-4 p-3.5 rounded-lg border border-slate-200 bg-slate-50">
+              {equipamento.observacoes && (
+                <div className="mt-4 p-3.5 rounded-xl border border-slate-200 bg-slate-50/60">
                   <p className="text-xs font-bold text-slate-600">Observações de TI:</p>
-                  <p className="text-xs text-slate-600 mt-1">{notebook.observacoes}</p>
+                  <p className="text-xs text-slate-600 mt-1">{equipamento.observacoes}</p>
                 </div>
               )}
             </div>
 
             {/* Linha do Tempo / Histórico de Auditoria */}
-            <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-blue-600" />
+                <Clock className="w-4 h-4 text-indigo-600" />
                 Histórico de Movimentações (Auditoria)
               </h2>
 
@@ -180,10 +311,10 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                   {historico.map((mov) => (
                     <div key={mov.id} className="relative">
-                      <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-blue-600" />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-900 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded">
+                      <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-xs" />
+                      <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-3.5 space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
                             {mov.tipo}
                           </span>
                           <span className="text-[11px] text-slate-400 font-medium">
@@ -191,10 +322,10 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
                             {new Date(mov.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-700 mt-1.5 font-medium">
+                        <p className="text-xs text-slate-700 font-medium pt-1">
                           {mov.motivo}
                         </p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">
+                        <p className="text-[10px] text-slate-400 font-mono">
                           Registrado por: {mov.registradoPor}
                         </p>
                       </div>
@@ -207,17 +338,17 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
 
           {/* Coluna 3: Responsável Atual */}
           <div className="space-y-6">
-            <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                <User className="w-4 h-4 text-blue-600" />
+                <User className="w-4 h-4 text-indigo-600" />
                 Responsável Atual
               </h2>
 
-              {notebook.responsavel ? (
+              {equipamento.responsavel ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-blue-50 text-blue-700 font-bold text-sm flex items-center justify-center border border-blue-100">
-                      {notebook.responsavel.nome
+                    <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-sm flex items-center justify-center border border-indigo-100">
+                      {equipamento.responsavel.nome
                         .split(" ")
                         .map((n) => n[0])
                         .slice(0, 2)
@@ -225,20 +356,20 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
                     </div>
                     <div>
                       <p className="font-bold text-sm text-slate-900">
-                        {notebook.responsavel.nome}
+                        {equipamento.responsavel.nome}
                       </p>
-                      <p className="text-xs text-slate-500 font-medium">{notebook.responsavel.cargo}</p>
+                      <p className="text-xs text-slate-500 font-medium">{equipamento.responsavel.cargo}</p>
                     </div>
                   </div>
 
                   <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs">
                     <div className="flex items-center gap-2 text-slate-600">
                       <Building2 className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-800">{notebook.responsavel.departamento}</span>
+                      <span className="font-medium text-slate-800">{equipamento.responsavel.departamento}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600">
                       <Mail className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-800 break-all">{notebook.responsavel.email}</span>
+                      <span className="font-medium text-slate-800 break-all">{equipamento.responsavel.email}</span>
                     </div>
                   </div>
                 </div>
@@ -249,7 +380,9 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
                     Disponível no Estoque
                   </p>
                   <p className="text-xs text-slate-500 mt-1 max-w-[200px] mx-auto">
-                    Este equipamento não possui responsável vinculado no momento.
+                    {equipamento.tipo === "periferico" && equipamento.quantidadeDisponivel !== undefined
+                      ? `${equipamento.quantidadeDisponivel} unidades prontas para distribuição.`
+                      : "Este equipamento não possui colaborador vinculado no momento."}
                   </p>
                 </div>
               )}

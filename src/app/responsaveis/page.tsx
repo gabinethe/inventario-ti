@@ -229,9 +229,11 @@ export default function ResponsaveisPage() {
                               <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
                                 {item.marca} {item.modelo}
                               </span>
-                              <span className="text-slate-400 ml-1.5 font-mono text-[11px]">
-                                ({item.patrimonio})
-                              </span>
+                              {item.numeroSerie && (
+                                <span className="text-slate-400 ml-1.5 font-mono text-[11px]">
+                                  • S/N: {item.numeroSerie}
+                                </span>
+                              )}
                             </div>
                           </Link>
 

@@ -25,14 +25,18 @@ export type SubtipoPeriferico =
  */
 export interface Equipamento {
   id: string;                      // Identificador único (UUID ou código interno)
-  patrimonio: string;              // Número da etiqueta de patrimônio da empresa (ex: PAT-00101)
+  patrimonio?: string;             // Opcional (não mais exigido no fluxo diário)
   tipo: TipoEquipamento;           // Tipo de ativo (notebook, monitor, smartphone, periferico)
   subtipo?: string;                // Subcategoria (ex: Headset, Mouse, Teclado para periféricos)
   marca: string;                   // Ex: Dell, Apple, Logitech, LG, Samsung
   modelo: string;                  // Ex: Latitude 3420, MX Master 3S, UltraWide 29"
-  numeroSerie: string;             // Número de série fornecido pelo fabricante
+  numeroSerie: string;             // Número de série fornecido pelo fabricante (ou identificador de lote)
   status: StatusEquipamento;       // Estado atual do equipamento
   
+  // Controle de lote e estoque (especialmente para periféricos)
+  quantidadeTotal?: number;        // Quantidade total adquirida para o lote
+  quantidadeDisponivel?: number;   // Quantidade restante disponível no estoque
+
   // Especificações técnicas flexíveis
   processador?: string;            // Ex: Intel Core i7, Apple M2
   memoriaRam?: string;             // Ex: 16 GB DDR4

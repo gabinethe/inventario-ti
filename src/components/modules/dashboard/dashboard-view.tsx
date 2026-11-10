@@ -62,22 +62,17 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
   }, []);
 
-  // Formatação de moeda BRL
-  const valorFormatado = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(metricas.valorTotalParque);
-
   // Filtragem na tabela do dashboard
   const equipamentosFiltrados = useMemo(() => {
     return notebooks.filter((eq) => {
       const termo = busca.toLowerCase();
       const matchBusca =
         !busca ||
-        eq.patrimonio.toLowerCase().includes(termo) ||
+        (eq.patrimonio && eq.patrimonio.toLowerCase().includes(termo)) ||
         eq.modelo.toLowerCase().includes(termo) ||
         eq.marca.toLowerCase().includes(termo) ||
         eq.numeroSerie.toLowerCase().includes(termo) ||
+        (eq.subtipo && eq.subtipo.toLowerCase().includes(termo)) ||
         (eq.responsavel?.nome.toLowerCase().includes(termo) ?? false);
 
       const matchStatus = filtroStatus === "todos" || eq.status === filtroStatus;
@@ -139,26 +134,6 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
           icon={Wrench}
           color="amber"
         />
-      </div>
-
-      {/* Banner Financeiro Corporativo */}
-      <div className="rounded-2xl border border-indigo-100 bg-white p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100 shadow-xs">
-            <DollarSign className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-              Valor Total do Patrimônio Ativo
-            </p>
-            <p className="text-2xl font-bold text-slate-900 tracking-tight">
-              {valorFormatado}
-            </p>
-          </div>
-        </div>
-        <p className="text-xs text-slate-500 max-w-sm sm:text-right font-medium">
-          Valor de aquisição acumulado de todos os equipamentos ativos no inventário corporativo.
-        </p>
       </div>
 
       {/* Atalhos de Categorias de Equipamentos */}
@@ -329,7 +304,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3.5">Patrimônio / Equipamento</th>
+                <th className="px-6 py-3.5">Equipamento / Modelo</th>
                 <th className="px-6 py-3.5">Configuração</th>
                 <th className="px-6 py-3.5">Status</th>
                 <th className="px-6 py-3.5">Responsável Atual</th>
@@ -364,16 +339,26 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                           <div className="font-bold text-slate-900">
                             {notebook.marca} {notebook.modelo}
                           </div>
-                          <div className="text-xs text-slate-500 font-mono">
-                            {notebook.patrimonio} • S/N: {notebook.numeroSerie}
+                          <div className="text-xs text-slate-500 mt-0.5">
+                            {notebook.tipo === "periferico" && notebook.quantidadeDisponivel !== undefined ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Estoque: {notebook.quantidadeDisponivel} unid. disponíveis
+                              </span>
+                            ) : (
+                              <span className="font-mono text-slate-400 text-[11px]">S/N: {notebook.numeroSerie}</span>
+                            )}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-xs text-slate-600">
-                      <div className="font-medium text-slate-800">{notebook.processador}</div>
-                      <div className="text-slate-400">
-                        {notebook.memoriaRam} • {notebook.armazenamento}
+                      <div className="font-semibold text-slate-800 uppercase text-[11px] tracking-wider text-indigo-600">
+                        {notebook.tipo} {notebook.subtipo ? `• ${notebook.subtipo}` : ""}
+                      </div>
+                      <div className="text-slate-500 line-clamp-1">
+                        {notebook.processador
+                          ? `${notebook.processador} • ${notebook.memoriaRam || ""}`
+                          : notebook.especificacoes || "Configuração corporativa"}
                       </div>
                     </td>
                     <td className="px-6 py-4">

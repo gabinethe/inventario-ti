@@ -156,7 +156,7 @@ export const equipamentosService = {
       const termo = filtros.busca.toLowerCase();
       resultado = resultado.filter(
         (eq) =>
-          eq.patrimonio.toLowerCase().includes(termo) ||
+          (eq.patrimonio && eq.patrimonio.toLowerCase().includes(termo)) ||
           eq.modelo.toLowerCase().includes(termo) ||
           eq.marca.toLowerCase().includes(termo) ||
           eq.numeroSerie.toLowerCase().includes(termo) ||
@@ -170,10 +170,20 @@ export const equipamentosService = {
 
   /**
    * Busca um único equipamento pelo seu ID.
+   * Consulta a memória local da sessão primeiro para resposta instantânea e garantida.
    */
   async buscarPorId(id: string): Promise<EquipamentoComResponsavel | null> {
-    const supabase = getSupabase();
+    const memoria = getMemoria();
+    const equipamentoLocal = memoria.eq.find((e) => e.id === id);
+    if (equipamentoLocal) {
+      const responsavel = memoria.resp.find((r) => r.id === equipamentoLocal.responsavelId);
+      return {
+        ...equipamentoLocal,
+        responsavel,
+      };
+    }
 
+    const supabase = getSupabase();
     if (supabase) {
       try {
         const { data, error } = await supabase
@@ -219,15 +229,7 @@ export const equipamentosService = {
       }
     }
 
-    const memoria = getMemoria();
-    const equipamento = memoria.eq.find((e) => e.id === id);
-    if (!equipamento) return null;
-
-    const responsavel = memoria.resp.find((r) => r.id === equipamento.responsavelId);
-    return {
-      ...equipamento,
-      responsavel,
-    };
+    return null;
   },
 
   /**
@@ -240,7 +242,7 @@ export const equipamentosService = {
     if (supabase) {
       try {
         const payloadBase: any = {
-          patrimonio: dados.patrimonio,
+          patrimonio: dados.patrimonio || ("ATV-" + Date.now().toString().slice(-6)),
           tipo: dados.tipo || "notebook",
           marca: dados.marca,
           modelo: dados.modelo,
@@ -325,14 +327,76 @@ export const equipamentosService = {
 
   /**
    * Atribui um equipamento da empresa a um colaborador responsável.
+   * Suporta alocação unitária a partir de lotes de periféricos com decremento do estoque.
    */
-  async atribuirEquipamento(equipamentoId: string, responsavelId: string, motivoCustomizado?: string): Promise<boolean> {
+  async atribuirEquipamento(
+    equipamentoId: string, 
+    responsavelId: string, 
+    motivoCustomizado?: string,
+    numeroSerieUnidade?: string
+  ): Promise<boolean> {
     const memoria = getMemoria();
     const equipamento = memoria.eq.find((e) => e.id === equipamentoId);
     const colaborador = memoria.resp.find((r) => r.id === responsavelId);
 
     if (!equipamento || !colaborador) return false;
 
+    // Se for periférico em lote com mais de 1 unidade disponível no estoque
+    if (equipamento.tipo === "periferico" && (equipamento.quantidadeDisponivel ?? 1) > 1) {
+      const serialUnidade = numeroSerieUnidade?.trim() || `SN-${(equipamento.subtipo || "PER").toUpperCase()}-${Date.now().toString().slice(-6)}`;
+      const qtdRestante = (equipamento.quantidadeDisponivel ?? 1) - 1;
+
+      // Unidade individual entregue sob custódia do colaborador
+      const unidadeEntregue: Equipamento = {
+        id: `eq-unit-${Date.now()}`,
+        tipo: "periferico",
+        subtipo: equipamento.subtipo,
+        marca: equipamento.marca,
+        modelo: equipamento.modelo,
+        numeroSerie: serialUnidade,
+        status: "em_uso",
+        responsavelId: colaborador.id,
+        dataAquisicao: equipamento.dataAquisicao,
+        valorAquisicao: equipamento.valorAquisicao,
+        especificacoes: equipamento.especificacoes,
+        criadoEm: new Date().toISOString(),
+        atualizadoEm: new Date().toISOString(),
+      };
+
+      // Atualiza a quantidade disponível do lote remanescente
+      const novaListaEq = [
+        unidadeEntregue,
+        ...memoria.eq.map((e) =>
+          e.id === equipamentoId
+            ? {
+                ...e,
+                quantidadeDisponivel: qtdRestante,
+                status: (qtdRestante > 0 ? "disponivel" : "em_uso") as StatusEquipamento,
+                atualizadoEm: new Date().toISOString(),
+              }
+            : e
+        ),
+      ];
+
+      const motivo = motivoCustomizado || `Atribuição de 1 unidade de ${equipamento.marca} ${equipamento.modelo} (Serial: ${serialUnidade}) para ${colaborador.nome}. Restam ${qtdRestante} unidades em estoque.`;
+
+      const novaMov: Movimentacao = {
+        id: `mov-${Date.now()}`,
+        tipo: "atribuicao",
+        equipamentoId: unidadeEntregue.id,
+        equipamentoNome: `${equipamento.marca} ${equipamento.modelo}`,
+        responsavelDestinoId: responsavelId,
+        responsavelNome: colaborador.nome,
+        data: new Date().toISOString(),
+        motivo,
+        registradoPor: getAdminNome(),
+      };
+
+      salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+      return true;
+    }
+
+    // Equipamento individual (notebook, monitor, celular ou última unidade de periférico)
     const supabase = getSupabase();
     if (supabase) {
       try {
@@ -349,10 +413,16 @@ export const equipamentosService = {
       }
     }
 
-    // Atualiza estado local
     const novaListaEq = memoria.eq.map((e) =>
       e.id === equipamentoId
-        ? { ...e, responsavelId, status: "em_uso" as StatusEquipamento, atualizadoEm: new Date().toISOString() }
+        ? { 
+            ...e, 
+            responsavelId, 
+            status: "em_uso" as StatusEquipamento,
+            quantidadeDisponivel: 0,
+            numeroSerie: numeroSerieUnidade?.trim() || e.numeroSerie,
+            atualizadoEm: new Date().toISOString() 
+          }
         : e
     );
 
@@ -362,7 +432,7 @@ export const equipamentosService = {
       id: `mov-${Date.now()}`,
       tipo: "atribuicao",
       equipamentoId,
-      equipamentoNome: `${equipamento.marca} ${equipamento.modelo} (${equipamento.patrimonio})`,
+      equipamentoNome: `${equipamento.marca} ${equipamento.modelo}`,
       responsavelDestinoId: responsavelId,
       responsavelNome: colaborador.nome,
       data: new Date().toISOString(),

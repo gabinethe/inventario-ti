@@ -14,7 +14,9 @@ import {
   Monitor,
   Smartphone,
   Headphones,
-  Boxes
+  Boxes,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { equipamentosService } from "@/services/equipamentos.service";
@@ -23,6 +25,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const tipoAtivo = searchParams?.get("tipo");
+
+  const [ativosAberto, setAtivosAberto] = useState(true);
 
   const [totais, setTotais] = useState({
     todos: 0,
@@ -66,11 +70,12 @@ export function Sidebar() {
 
   const isLinkActive = (href: string, tipo?: string) => {
     if (href === "/") return pathname === "/";
-    if (pathname.startsWith("/equipamentos")) {
+    if (href.startsWith("/equipamentos")) {
+      if (!pathname.startsWith("/equipamentos")) return false;
       if (tipo) return tipoAtivo === tipo;
       return !tipoAtivo;
     }
-    return pathname.startsWith(href);
+    return pathname === href || pathname.startsWith(href + "/");
   };
 
   return (
@@ -115,11 +120,25 @@ export function Sidebar() {
             </Link>
           </div>
 
-          {/* Seção 2: Categorias de Ativos de TI */}
+          {/* Seção 2: Categorias de Ativos de TI (Expansível) */}
           <div className="space-y-1">
-            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-indigo-400/60">
-              Inventário de Ativos
-            </p>
+            <div className="flex items-center justify-between px-3 pb-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400/60">
+                Inventário de Ativos
+              </p>
+              <button
+                type="button"
+                onClick={() => setAtivosAberto(!ativosAberto)}
+                className="text-indigo-400/70 hover:text-white transition-colors p-1 rounded-md hover:bg-indigo-950/60 cursor-pointer"
+                title={ativosAberto ? "Recolher categorias" : "Expandir categorias"}
+              >
+                {ativosAberto ? (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronRight className="h-3.5 w-3.5" />
+                )}
+              </button>
+            </div>
 
             {/* Todos os Ativos */}
             <Link
@@ -141,85 +160,90 @@ export function Sidebar() {
               </span>
             </Link>
 
-            {/* Notebooks */}
-            <Link
-              href="/equipamentos?tipo=notebook"
-              prefetch={true}
-              className={cn(
-                "flex items-center justify-between rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-150",
-                isLinkActive("/equipamentos", "notebook")
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
-                  : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Laptop className="h-4 w-4" />
-                <span>Notebooks</span>
-              </div>
-              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                {totais.notebook}
-              </span>
-            </Link>
+            {/* Sub-itens expansíveis */}
+            {ativosAberto && (
+              <div className="pl-3.5 pt-1 space-y-1 border-l border-indigo-900/40 ml-3 animate-in fade-in duration-150">
+                {/* Notebooks */}
+                <Link
+                  href="/equipamentos?tipo=notebook"
+                  prefetch={true}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-150",
+                    isLinkActive("/equipamentos", "notebook")
+                      ? "bg-indigo-600/90 text-white font-semibold"
+                      : "text-indigo-300/70 hover:bg-indigo-950/60 hover:text-white"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Laptop className="h-3.5 w-3.5" />
+                    <span>Notebooks</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-indigo-300">
+                    {totais.notebook}
+                  </span>
+                </Link>
 
-            {/* Monitores */}
-            <Link
-              href="/equipamentos?tipo=monitor"
-              prefetch={true}
-              className={cn(
-                "flex items-center justify-between rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-150",
-                isLinkActive("/equipamentos", "monitor")
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
-                  : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Monitor className="h-4 w-4" />
-                <span>Monitores</span>
-              </div>
-              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                {totais.monitor}
-              </span>
-            </Link>
+                {/* Monitores */}
+                <Link
+                  href="/equipamentos?tipo=monitor"
+                  prefetch={true}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-150",
+                    isLinkActive("/equipamentos", "monitor")
+                      ? "bg-indigo-600/90 text-white font-semibold"
+                      : "text-indigo-300/70 hover:bg-indigo-950/60 hover:text-white"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Monitor className="h-3.5 w-3.5" />
+                    <span>Monitores</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-indigo-300">
+                    {totais.monitor}
+                  </span>
+                </Link>
 
-            {/* Smartphones */}
-            <Link
-              href="/equipamentos?tipo=smartphone"
-              prefetch={true}
-              className={cn(
-                "flex items-center justify-between rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-150",
-                isLinkActive("/equipamentos", "smartphone")
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
-                  : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Smartphone className="h-4 w-4" />
-                <span>Celulares</span>
-              </div>
-              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                {totais.smartphone}
-              </span>
-            </Link>
+                {/* Smartphones */}
+                <Link
+                  href="/equipamentos?tipo=smartphone"
+                  prefetch={true}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-150",
+                    isLinkActive("/equipamentos", "smartphone")
+                      ? "bg-indigo-600/90 text-white font-semibold"
+                      : "text-indigo-300/70 hover:bg-indigo-950/60 hover:text-white"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Smartphone className="h-3.5 w-3.5" />
+                    <span>Celulares</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-indigo-300">
+                    {totais.smartphone}
+                  </span>
+                </Link>
 
-            {/* Periféricos */}
-            <Link
-              href="/equipamentos?tipo=periferico"
-              prefetch={true}
-              className={cn(
-                "flex items-center justify-between rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-150",
-                isLinkActive("/equipamentos", "periferico")
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
-                  : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Headphones className="h-4 w-4" />
-                <span>Periféricos</span>
+                {/* Periféricos */}
+                <Link
+                  href="/equipamentos?tipo=periferico"
+                  prefetch={true}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-150",
+                    isLinkActive("/equipamentos", "periferico")
+                      ? "bg-indigo-600/90 text-white font-semibold"
+                      : "text-indigo-300/70 hover:bg-indigo-950/60 hover:text-white"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Headphones className="h-3.5 w-3.5" />
+                    <span>Periféricos</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-indigo-300">
+                    {totais.periferico}
+                  </span>
+                </Link>
               </div>
-              <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                {totais.periferico}
-              </span>
-            </Link>
+            )}
           </div>
 
           {/* Seção 3: Pessoas e Governança */}

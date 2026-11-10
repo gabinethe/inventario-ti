@@ -101,7 +101,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
       const termo = busca.toLowerCase();
       const matchBusca =
         !busca ||
-        eq.patrimonio.toLowerCase().includes(termo) ||
+        (eq.patrimonio && eq.patrimonio.toLowerCase().includes(termo)) ||
         eq.modelo.toLowerCase().includes(termo) ||
         eq.marca.toLowerCase().includes(termo) ||
         eq.numeroSerie.toLowerCase().includes(termo) ||
@@ -330,8 +330,14 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                           <div className="font-bold text-slate-900">
                             {item.marca} {item.modelo}
                           </div>
-                          <div className="text-xs text-slate-500 font-mono">
-                            {item.patrimonio} • S/N: {item.numeroSerie}
+                          <div className="text-xs text-slate-500 mt-0.5">
+                            {item.tipo === "periferico" && item.quantidadeDisponivel !== undefined ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                Estoque: {item.quantidadeDisponivel} unid. disponíveis
+                              </span>
+                            ) : (
+                              <span className="font-mono text-slate-400 text-[11px]">S/N: {item.numeroSerie}</span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -445,7 +451,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         descricao="Tem certeza que deseja excluir permanentemente este equipamento do inventário?"
         itemIdentificador={
           equipamentoParaExcluir
-            ? `${equipamentoParaExcluir.marca} ${equipamentoParaExcluir.modelo} — Patrimônio: ${equipamentoParaExcluir.patrimonio}`
+            ? `${equipamentoParaExcluir.marca} ${equipamentoParaExcluir.modelo} (S/N: ${equipamentoParaExcluir.numeroSerie})`
             : undefined
         }
         onFechar={() => {

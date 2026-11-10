@@ -23,6 +23,7 @@ export function ModalAtribuicao({
 }: ModalAtribuicaoProps) {
   const [colaboradores, setColaboradores] = useState<Responsavel[]>([]);
   const [responsavelId, setResponsavelId] = useState("");
+  const [numeroSerieUnidade, setNumeroSerieUnidade] = useState("");
   const [motivo, setMotivo] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -31,6 +32,7 @@ export function ModalAtribuicao({
     if (aberto) {
       setErro(null);
       setMotivo("");
+      setNumeroSerieUnidade("");
       if (modo === "atribuir") {
         equipamentosService.listarResponsaveis().then((lista) => {
           setColaboradores(lista);
@@ -57,7 +59,8 @@ export function ModalAtribuicao({
         await equipamentosService.atribuirEquipamento(
           equipamento.id,
           responsavelId,
-          motivo || undefined
+          motivo || undefined,
+          numeroSerieUnidade || undefined
         );
       } else {
         await equipamentosService.devolverEquipamento(
@@ -129,9 +132,15 @@ export function ModalAtribuicao({
             <p className="font-bold text-slate-900">
               {equipamento.marca} {equipamento.modelo}
             </p>
-            <p className="text-slate-500 font-mono">
-              Patrimônio: <span className="font-bold text-slate-800">{equipamento.patrimonio}</span> • S/N: {equipamento.numeroSerie}
-            </p>
+            <div className="text-slate-500 mt-0.5">
+              {equipamento.quantidadeDisponivel !== undefined ? (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  Estoque: {equipamento.quantidadeDisponivel} unid. disponíveis
+                </span>
+              ) : (
+                <span className="font-mono text-xs">S/N: {equipamento.numeroSerie}</span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -144,24 +153,45 @@ export function ModalAtribuicao({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {modo === "atribuir" ? (
-            <div className="space-y-1.5">
-              <label htmlFor="responsavel" className="block text-xs font-semibold text-slate-700">
-                Selecione o Colaborador de Destino *
-              </label>
-              <select
-                id="responsavel"
-                value={responsavelId}
-                onChange={(e) => setResponsavelId(e.target.value)}
-                required
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
-              >
-                {colaboradores.map((colab) => (
-                  <option key={colab.id} value={colab.id}>
-                    {colab.nome} — {colab.departamento} ({colab.cargo})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <>
+              <div className="space-y-1.5">
+                <label htmlFor="responsavel" className="block text-xs font-semibold text-slate-700">
+                  Selecione o Colaborador de Destino *
+                </label>
+                <select
+                  id="responsavel"
+                  value={responsavelId}
+                  onChange={(e) => setResponsavelId(e.target.value)}
+                  required
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                >
+                  {colaboradores.map((colab) => (
+                    <option key={colab.id} value={colab.id}>
+                      {colab.nome} — {colab.departamento} ({colab.cargo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {equipamento.tipo === "periferico" && (
+                <div className="space-y-1.5 p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100">
+                  <label htmlFor="numeroSerieUnidade" className="block text-xs font-semibold text-slate-800">
+                    Número de Série da Unidade Entregue (Opcional)
+                  </label>
+                  <input
+                    id="numeroSerieUnidade"
+                    type="text"
+                    value={numeroSerieUnidade}
+                    onChange={(e) => setNumeroSerieUnidade(e.target.value)}
+                    placeholder="Ex: SN-82910X (ou deixe em branco para gerar automático)"
+                    className="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                  />
+                  <p className="text-[11px] text-slate-500">
+                    Ao confirmar, 1 unidade sairá do estoque disponível e será vinculada com este número de série ao colaborador.
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900">
               <p className="font-semibold">Responsável atual:</p>

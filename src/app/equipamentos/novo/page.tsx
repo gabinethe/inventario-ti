@@ -26,6 +26,7 @@ export default function NovoEquipamentoPage() {
 
   const [tipo, setTipo] = useState<TipoEquipamento>("notebook");
   const [subtipo, setSubtipo] = useState("mouse");
+  const [quantidadeEstoque, setQuantidadeEstoque] = useState(1);
 
   const [form, setForm] = useState({
     patrimonio: "",
@@ -68,13 +69,14 @@ export default function NovoEquipamentoPage() {
       const statusFinal: StatusEquipamento = form.responsavelId ? "em_uso" : form.status;
 
       await equipamentosService.criar({
-        patrimonio: form.patrimonio,
         tipo,
         subtipo: tipo === "periferico" ? subtipo : undefined,
         marca: form.marca,
         modelo: form.modelo,
-        numeroSerie: form.numeroSerie,
+        numeroSerie: form.numeroSerie || (tipo === "periferico" ? `Lote Estoque (${quantidadeEstoque} un)` : "S/N"),
         status: statusFinal,
+        quantidadeTotal: tipo === "periferico" ? quantidadeEstoque : 1,
+        quantidadeDisponivel: tipo === "periferico" ? (form.responsavelId ? quantidadeEstoque - 1 : quantidadeEstoque) : 1,
         processador: tipo === "notebook" ? form.processador : undefined,
         memoriaRam: tipo === "notebook" ? form.memoriaRam : undefined,
         armazenamento: tipo === "notebook" || tipo === "smartphone" ? form.armazenamento : undefined,
@@ -213,20 +215,10 @@ export default function NovoEquipamentoPage() {
           {/* 2. Dados de Identificação */}
           <div className="pt-4 border-t border-slate-200 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              2. Identificação do Fabricante & Patrimônio
+              2. Identificação do Fabricante & Modelo
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input
-                id="patrimonio"
-                name="patrimonio"
-                label="Código de Patrimônio *"
-                placeholder="Ex: PAT-00108"
-                required
-                value={form.patrimonio}
-                onChange={handleChange}
-              />
-
+            <div className={`grid grid-cols-1 ${tipo === "periferico" ? "md:grid-cols-3" : "md:grid-cols-2"} gap-4`}>
               <div className="w-full space-y-1.5">
                 <label htmlFor="marca" className="block text-xs font-semibold text-slate-700">
                   Marca / Fabricante *
@@ -263,15 +255,41 @@ export default function NovoEquipamentoPage() {
                 value={form.modelo}
                 onChange={handleChange}
               />
+
+              {tipo === "periferico" && (
+                <div className="w-full space-y-1.5">
+                  <label htmlFor="quantidadeEstoque" className="block text-xs font-semibold text-slate-700">
+                    Quantidade em Estoque (Unidades) *
+                  </label>
+                  <input
+                    id="quantidadeEstoque"
+                    type="number"
+                    min="1"
+                    max="999"
+                    value={quantidadeEstoque}
+                    onChange={(e) => setQuantidadeEstoque(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                    required
+                  />
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 id="numeroSerie"
                 name="numeroSerie"
-                label="Número de Série (S/N) ou IMEI *"
-                placeholder="Ex: CN0897X12 / S/N fabricante"
-                required
+                label={
+                  tipo === "periferico"
+                    ? "Número de Série (Opcional - pode ser informado na entrega)"
+                    : "Número de Série (S/N) ou IMEI *"
+                }
+                placeholder={
+                  tipo === "periferico"
+                    ? "Ex: Lote geral ou serial específico"
+                    : "Ex: CN0897X12 / S/N fabricante"
+                }
+                required={tipo !== "periferico"}
                 value={form.numeroSerie}
                 onChange={handleChange}
               />
