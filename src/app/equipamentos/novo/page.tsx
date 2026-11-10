@@ -1,19 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Laptop, Save, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Save, CheckCircle2, Boxes, Laptop, Monitor, Smartphone, Headphones } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusEquipamento } from "@/types";
+import { StatusEquipamento, TipoEquipamento, Responsavel } from "@/types";
 import { equipamentosService } from "@/services/equipamentos.service";
 
-export default function NovoNotebookPage() {
+const MARCAS_POR_TIPO = {
+  notebook: ["Dell", "Apple", "Lenovo", "HP", "Samsung", "Asus", "Acer", "Positivo", "Outra"],
+  monitor: ["Dell", "LG", "Samsung", "AOC", "Philips", "BenQ", "Asus", "Outra"],
+  smartphone: ["Apple", "Samsung", "Motorola", "Xiaomi", "Google", "Outra"],
+  periferico: ["Logitech", "Dell", "Redragon", "HyperX", "Razer", "Microsoft", "JBL", "Outra"],
+  outro: ["Dell", "HP", "Outra"],
+};
+
+export default function NovoEquipamentoPage() {
   const router = useRouter();
   const [salvando, setSalvando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
+  const [colaboradores, setColaboradores] = useState<Responsavel[]>([]);
+
+  const [tipo, setTipo] = useState<TipoEquipamento>("notebook");
+  const [subtipo, setSubtipo] = useState("mouse");
 
   const [form, setForm] = useState({
     patrimonio: "",
@@ -22,12 +34,27 @@ export default function NovoNotebookPage() {
     numeroSerie: "",
     status: "disponivel" as StatusEquipamento,
     processador: "",
-    memoriaRam: "16 GB DDR4",
-    armazenamento: "SSD 512 GB NVMe",
+    memoriaRam: "",
+    armazenamento: "",
+    especificacoes: "",
+    responsavelId: "",
     dataAquisicao: "2024-11-01",
     valorAquisicao: "",
     observacoes: "",
   });
+
+  useEffect(() => {
+    equipamentosService.listarResponsaveis().then((lista) => {
+      setColaboradores(lista);
+    });
+  }, []);
+
+  // Ao mudar o tipo, ajusta a primeira marca sugerida
+  const handleTipoChange = (novoTipo: TipoEquipamento) => {
+    setTipo(novoTipo);
+    const primeiraMarca = MARCAS_POR_TIPO[novoTipo][0];
+    setForm((prev) => ({ ...prev, marca: primeiraMarca }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,16 +65,21 @@ export default function NovoNotebookPage() {
     setSalvando(true);
 
     try {
+      const statusFinal: StatusEquipamento = form.responsavelId ? "em_uso" : form.status;
+
       await equipamentosService.criar({
         patrimonio: form.patrimonio,
+        tipo,
+        subtipo: tipo === "periferico" ? subtipo : undefined,
         marca: form.marca,
         modelo: form.modelo,
         numeroSerie: form.numeroSerie,
-        status: form.status,
-        tipo: "notebook",
-        processador: form.processador,
-        memoriaRam: form.memoriaRam,
-        armazenamento: form.armazenamento,
+        status: statusFinal,
+        processador: tipo === "notebook" ? form.processador : undefined,
+        memoriaRam: tipo === "notebook" ? form.memoriaRam : undefined,
+        armazenamento: tipo === "notebook" || tipo === "smartphone" ? form.armazenamento : undefined,
+        especificacoes: form.especificacoes || undefined,
+        responsavelId: form.responsavelId || undefined,
         dataAquisicao: form.dataAquisicao,
         valorAquisicao: form.valorAquisicao ? Number(form.valorAquisicao) : undefined,
         observacoes: form.observacoes,
@@ -69,7 +101,7 @@ export default function NovoNotebookPage() {
     <>
       <Header
         title="Cadastrar Equipamento"
-        subtitle="Entrada de novo ativo no inventário da empresa"
+        subtitle="Entrada de notebook, monitor, smartphone ou periférico no inventário"
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-4xl">
@@ -88,140 +120,263 @@ export default function NovoNotebookPage() {
           <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 shadow-xs">
             <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
             <div>
-              <p className="font-bold text-sm">Equipamento cadastrado com sucesso!</p>
-              <p className="text-xs text-emerald-700">Redirecionando para a lista de equipamentos...</p>
+              <p className="font-bold text-sm">Ativo cadastrado com sucesso!</p>
+              <p className="text-xs text-emerald-700">Atualizando inventário e redirecionando...</p>
             </div>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
-            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-              <Laptop className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">
-                Identificação do Equipamento
-              </h2>
-              <p className="text-xs text-slate-500 font-medium">
-                Insira as informações de patrimônio e modelo do fabricante.
-              </p>
+          {/* 1. Seleção Visual do Tipo de Equipamento */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              1. Selecione a Categoria do Ativo *
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <button
+                type="button"
+                onClick={() => handleTipoChange("notebook")}
+                className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                  tipo === "notebook"
+                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                }`}
+              >
+                <Laptop className={`w-5 h-5 ${tipo === "notebook" ? "text-indigo-600" : "text-slate-400"}`} />
+                <span className="text-xs font-bold">Notebook</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTipoChange("monitor")}
+                className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                  tipo === "monitor"
+                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                }`}
+              >
+                <Monitor className={`w-5 h-5 ${tipo === "monitor" ? "text-indigo-600" : "text-slate-400"}`} />
+                <span className="text-xs font-bold">Monitor</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTipoChange("smartphone")}
+                className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                  tipo === "smartphone"
+                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                }`}
+              >
+                <Smartphone className={`w-5 h-5 ${tipo === "smartphone" ? "text-indigo-600" : "text-slate-400"}`} />
+                <span className="text-xs font-bold">Celular</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleTipoChange("periferico")}
+                className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
+                  tipo === "periferico"
+                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                }`}
+              >
+                <Headphones className={`w-5 h-5 ${tipo === "periferico" ? "text-indigo-600" : "text-slate-400"}`} />
+                <span className="text-xs font-bold">Periférico</span>
+              </button>
             </div>
           </div>
 
-          {/* Dados Principais */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              id="patrimonio"
-              name="patrimonio"
-              label="Código de Patrimônio *"
-              placeholder="Ex: PAT-00106"
-              required
-              value={form.patrimonio}
-              onChange={handleChange}
-            />
-
-            <div className="w-full space-y-1.5">
-              <label htmlFor="marca" className="block text-xs font-semibold text-slate-700">
-                Marca / Fabricante *
+          {/* Subtipo de Periférico se aplicável */}
+          {tipo === "periferico" && (
+            <div className="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-1.5 animate-in fade-in duration-150">
+              <label htmlFor="subtipo" className="block text-xs font-semibold text-indigo-950">
+                Tipo de Periférico / Acessório *
               </label>
               <select
-                id="marca"
-                name="marca"
-                value={form.marca}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                id="subtipo"
+                value={subtipo}
+                onChange={(e) => setSubtipo(e.target.value)}
+                className="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
               >
-                <option value="Dell">Dell</option>
-                <option value="Apple">Apple</option>
-                <option value="Lenovo">Lenovo</option>
-                <option value="HP">HP</option>
-                <option value="Samsung">Samsung</option>
-                <option value="Asus">Asus</option>
-                <option value="Outro">Outro</option>
+                <option value="headset">Headset / Fone de Ouvido</option>
+                <option value="mouse">Mouse</option>
+                <option value="teclado">Teclado</option>
+                <option value="webcam">Webcam</option>
+                <option value="hub_usb">Hub USB-C / Dock Station</option>
+                <option value="carregador">Carregador / Fonte</option>
+                <option value="outro">Outro Acessório</option>
               </select>
             </div>
+          )}
 
-            <Input
-              id="modelo"
-              name="modelo"
-              label="Modelo do Equipamento *"
-              placeholder="Ex: Latitude 3420 / MacBook Pro"
-              required
-              value={form.modelo}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              id="numeroSerie"
-              name="numeroSerie"
-              label="Número de Série (S/N) *"
-              placeholder="Ex: CN0897X12"
-              required
-              value={form.numeroSerie}
-              onChange={handleChange}
-            />
-
-            <div className="w-full space-y-1.5">
-              <label htmlFor="status" className="block text-xs font-semibold text-slate-700">
-                Status Inicial *
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
-              >
-                <option value="disponivel">Disponível no Estoque</option>
-                <option value="em_uso">Em Uso com Colaborador</option>
-                <option value="manutencao">Em Manutenção Técnica</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Especificações de Hardware */}
-          <div className="pt-4 border-t border-slate-200">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              Especificações de Hardware (Notebook)
+          {/* 2. Dados de Identificação */}
+          <div className="pt-4 border-t border-slate-200 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              2. Identificação do Fabricante & Patrimônio
             </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input
-                id="processador"
-                name="processador"
-                label="Processador *"
-                placeholder="Ex: Intel Core i5 12ª Ger / Apple M2"
+                id="patrimonio"
+                name="patrimonio"
+                label="Código de Patrimônio *"
+                placeholder="Ex: PAT-00108"
                 required
-                value={form.processador}
+                value={form.patrimonio}
                 onChange={handleChange}
               />
+
+              <div className="w-full space-y-1.5">
+                <label htmlFor="marca" className="block text-xs font-semibold text-slate-700">
+                  Marca / Fabricante *
+                </label>
+                <select
+                  id="marca"
+                  name="marca"
+                  value={form.marca}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                >
+                  {MARCAS_POR_TIPO[tipo].map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <Input
-                id="memoriaRam"
-                name="memoriaRam"
-                label="Memória RAM *"
-                placeholder="Ex: 16 GB DDR4"
+                id="modelo"
+                name="modelo"
+                label="Modelo do Ativo *"
+                placeholder={
+                  tipo === "notebook"
+                    ? "Ex: Latitude 3420"
+                    : tipo === "monitor"
+                    ? "Ex: UltraSharp 27 4K"
+                    : tipo === "smartphone"
+                    ? "Ex: iPhone 14 128GB"
+                    : "Ex: MX Master 3S"
+                }
                 required
-                value={form.memoriaRam}
-                onChange={handleChange}
-              />
-              <Input
-                id="armazenamento"
-                name="armazenamento"
-                label="Armazenamento *"
-                placeholder="Ex: SSD 512 GB NVMe"
-                required
-                value={form.armazenamento}
+                value={form.modelo}
                 onChange={handleChange}
               />
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                id="numeroSerie"
+                name="numeroSerie"
+                label="Número de Série (S/N) ou IMEI *"
+                placeholder="Ex: CN0897X12 / S/N fabricante"
+                required
+                value={form.numeroSerie}
+                onChange={handleChange}
+              />
+
+              <div className="w-full space-y-1.5">
+                <label htmlFor="responsavelId" className="block text-xs font-semibold text-slate-700">
+                  Atribuir a um Colaborador Imediatamente? (Opcional)
+                </label>
+                <select
+                  id="responsavelId"
+                  name="responsavelId"
+                  value={form.responsavelId}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                >
+                  <option value="">Não (Manter Disponível no Estoque de TI)</option>
+                  {colaboradores.map((colab) => (
+                    <option key={colab.id} value={colab.id}>
+                      {colab.nome} — {colab.departamento} ({colab.cargo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
-          {/* Dados Financeiros e Compra */}
+          {/* 3. Especificações Técnicas Dinâmicas */}
+          <div className="pt-4 border-t border-slate-200 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              3. Especificações Técnicas ({tipo.toUpperCase()})
+            </h3>
+
+            {tipo === "notebook" ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Input
+                  id="processador"
+                  name="processador"
+                  label="Processador *"
+                  placeholder="Ex: Intel Core i7 12ª Ger / M2"
+                  required
+                  value={form.processador}
+                  onChange={handleChange}
+                />
+                <Input
+                  id="memoriaRam"
+                  name="memoriaRam"
+                  label="Memória RAM *"
+                  placeholder="Ex: 16 GB DDR4"
+                  required
+                  value={form.memoriaRam}
+                  onChange={handleChange}
+                />
+                <Input
+                  id="armazenamento"
+                  name="armazenamento"
+                  label="Armazenamento *"
+                  placeholder="Ex: SSD 512 GB NVMe"
+                  required
+                  value={form.armazenamento}
+                  onChange={handleChange}
+                />
+              </div>
+            ) : tipo === "smartphone" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  id="armazenamento"
+                  name="armazenamento"
+                  label="Armazenamento Interno *"
+                  placeholder="Ex: 128 GB / 256 GB"
+                  required
+                  value={form.armazenamento}
+                  onChange={handleChange}
+                />
+                <Input
+                  id="especificacoes"
+                  name="especificacoes"
+                  label="Operadora / Chip Corporativo (Opcional)"
+                  placeholder="Ex: Vivo Empresas 5G - Linha (11) 98765-4321"
+                  value={form.especificacoes}
+                  onChange={handleChange}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                <Input
+                  id="especificacoes"
+                  name="especificacoes"
+                  label={tipo === "monitor" ? "Tamanho, Resolução e Entradas *" : "Conexão e Detalhes do Periférico *"}
+                  placeholder={
+                    tipo === "monitor"
+                      ? "Ex: 27 polegadas 4K IPS • HDMI, DisplayPort e USB-C com carregamento 90W"
+                      : "Ex: Conexão Sem Fio Bluetooth / 2.4 GHz • Cancelamento de ruído"
+                  }
+                  required
+                  value={form.especificacoes}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 4. Aquisição e Detalhes Financeiros */}
           <div className="pt-4 border-t border-slate-200">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              Aquisição e Informações Adicionais
+              4. Dados de Aquisição
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
@@ -253,7 +408,7 @@ export default function NovoNotebookPage() {
                 id="observacoes"
                 name="observacoes"
                 rows={3}
-                placeholder="Detalhes adicionais, acessórios inclusos, estado físico, etc."
+                placeholder="Detalhes adicionais, acessórios inclusos, nota fiscal, etc."
                 value={form.observacoes}
                 onChange={handleChange}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15 shadow-2xs"
@@ -269,7 +424,7 @@ export default function NovoNotebookPage() {
             </Link>
             <Button type="submit" disabled={salvando}>
               <Save className="w-4 h-4" />
-              {salvando ? "Salvando..." : "Salvar Equipamento"}
+              {salvando ? "Salvando..." : "Salvar no Inventário"}
             </Button>
           </div>
         </form>

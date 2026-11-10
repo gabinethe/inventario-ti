@@ -2,15 +2,28 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Users, Mail, Laptop, Building2, UserPlus, Trash2 } from "lucide-react";
+import { 
+  Users, 
+  Mail, 
+  Laptop, 
+  Building2, 
+  UserPlus, 
+  Trash2, 
+  Monitor, 
+  Smartphone, 
+  Headphones, 
+  Undo2,
+  Boxes
+} from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
+import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
 import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
-import { Responsavel } from "@/types";
+import { Responsavel, TipoEquipamento } from "@/types";
 
 interface ColaboradorComAtivos extends Responsavel {
-  notebooks: EquipamentoComResponsavel[];
+  ativos: EquipamentoComResponsavel[];
 }
 
 export default function ResponsaveisPage() {
@@ -18,12 +31,20 @@ export default function ResponsaveisPage() {
   const [carregando, setCarregando] = useState(true);
 
   // Modal de exclusão segura
-  const [modalAberto, setModalAberto] = useState(false);
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   const [colaboradorParaExcluir, setColaboradorParaExcluir] = useState<ColaboradorComAtivos | null>(null);
   const [excluindo, setExcluindo] = useState(false);
 
+  // Modal de Devolução rápida
+  const [modalDevolucaoAberto, setModalDevolucaoAberto] = useState(false);
+  const [ativoParaDevolver, setAtivoParaDevolver] = useState<EquipamentoComResponsavel | null>(null);
+
   useEffect(() => {
     carregarDados();
+
+    const handleAtualizacao = () => carregarDados();
+    window.addEventListener("inventario_alterado", handleAtualizacao);
+    return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
   }, []);
 
   async function carregarDados() {
@@ -36,7 +57,7 @@ export default function ResponsaveisPage() {
 
       const lista = resps.map((resp) => ({
         ...resp,
-        notebooks: eqs.filter((e) => e.responsavelId === resp.id),
+        ativos: eqs.filter((e) => e.responsavelId === resp.id),
       }));
 
       setColaboradores(lista);
@@ -49,7 +70,7 @@ export default function ResponsaveisPage() {
 
   const abrirModalExclusao = (colab: ColaboradorComAtivos) => {
     setColaboradorParaExcluir(colab);
-    setModalAberto(true);
+    setModalExclusaoAberto(true);
   };
 
   const confirmarExclusao = async () => {
@@ -59,7 +80,7 @@ export default function ResponsaveisPage() {
     try {
       await equipamentosService.excluirResponsavel(colaboradorParaExcluir.id);
       setColaboradores((prev) => prev.filter((c) => c.id !== colaboradorParaExcluir.id));
-      setModalAberto(false);
+      setModalExclusaoAberto(false);
       setColaboradorParaExcluir(null);
     } catch (err) {
       console.error("Erro ao excluir colaborador:", err);
@@ -68,11 +89,30 @@ export default function ResponsaveisPage() {
     }
   };
 
+  const abrirDevolucaoAtivo = (ativo: EquipamentoComResponsavel) => {
+    setAtivoParaDevolver(ativo);
+    setModalDevolucaoAberto(true);
+  };
+
+  const getIconeAtivo = (tipo: TipoEquipamento) => {
+    switch (tipo) {
+      case "monitor":
+        return <Monitor className="w-4 h-4 text-indigo-600" />;
+      case "smartphone":
+        return <Smartphone className="w-4 h-4 text-indigo-600" />;
+      case "periferico":
+        return <Headphones className="w-4 h-4 text-indigo-600" />;
+      case "notebook":
+      default:
+        return <Laptop className="w-4 h-4 text-indigo-600" />;
+    }
+  };
+
   return (
     <>
       <Header
-        title="Usuários e Colaboradores"
-        subtitle="Gerenciamento de responsáveis e posse de equipamentos"
+        title="Colaboradores e Posse de Ativos"
+        subtitle="Rastreamento centralizado de equipamentos sob a responsabilidade de cada profissional"
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-6xl">
@@ -80,10 +120,10 @@ export default function ResponsaveisPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
               <Users className="h-6 w-6 text-indigo-600" />
-              Usuários e Posse de Ativos
+              Quadro de Colaboradores & Custódia
             </h1>
             <p className="text-sm text-slate-500 font-medium">
-              Relação de colaboradores e os equipamentos corporativos sob sua responsabilidade.
+              Consulte quem está em posse de cada computador, monitor, celular ou acessório da empresa.
             </p>
           </div>
 
@@ -114,7 +154,7 @@ export default function ResponsaveisPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100">
+                    <div className="h-11 w-11 rounded-2xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100 shadow-2xs">
                       {colab.nome
                         .split(" ")
                         .map((n) => n[0])
@@ -131,7 +171,7 @@ export default function ResponsaveisPage() {
 
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                      {colab.notebooks.length} {colab.notebooks.length === 1 ? "ativo" : "ativos"}
+                      {colab.ativos.length} {colab.ativos.length === 1 ? "ativo em posse" : "ativos em posse"}
                     </span>
                     <button
                       type="button"
@@ -155,37 +195,56 @@ export default function ResponsaveisPage() {
                   </div>
                 </div>
 
-                {/* Notebooks em posse deste colaborador */}
-                <div className="pt-2 border-t border-slate-100">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                    Equipamento sob custódia:
-                  </p>
-                  {colab.notebooks.length === 0 ? (
-                    <p className="text-xs text-slate-400 italic">Nenhum equipamento vinculado</p>
+                {/* Ativos em posse deste colaborador */}
+                <div className="pt-2 border-t border-slate-100 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Equipamentos sob custódia ({colab.ativos.length}):
+                    </p>
+                    <Link
+                      href="/equipamentos"
+                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700"
+                    >
+                      + Atribuir Ativo
+                    </Link>
+                  </div>
+
+                  {colab.ativos.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic py-2">Nenhum equipamento em posse no momento.</p>
                   ) : (
-                    <div className="space-y-2">
-                      {colab.notebooks.map((nb) => (
-                        <Link
-                          key={nb.id}
-                          href={`/equipamentos/${nb.id}`}
-                          prefetch={true}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/70 border border-slate-200/60 text-xs transition-colors group"
+                    <div className="space-y-1.5">
+                      {colab.ativos.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/60 text-xs transition-colors group"
                         >
-                          <div className="flex items-center gap-2">
-                            <Laptop className="w-4 h-4 text-indigo-600" />
-                            <div>
+                          <Link
+                            href={`/equipamentos/${item.id}`}
+                            className="flex items-center gap-2.5 flex-1 min-w-0"
+                          >
+                            <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                              {getIconeAtivo(item.tipo)}
+                            </div>
+                            <div className="truncate">
                               <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                                {nb.marca} {nb.modelo}
+                                {item.marca} {item.modelo}
                               </span>
-                              <span className="text-slate-400 ml-1.5 font-mono">
-                                ({nb.patrimonio})
+                              <span className="text-slate-400 ml-1.5 font-mono text-[11px]">
+                                ({item.patrimonio})
                               </span>
                             </div>
-                          </div>
-                          <span className="text-[11px] font-semibold text-indigo-600">
-                            Ver ativo →
-                          </span>
-                        </Link>
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => abrirDevolucaoAtivo(item)}
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg text-amber-700 hover:bg-amber-100/80 transition-colors cursor-pointer ml-2"
+                            title="Devolver equipamento para o estoque de TI"
+                          >
+                            <Undo2 className="w-3 h-3" />
+                            Devolver
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
@@ -196,18 +255,30 @@ export default function ResponsaveisPage() {
         )}
       </main>
 
+      {/* Modal de Devolução Rápida */}
+      <ModalAtribuicao
+        aberto={modalDevolucaoAberto}
+        equipamento={ativoParaDevolver}
+        modo="devolver"
+        onFechar={() => {
+          setModalDevolucaoAberto(false);
+          setAtivoParaDevolver(null);
+        }}
+        onSucesso={() => carregarDados()}
+      />
+
       {/* Modal de Confirmação Segura de Exclusão de Colaborador */}
       <ModalConfirmacao
-        aberto={modalAberto}
+        aberto={modalExclusaoAberto}
         titulo="Excluir Colaborador"
-        descricao="Tem certeza que deseja excluir este colaborador? Qualquer equipamento que estiver sob sua custódia voltará automaticamente para o status 'Disponível no estoque'."
+        descricao="Tem certeza que deseja excluir este colaborador? Qualquer equipamento que estiver sob sua custódia voltará automaticamente para o status 'Disponível no estoque de TI'."
         itemIdentificador={
           colaboradorParaExcluir
             ? `${colaboradorParaExcluir.nome} (${colaboradorParaExcluir.departamento} • ${colaboradorParaExcluir.email})`
             : undefined
         }
         onFechar={() => {
-          setModalAberto(false);
+          setModalExclusaoAberto(false);
           setColaboradorParaExcluir(null);
         }}
         onConfirmar={confirmarExclusao}

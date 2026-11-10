@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { 
   Laptop, 
   Search, 
@@ -9,54 +10,94 @@ import {
   UserCheck, 
   Wrench, 
   Eye,
-  Trash2
+  Trash2,
+  Monitor,
+  Smartphone,
+  Headphones,
+  Boxes,
+  ArrowRightLeft,
+  Undo2
 } from "lucide-react";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
-import { StatusEquipamento } from "@/types";
+import { StatusEquipamento, TipoEquipamento } from "@/types";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
+import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
 
 interface TabelaEquipamentosProps {
   equipamentosIniciais: EquipamentoComResponsavel[];
 }
 
 export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosProps) {
+  const searchParams = useSearchParams();
+  const tipoParam = searchParams?.get("tipo") as TipoEquipamento | null;
+
   const [equipamentos, setEquipamentos] = useState<EquipamentoComResponsavel[]>(equipamentosIniciais);
   const [busca, setBusca] = useState("");
+  const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">(tipoParam || "todos");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipamento | "todos">("todos");
-  
-  // Sincroniza dados com o serviço para refletir exclusões mesmo após F5
-  React.useEffect(() => {
-    async function sincronizar() {
-      const dados = await equipamentosService.listar();
-      setEquipamentos(dados);
-    }
-    sincronizar();
 
-    const handleAtualizacao = () => sincronizar();
+  // Sincroniza com parâmetros de URL (caso mude na sidebar)
+  useEffect(() => {
+    if (tipoParam) {
+      setFiltroTipo(tipoParam);
+    } else {
+      setFiltroTipo("todos");
+    }
+  }, [tipoParam]);
+
+  // Sincroniza dados com o serviço para refletir exclusões/atribuições
+  const recarregar = async () => {
+    const dados = await equipamentosService.listar();
+    setEquipamentos(dados);
+  };
+
+  useEffect(() => {
+    recarregar();
+    const handleAtualizacao = () => recarregar();
     window.addEventListener("inventario_alterado", handleAtualizacao);
     return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
   }, []);
 
-  // Estado para exclusão segura
+  // Modal de Exclusão
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
   const [equipamentoParaExcluir, setEquipamentoParaExcluir] = useState<EquipamentoComResponsavel | null>(null);
   const [excluindo, setExcluindo] = useState(false);
 
-  // Contadores para os botões de filtro
-  const contadores = useMemo(() => {
+  // Modal de Atribuição / Devolução
+  const [modalAtribuicaoAberto, setModalAtribuicaoAberto] = useState(false);
+  const [equipamentoEmOperacao, setEquipamentoEmOperacao] = useState<EquipamentoComResponsavel | null>(null);
+  const [modoOperacao, setModoOperacao] = useState<"atribuir" | "devolver">("atribuir");
+
+  // Contadores por Tipo
+  const contadoresTipo = useMemo(() => {
     return {
       todos: equipamentos.length,
-      disponivel: equipamentos.filter((e) => e.status === "disponivel").length,
-      em_uso: equipamentos.filter((e) => e.status === "em_uso").length,
-      manutencao: equipamentos.filter((e) => e.status === "manutencao").length,
+      notebook: equipamentos.filter((e) => e.tipo === "notebook").length,
+      monitor: equipamentos.filter((e) => e.tipo === "monitor").length,
+      smartphone: equipamentos.filter((e) => e.tipo === "smartphone").length,
+      periferico: equipamentos.filter((e) => e.tipo === "periferico").length,
     };
   }, [equipamentos]);
 
-  // Filtragem dinâmica e instantânea
+  // Contadores por Status (dentro do tipo selecionado)
+  const contadoresStatus = useMemo(() => {
+    const base = filtroTipo === "todos" ? equipamentos : equipamentos.filter((e) => e.tipo === filtroTipo);
+    return {
+      todos: base.length,
+      disponivel: base.filter((e) => e.status === "disponivel").length,
+      em_uso: base.filter((e) => e.status === "em_uso").length,
+      manutencao: base.filter((e) => e.status === "manutencao").length,
+    };
+  }, [equipamentos, filtroTipo]);
+
+  // Filtragem dinâmica combinada
   const equipamentosFiltrados = useMemo(() => {
     return equipamentos.filter((eq) => {
+      const matchTipo = filtroTipo === "todos" || eq.tipo === filtroTipo;
+      const matchStatus = filtroStatus === "todos" || eq.status === filtroStatus;
+
       const termo = busca.toLowerCase();
       const matchBusca =
         !busca ||
@@ -64,38 +105,125 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         eq.modelo.toLowerCase().includes(termo) ||
         eq.marca.toLowerCase().includes(termo) ||
         eq.numeroSerie.toLowerCase().includes(termo) ||
+        (eq.subtipo && eq.subtipo.toLowerCase().includes(termo)) ||
         (eq.responsavel?.nome.toLowerCase().includes(termo) ?? false);
 
-      const matchStatus = filtroStatus === "todos" || eq.status === filtroStatus;
-
-      return matchBusca && matchStatus;
+      return matchTipo && matchStatus && matchBusca;
     });
-  }, [equipamentos, busca, filtroStatus]);
+  }, [equipamentos, busca, filtroTipo, filtroStatus]);
 
-  const abrirModalExclusao = (notebook: EquipamentoComResponsavel) => {
-    setEquipamentoParaExcluir(notebook);
+  const abrirModalExclusao = (item: EquipamentoComResponsavel) => {
+    setEquipamentoParaExcluir(item);
     setModalExclusaoAberto(true);
   };
 
   const confirmarExclusao = async () => {
     if (!equipamentoParaExcluir) return;
     setExcluindo(true);
-
     try {
       await equipamentosService.excluirEquipamento(equipamentoParaExcluir.id);
-      setEquipamentos((prev) => prev.filter((e) => e.id !== equipamentoParaExcluir.id));
       setModalExclusaoAberto(false);
       setEquipamentoParaExcluir(null);
+      await recarregar();
     } catch (err) {
-      console.error("Erro ao excluir equipamento:", err);
+      console.error(err);
     } finally {
       setExcluindo(false);
     }
   };
 
+  const abrirAtribuicao = (item: EquipamentoComResponsavel) => {
+    setEquipamentoEmOperacao(item);
+    setModoOperacao("atribuir");
+    setModalAtribuicaoAberto(true);
+  };
+
+  const abrirDevolucao = (item: EquipamentoComResponsavel) => {
+    setEquipamentoEmOperacao(item);
+    setModoOperacao("devolver");
+    setModalAtribuicaoAberto(true);
+  };
+
+  const getIconeTipo = (tipo: TipoEquipamento) => {
+    switch (tipo) {
+      case "monitor":
+        return <Monitor className="w-4 h-4" />;
+      case "smartphone":
+        return <Smartphone className="w-4 h-4" />;
+      case "periferico":
+        return <Headphones className="w-4 h-4" />;
+      case "notebook":
+      default:
+        return <Laptop className="w-4 h-4" />;
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Barra de Filtros e Busca */}
+    <div className="space-y-6">
+      {/* 1. Barra de Seleção de Categorias de Equipamento */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
+        <button
+          onClick={() => setFiltroTipo("todos")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+            filtroTipo === "todos"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <Boxes className="w-4 h-4" />
+          Todos os Ativos ({contadoresTipo.todos})
+        </button>
+
+        <button
+          onClick={() => setFiltroTipo("notebook")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+            filtroTipo === "notebook"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <Laptop className="w-4 h-4" />
+          Notebooks ({contadoresTipo.notebook})
+        </button>
+
+        <button
+          onClick={() => setFiltroTipo("monitor")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+            filtroTipo === "monitor"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <Monitor className="w-4 h-4" />
+          Monitores ({contadoresTipo.monitor})
+        </button>
+
+        <button
+          onClick={() => setFiltroTipo("smartphone")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+            filtroTipo === "smartphone"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <Smartphone className="w-4 h-4" />
+          Celulares ({contadoresTipo.smartphone})
+        </button>
+
+        <button
+          onClick={() => setFiltroTipo("periferico")}
+          className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+            filtroTipo === "periferico"
+              ? "bg-indigo-600 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100"
+          }`}
+        >
+          <Headphones className="w-4 h-4" />
+          Periféricos ({contadoresTipo.periferico})
+        </button>
+      </div>
+
+      {/* 2. Barra de Busca e Filtros de Estado Operacional */}
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         {/* Campo de Busca */}
         <div className="relative flex-1 max-w-md">
@@ -119,7 +247,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                 : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
             }`}
           >
-            Todos ({contadores.todos})
+            Todos ({contadoresStatus.todos})
           </button>
 
           <button
@@ -131,7 +259,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            Disponíveis ({contadores.disponivel})
+            Disponíveis ({contadoresStatus.disponivel})
           </button>
 
           <button
@@ -142,8 +270,8 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                 : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
             }`}
           >
-            <UserCheck className="w-3.5 h-3.5 text-indigo-500" />
-            Em Uso ({contadores.em_uso})
+            <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
+            Em Uso ({contadoresStatus.em_uso})
           </button>
 
           <button
@@ -155,21 +283,21 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             }`}
           >
             <Wrench className="w-3.5 h-3.5 text-amber-500" />
-            Manutenção ({contadores.manutencao})
+            Manutenção ({contadoresStatus.manutencao})
           </button>
         </div>
       </div>
 
-      {/* Tabela de Resultados */}
+      {/* 3. Tabela de Resultados Integrada */}
       <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50/80 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3.5">Patrimônio / Equipamento</th>
-                <th className="px-6 py-3.5">Configuração</th>
+                <th className="px-6 py-3.5">Ativo / Patrimônio</th>
+                <th className="px-6 py-3.5">Categoria & Detalhes</th>
                 <th className="px-6 py-3.5">Status</th>
-                <th className="px-6 py-3.5">Responsável Atual</th>
+                <th className="px-6 py-3.5">Custódia / Responsável</th>
                 <th className="px-6 py-3.5 text-right">Ações</th>
               </tr>
             </thead>
@@ -177,75 +305,114 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               {equipamentosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
-                    <Laptop className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
+                    <Boxes className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
                     <p className="font-semibold text-slate-600 text-sm">
-                      Nenhum equipamento encontrado
+                      Nenhum ativo encontrado nesta seleção
                     </p>
                     <p className="text-xs text-slate-400 mt-1">
-                      Tente alterar os termos da busca ou limpar os filtros selecionados.
+                      Tente alterar a categoria, os filtros ou limpar os termos da busca.
                     </p>
                   </td>
                 </tr>
               ) : (
-                equipamentosFiltrados.map((notebook) => (
+                equipamentosFiltrados.map((item) => (
                   <tr
-                    key={notebook.id}
+                    key={item.id}
                     className="hover:bg-indigo-50/30 transition-colors"
                   >
+                    {/* Ativo */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-                          <Laptop className="w-4 h-4" />
+                          {getIconeTipo(item.tipo)}
                         </div>
                         <div>
                           <div className="font-bold text-slate-900">
-                            {notebook.marca} {notebook.modelo}
+                            {item.marca} {item.modelo}
                           </div>
                           <div className="text-xs text-slate-500 font-mono">
-                            {notebook.patrimonio} • S/N: {notebook.numeroSerie}
+                            {item.patrimonio} • S/N: {item.numeroSerie}
                           </div>
                         </div>
                       </div>
                     </td>
+
+                    {/* Especificações */}
                     <td className="px-6 py-4 text-xs text-slate-600">
-                      <div className="font-semibold text-slate-800">{notebook.processador}</div>
-                      <div className="text-slate-400">
-                        {notebook.memoriaRam} • {notebook.armazenamento}
+                      <div className="font-semibold text-slate-800 uppercase text-[11px] tracking-wider text-indigo-600">
+                        {item.tipo} {item.subtipo ? `• ${item.subtipo}` : ""}
+                      </div>
+                      <div className="text-slate-500 line-clamp-1">
+                        {item.processador
+                          ? `${item.processador} • ${item.memoriaRam || ""}`
+                          : item.especificacoes || "Configuração corporativa"}
                       </div>
                     </td>
+
+                    {/* Status */}
                     <td className="px-6 py-4">
-                      <StatusBadge status={notebook.status} />
+                      <StatusBadge status={item.status} />
                     </td>
+
+                    {/* Responsável */}
                     <td className="px-6 py-4 text-xs">
-                      {notebook.responsavel ? (
+                      {item.responsavel ? (
                         <div>
                           <p className="font-bold text-slate-800">
-                            {notebook.responsavel.nome}
+                            {item.responsavel.nome}
                           </p>
                           <p className="text-slate-400">
-                            {notebook.responsavel.departamento}
+                            {item.responsavel.departamento}
                           </p>
                         </div>
                       ) : (
                         <span className="text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100">
-                          No estoque de TI
+                          Estoque de TI
                         </span>
                       )}
                     </td>
+
+                    {/* Ações */}
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <Link href={`/equipamentos/${notebook.id}`} prefetch={true}>
+                        {/* Botão de Atribuir ou Devolver */}
+                        {item.status === "disponivel" ? (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => abrirAtribuicao(item)}
+                            className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"
+                            title="Atribuir a um colaborador"
+                          >
+                            <ArrowRightLeft className="w-3.5 h-3.5" />
+                            Atribuir
+                          </Button>
+                        ) : item.status === "em_uso" ? (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => abrirDevolucao(item)}
+                            className="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200"
+                            title="Devolver ao estoque de TI"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                            Devolver
+                          </Button>
+                        ) : null}
+
+                        <Link href={`/equipamentos/${item.id}`} prefetch={true}>
                           <Button variant="outline" size="sm">
                             <Eye className="w-3.5 h-3.5" />
                             Detalhes
                           </Button>
                         </Link>
+
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => abrirModalExclusao(notebook)}
+                          onClick={() => abrirModalExclusao(item)}
                           className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-2"
-                          title="Excluir equipamento com segurança"
+                          title="Excluir ativo com segurança"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -259,11 +426,23 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </div>
       </div>
 
+      {/* Modal de Atribuição / Devolução de Custódia */}
+      <ModalAtribuicao
+        aberto={modalAtribuicaoAberto}
+        equipamento={equipamentoEmOperacao}
+        modo={modoOperacao}
+        onFechar={() => {
+          setModalAtribuicaoAberto(false);
+          setEquipamentoEmOperacao(null);
+        }}
+        onSucesso={() => recarregar()}
+      />
+
       {/* Modal de Confirmação Segura de Exclusão */}
       <ModalConfirmacao
         aberto={modalExclusaoAberto}
-        titulo="Excluir Equipamento"
-        descricao="Tem certeza que deseja excluir este notebook do inventário?"
+        titulo="Excluir Ativo"
+        descricao="Tem certeza que deseja excluir permanentemente este equipamento do inventário?"
         itemIdentificador={
           equipamentoParaExcluir
             ? `${equipamentoParaExcluir.marca} ${equipamentoParaExcluir.modelo} — Patrimônio: ${equipamentoParaExcluir.patrimonio}`

@@ -12,7 +12,10 @@ import {
   ArrowRight, 
   DollarSign,
   Filter,
-  Eye
+  Eye,
+  Monitor,
+  Smartphone,
+  Headphones
 } from "lucide-react";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/badge";
@@ -28,6 +31,12 @@ interface DashboardViewProps {
     disponiveis: number;
     emManutencao: number;
     valorTotalParque: number;
+    porTipo?: {
+      notebook: number;
+      monitor: number;
+      smartphone: number;
+      periferico: number;
+    };
   };
 }
 
@@ -150,6 +159,85 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         <p className="text-xs text-slate-500 max-w-sm sm:text-right font-medium">
           Valor de aquisição acumulado de todos os equipamentos ativos no inventário corporativo.
         </p>
+      </div>
+
+      {/* Atalhos de Categorias de Equipamentos */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Link
+          href="/equipamentos?tipo=notebook"
+          prefetch={true}
+          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xs transition-all flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Laptop className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Notebooks</p>
+              <p className="text-[11px] text-slate-400">Ver inventário</p>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+            {metricas.porTipo?.notebook || 0}
+          </span>
+        </Link>
+
+        <Link
+          href="/equipamentos?tipo=monitor"
+          prefetch={true}
+          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xs transition-all flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Monitor className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Monitores</p>
+              <p className="text-[11px] text-slate-400">Ver inventário</p>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+            {metricas.porTipo?.monitor || 0}
+          </span>
+        </Link>
+
+        <Link
+          href="/equipamentos?tipo=smartphone"
+          prefetch={true}
+          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xs transition-all flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Smartphone className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Celulares</p>
+              <p className="text-[11px] text-slate-400">Ver inventário</p>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+            {metricas.porTipo?.smartphone || 0}
+          </span>
+        </Link>
+
+        <Link
+          href="/equipamentos?tipo=periferico"
+          prefetch={true}
+          className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-xs transition-all flex items-center justify-between group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Headphones className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-800">Periféricos</p>
+              <p className="text-[11px] text-slate-400">Ver inventário</p>
+            </div>
+          </div>
+          <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+            {metricas.porTipo?.periferico || 0}
+          </span>
+        </Link>
       </div>
 
       {/* Seção da Tabela com Barra de Pesquisa e Filtros */}
