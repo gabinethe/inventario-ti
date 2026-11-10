@@ -21,6 +21,7 @@ import { Header } from "@/components/layout/header";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { equipamentosService } from "@/services/equipamentos.service";
+import { AcoesDetalhesEquipamento } from "@/components/modules/equipamentos/acoes-detalhes-equipamento";
 
 interface DetalhesPageProps {
   params: Promise<{ id: string }>;
@@ -81,10 +82,7 @@ export default async function DetalhesEquipamentoPage({ params }: DetalhesPagePr
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <ArrowLeftRight className="w-4 h-4" />
-              Transferir Responsável
-            </Button>
+            <AcoesDetalhesEquipamento equipamento={notebook} />
           </div>
         </div>
 

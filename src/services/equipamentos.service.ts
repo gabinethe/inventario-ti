@@ -342,4 +342,60 @@ export const equipamentosService = {
 
     return movimentacoesMemoria.filter((m) => m.equipamentoId === equipamentoId);
   },
+
+  /**
+   * Exclui um equipamento com segurança.
+   */
+  async excluirEquipamento(id: string): Promise<boolean> {
+    const supabase = getSupabase();
+
+    if (supabase) {
+      try {
+        const { error } = await supabase.from("equipamentos").delete().eq("id", id);
+        if (!error) {
+          equipamentosMemoria = equipamentosMemoria.filter((e) => e.id !== id);
+          return true;
+        }
+      } catch (err) {
+        console.error("Erro ao excluir equipamento do Supabase:", err);
+      }
+    }
+
+    equipamentosMemoria = equipamentosMemoria.filter((e) => e.id !== id);
+    return true;
+  },
+
+  /**
+   * Exclui um colaborador responsável, desvinculando ativos sob sua custódia.
+   */
+  async excluirResponsavel(id: string): Promise<boolean> {
+    const supabase = getSupabase();
+
+    if (supabase) {
+      try {
+        // Desvincula equipamentos atribuídos a este colaborador antes de excluir
+        await supabase
+          .from("equipamentos")
+          .update({ responsavel_id: null, status: "disponivel" })
+          .eq("responsavel_id", id);
+
+        const { error } = await supabase.from("responsaveis").delete().eq("id", id);
+        if (!error) {
+          responsaveisMemoria = responsaveisMemoria.filter((r) => r.id !== id);
+          equipamentosMemoria = equipamentosMemoria.map((e) =>
+            e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" } : e
+          );
+          return true;
+        }
+      } catch (err) {
+        console.error("Erro ao excluir responsável do Supabase:", err);
+      }
+    }
+
+    responsaveisMemoria = responsaveisMemoria.filter((r) => r.id !== id);
+    equipamentosMemoria = equipamentosMemoria.map((e) =>
+      e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" } : e
+    );
+    return true;
+  },
 };

@@ -56,8 +56,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-6">
         {/* Logotipo e Cabeçalho */}
         <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm mb-2">
-            <Box className="h-6 w-6 text-blue-500" />
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b0e24] text-white shadow-md shadow-indigo-950/30 mb-2 border border-indigo-900/40">
+            <Box className="h-6 w-6 text-indigo-400" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Inventário TI
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 E-mail de Administrador
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
                 <input
                   id="email"
                   type="email"
@@ -99,7 +99,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@empresa.com.br"
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
                 Senha
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
                 <input
                   id="password"
                   type="password"
@@ -117,7 +117,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
                 />
               </div>
             </div>

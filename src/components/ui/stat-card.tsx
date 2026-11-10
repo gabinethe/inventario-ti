@@ -6,14 +6,18 @@ interface StatCardProps {
   value: string | number;
   subtitle?: string;
   icon: React.ElementType;
-  color?: "blue" | "emerald" | "amber" | "slate";
+  color?: "blue" | "indigo" | "emerald" | "amber" | "slate";
   className?: string;
 }
 
 const colorMap = {
+  indigo: {
+    bg: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    badge: "text-indigo-700 bg-indigo-50",
+  },
   blue: {
-    bg: "bg-blue-50 text-blue-600 border-blue-100",
-    badge: "text-blue-700 bg-blue-50",
+    bg: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    badge: "text-indigo-700 bg-indigo-50",
   },
   emerald: {
     bg: "bg-emerald-50 text-emerald-600 border-emerald-100",

@@ -58,7 +58,7 @@ export default function NovoNotebookPage() {
       setTimeout(() => {
         router.push("/equipamentos");
         router.refresh();
-      }, 1000);
+      }, 300);
     } catch (err) {
       setSalvando(false);
       console.error(err);
@@ -76,6 +76,7 @@ export default function NovoNotebookPage() {
         <div>
           <Link
             href="/equipamentos"
+            prefetch={true}
             className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -93,9 +94,9 @@ export default function NovoNotebookPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
-            <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
               <Laptop className="w-5 h-5" />
             </div>
             <div>
@@ -129,7 +130,7 @@ export default function NovoNotebookPage() {
                 name="marca"
                 value={form.marca}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
               >
                 <option value="Dell">Dell</option>
                 <option value="Apple">Apple</option>
@@ -172,7 +173,7 @@ export default function NovoNotebookPage() {
                 name="status"
                 value={form.status}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
               >
                 <option value="disponivel">Disponível no Estoque</option>
                 <option value="em_uso">Em Uso com Colaborador</option>
@@ -255,7 +256,7 @@ export default function NovoNotebookPage() {
                 placeholder="Detalhes adicionais, acessórios inclusos, estado físico, etc."
                 value={form.observacoes}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/15 shadow-2xs"
+                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15 shadow-2xs"
               />
             </div>
           </div>
