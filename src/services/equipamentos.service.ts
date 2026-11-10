@@ -79,87 +79,77 @@ export interface EquipamentoComResponsavel extends Equipamento {
 export const equipamentosService = {
   /**
    * Retorna todos os equipamentos, com suporte a filtros por tipo, status e termo de busca.
+   * Integração fluida entre o armazenamento local e o Supabase.
    */
   async listar(filtros?: { 
     busca?: string; 
-    status?: StatusEquipamento;
+    status?: StatusEquipamento | "todos";
     tipo?: TipoEquipamento | "todos";
   }): Promise<EquipamentoComResponsavel[]> {
-    const supabase = getSupabase();
+    let baseEquipamentos: Equipamento[] = [];
+    const memoria = getMemoria();
 
-    if (supabase) {
-      try {
-        let query = supabase.from("equipamentos").select("*, responsaveis(*)");
-        if (filtros?.tipo && filtros.tipo !== "todos") {
-          query = query.eq("tipo", filtros.tipo);
-        }
+    // No navegador, a memória local (localStorage) é a fonte de verdade imediata da sessão do usuário
+    if (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY_EQ)) {
+      baseEquipamentos = memoria.eq;
+    } else {
+      // Primeira inicialização ou SSR: busca do Supabase
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          const { data, error } = await supabase.from("equipamentos").select("*, responsaveis(*)");
+          if (!error && data && data.length > 0) {
+            const listaSupabase: Equipamento[] = data.map((item: any) => ({
+              id: item.id,
+              patrimonio: item.patrimonio,
+              tipo: (item.tipo as TipoEquipamento) || "notebook",
+              subtipo: item.subtipo,
+              marca: item.marca,
+              modelo: item.modelo,
+              numeroSerie: item.numero_serie,
+              status: item.status,
+              processador: item.processador,
+              memoriaRam: item.memoria_ram,
+              armazenamento: item.armazenamento,
+              especificacoes: item.especificacoes,
+              responsavelId: item.responsavel_id,
+              dataAquisicao: item.data_aquisicao,
+              valorAquisicao: Number(item.valor_aquisicao) || 0,
+              observacoes: item.observacoes,
+              criadoEm: item.criado_em,
+              atualizadoEm: item.atualizado_em,
+            }));
 
-        const { data, error } = await query;
+            // Complementa com o inventário diversificado se o Supabase tiver apenas notebooks iniciais
+            const patrimoniosExistentes = new Set(listaSupabase.map((e) => e.patrimonio));
+            const complementares = MOCK_EQUIPAMENTOS.filter((e) => !patrimoniosExistentes.has(e.patrimonio));
+            baseEquipamentos = [...listaSupabase, ...complementares];
 
-        if (!error && data && data.length > 0) {
-          let resultado: EquipamentoComResponsavel[] = data.map((item: any) => ({
-            id: item.id,
-            patrimonio: item.patrimonio,
-            tipo: item.tipo as TipoEquipamento,
-            subtipo: item.subtipo,
-            marca: item.marca,
-            modelo: item.modelo,
-            numeroSerie: item.numero_serie,
-            status: item.status,
-            processador: item.processador,
-            memoriaRam: item.memoria_ram,
-            armazenamento: item.armazenamento,
-            especificacoes: item.especificacoes,
-            responsavelId: item.responsavel_id,
-            dataAquisicao: item.data_aquisicao,
-            valorAquisicao: Number(item.valor_aquisicao) || 0,
-            observacoes: item.observacoes,
-            criadoEm: item.criado_em,
-            atualizadoEm: item.atualizado_em,
-            responsavel: item.responsaveis
-              ? {
-                  id: item.responsaveis.id,
-                  nome: item.responsaveis.nome,
-                  email: item.responsaveis.email,
-                  departamento: item.responsaveis.departamento,
-                  cargo: item.responsaveis.cargo,
-                  avatarUrl: item.responsaveis.avatar_url,
-                }
-              : undefined,
-          }));
-
-          if (filtros?.busca) {
-            const termo = filtros.busca.toLowerCase();
-            resultado = resultado.filter(
-              (eq) =>
-                eq.patrimonio.toLowerCase().includes(termo) ||
-                eq.modelo.toLowerCase().includes(termo) ||
-                eq.marca.toLowerCase().includes(termo) ||
-                eq.numeroSerie.toLowerCase().includes(termo) ||
-                (eq.responsavel?.nome.toLowerCase().includes(termo) ?? false)
-            );
+            if (typeof window !== "undefined") {
+              salvarMemoria(baseEquipamentos);
+            }
           }
-
-          if (filtros?.status) {
-            resultado = resultado.filter((eq) => eq.status === filtros.status);
-          }
-
-          return resultado;
+        } catch (err) {
+          console.error("Erro ao listar do Supabase:", err);
         }
-      } catch (err) {
-        console.error("Erro ao listar do Supabase:", err);
+      }
+
+      if (baseEquipamentos.length === 0) {
+        baseEquipamentos = memoria.eq;
       }
     }
 
-    // Fallback com persistência local
-    const memoria = getMemoria();
-    let resultado = memoria.eq.map((item) => ({
+    let resultado: EquipamentoComResponsavel[] = baseEquipamentos.map((item) => ({
       ...item,
       responsavel: memoria.resp.find((r) => r.id === item.responsavelId),
     }));
 
     if (filtros?.tipo && filtros.tipo !== "todos") {
       resultado = resultado.filter((eq) => eq.tipo === filtros.tipo);
+    }
+
+    if (filtros?.status && filtros.status !== "todos") {
+      resultado = resultado.filter((eq) => eq.status === filtros.status);
     }
 
     if (filtros?.busca) {
@@ -170,12 +160,9 @@ export const equipamentosService = {
           eq.modelo.toLowerCase().includes(termo) ||
           eq.marca.toLowerCase().includes(termo) ||
           eq.numeroSerie.toLowerCase().includes(termo) ||
+          (eq.subtipo && eq.subtipo.toLowerCase().includes(termo)) ||
           (eq.responsavel?.nome.toLowerCase().includes(termo) ?? false)
       );
-    }
-
-    if (filtros?.status) {
-      resultado = resultado.filter((eq) => eq.status === filtros.status);
     }
 
     return resultado;
@@ -252,34 +239,48 @@ export const equipamentosService = {
 
     if (supabase) {
       try {
-        const { data, error } = await supabase
+        const payloadBase: any = {
+          patrimonio: dados.patrimonio,
+          tipo: dados.tipo || "notebook",
+          marca: dados.marca,
+          modelo: dados.modelo,
+          numero_serie: dados.numeroSerie,
+          status: dados.status,
+          processador: dados.processador || "N/A",
+          memoria_ram: dados.memoriaRam || "N/A",
+          armazenamento: dados.armazenamento || "N/A",
+          responsavel_id: dados.responsavelId || null,
+          data_aquisicao: dados.dataAquisicao,
+          valor_aquisicao: dados.valorAquisicao,
+          observacoes: dados.observacoes || (dados.subtipo ? `Subtipo: ${dados.subtipo}` : null),
+        };
+
+        // Tenta salvar com as novas colunas
+        let res = await supabase
           .from("equipamentos")
           .insert({
-            patrimonio: dados.patrimonio,
-            tipo: dados.tipo || "notebook",
+            ...payloadBase,
             subtipo: dados.subtipo,
-            marca: dados.marca,
-            modelo: dados.modelo,
-            numero_serie: dados.numeroSerie,
-            status: dados.status,
-            processador: dados.processador,
-            memoria_ram: dados.memoriaRam,
-            armazenamento: dados.armazenamento,
             especificacoes: dados.especificacoes,
-            responsavel_id: dados.responsavelId || null,
-            data_aquisicao: dados.dataAquisicao,
-            valor_aquisicao: dados.valorAquisicao,
-            observacoes: dados.observacoes,
           })
           .select()
           .single();
 
-        if (!error && data) {
+        // Se falhou por colunas inexistentes na tabela do Supabase, tenta com payload compatível
+        if (res.error) {
+          res = await supabase
+            .from("equipamentos")
+            .insert(payloadBase)
+            .select()
+            .single();
+        }
+
+        if (!res.error && res.data) {
           novoEquipamento = {
             ...dados,
-            id: data.id,
-            criadoEm: data.criado_em,
-            atualizadoEm: data.atualizado_em,
+            id: res.data.id,
+            criadoEm: res.data.criado_em,
+            atualizadoEm: res.data.atualizado_em,
           };
         }
       } catch (err) {
@@ -463,13 +464,17 @@ export const equipamentosService = {
    * Lista todos os responsáveis cadastrados.
    */
   async listarResponsaveis(): Promise<Responsavel[]> {
-    const supabase = getSupabase();
+    const memoria = getMemoria();
+    if (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY_RESP)) {
+      return memoria.resp;
+    }
 
+    const supabase = getSupabase();
     if (supabase) {
       try {
         const { data, error } = await supabase.from("responsaveis").select("*");
         if (!error && data && data.length > 0) {
-          return data.map((item: any) => ({
+          const resps: Responsavel[] = data.map((item: any) => ({
             id: item.id,
             nome: item.nome,
             email: item.email,
@@ -477,13 +482,22 @@ export const equipamentosService = {
             cargo: item.cargo,
             avatarUrl: item.avatar_url,
           }));
+
+          const emailsExistentes = new Set(resps.map((r) => r.email));
+          const complementares = MOCK_RESPONSAVEIS.filter((r) => !emailsExistentes.has(r.email));
+          const listaFinal = [...resps, ...complementares];
+
+          if (typeof window !== "undefined") {
+            salvarMemoria(memoria.eq, listaFinal, memoria.mov);
+          }
+          return listaFinal;
         }
       } catch (err) {
         console.error("Erro ao listar responsáveis do Supabase:", err);
       }
     }
 
-    return getMemoria().resp;
+    return memoria.resp;
   },
 
   /**

@@ -18,18 +18,20 @@ CREATE TABLE IF NOT EXISTS public.responsaveis (
     atualizado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Tabela de Equipamentos (Notebooks e outros ativos)
+-- 3. Tabela de Equipamentos (Notebooks, Monitores, Celulares, Periféricos)
 CREATE TABLE IF NOT EXISTS public.equipamentos (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     patrimonio TEXT UNIQUE NOT NULL,
-    tipo TEXT NOT NULL DEFAULT 'notebook',
+    tipo TEXT NOT NULL DEFAULT 'notebook', -- 'notebook', 'monitor', 'smartphone', 'periferico', 'outro'
+    subtipo TEXT, -- 'mouse', 'teclado', 'headset', 'webcam', 'hub_usb', etc.
     marca TEXT NOT NULL,
     modelo TEXT NOT NULL,
     numero_serie TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'disponivel', -- 'disponivel', 'em_uso', 'manutencao', 'descartado'
-    processador TEXT NOT NULL,
-    memoria_ram TEXT NOT NULL,
-    armazenamento TEXT NOT NULL,
+    processador TEXT,
+    memoria_ram TEXT,
+    armazenamento TEXT,
+    especificacoes TEXT,
     responsavel_id UUID REFERENCES public.responsaveis(id) ON DELETE SET NULL,
     data_aquisicao DATE NOT NULL DEFAULT CURRENT_DATE,
     valor_aquisicao NUMERIC(10, 2),
@@ -41,8 +43,8 @@ CREATE TABLE IF NOT EXISTS public.equipamentos (
 -- 4. Tabela de Movimentações (Histórico de Auditoria Imutável)
 CREATE TABLE IF NOT EXISTS public.movimentacoes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    equipamento_id UUID NOT NULL REFERENCES public.equipamentos(id) ON DELETE CASCADE,
-    tipo TEXT NOT NULL, -- 'atribuicao', 'devolucao', 'manutencao', 'retorno', 'descarte'
+    equipamento_id UUID REFERENCES public.equipamentos(id) ON DELETE CASCADE,
+    tipo TEXT NOT NULL, -- 'atribuicao', 'devolucao', 'entrada', 'manutencao', 'colaborador', 'exclusao'
     responsavel_origem_id UUID REFERENCES public.responsaveis(id) ON DELETE SET NULL,
     responsavel_destino_id UUID REFERENCES public.responsaveis(id) ON DELETE SET NULL,
     data TIMESTAMPTZ DEFAULT NOW(),
