@@ -1,0 +1,160 @@
+import { Equipamento, Responsavel, Movimentacao } from "@/types";
+
+/**
+ * Colaboradores de exemplo para testes de atribuição.
+ */
+export const MOCK_RESPONSAVEIS: Responsavel[] = [
+  {
+    id: "resp-1",
+    nome: "Ana Carolina Silveira",
+    email: "ana.silveira@empresa.com.br",
+    departamento: "Engenharia de Software",
+    cargo: "Desenvolvedora Frontend Sênior",
+  },
+  {
+    id: "resp-2",
+    nome: "Lucas Ferreira Lima",
+    email: "lucas.lima@empresa.com.br",
+    departamento: "Design de Produto",
+    cargo: "Product Designer Pleno",
+  },
+  {
+    id: "resp-3",
+    nome: "Mariana Souza Rocha",
+    email: "mariana.rocha@empresa.com.br",
+    departamento: "Recursos Humanos",
+    cargo: "Business Partner",
+  },
+  {
+    id: "resp-4",
+    nome: "Rodrigo Mendes Castro",
+    email: "rodrigo.castro@empresa.com.br",
+    departamento: "Financeiro",
+    cargo: "Analista Financeiro",
+  },
+];
+
+/**
+ * Notebooks cadastrados no parque com diferentes status.
+ */
+export const MOCK_EQUIPAMENTOS: Equipamento[] = [
+  {
+    id: "eq-1",
+    patrimonio: "PAT-00101",
+    tipo: "notebook",
+    marca: "Dell",
+    modelo: "Latitude 3420",
+    numeroSerie: "DL3420X9812",
+    status: "em_uso",
+    processador: "Intel Core i5 11ª Geração",
+    memoriaRam: "16 GB DDR4",
+    armazenamento: "SSD 512 GB NVMe",
+    responsavelId: "resp-1",
+    dataAquisicao: "2024-02-15",
+    valorAquisicao: 4890.00,
+    observacoes: "Entregue com bolsa e carregador original.",
+    criadoEm: "2024-02-15T10:00:00Z",
+    atualizadoEm: "2024-03-01T14:30:00Z",
+  },
+  {
+    id: "eq-2",
+    patrimonio: "PAT-00102",
+    tipo: "notebook",
+    marca: "Apple",
+    modelo: "MacBook Pro 14 M2 Pro",
+    numeroSerie: "C02G9981MD6R",
+    status: "em_uso",
+    processador: "Apple M2 Pro (10 núcleos)",
+    memoriaRam: "32 GB Memória Unificada",
+    armazenamento: "SSD 1 TB",
+    responsavelId: "resp-2",
+    dataAquisicao: "2024-01-10",
+    valorAquisicao: 14500.00,
+    observacoes: "Máquina para trabalho gráfico pesado.",
+    criadoEm: "2024-01-10T09:00:00Z",
+    atualizadoEm: "2024-01-15T11:00:00Z",
+  },
+  {
+    id: "eq-3",
+    patrimonio: "PAT-00103",
+    tipo: "notebook",
+    marca: "Lenovo",
+    modelo: "ThinkPad T14 Gen 3",
+    numeroSerie: "PF29XKL001",
+    status: "disponivel",
+    processador: "AMD Ryzen 7 PRO 6850U",
+    memoriaRam: "16 GB LPDDR5",
+    armazenamento: "SSD 512 GB NVMe",
+    dataAquisicao: "2024-06-20",
+    valorAquisicao: 5900.00,
+    observacoes: "Formatado e pronto para entrega a novos contratados.",
+    criadoEm: "2024-06-20T16:00:00Z",
+    atualizadoEm: "2024-06-20T16:00:00Z",
+  },
+  {
+    id: "eq-4",
+    patrimonio: "PAT-00104",
+    tipo: "notebook",
+    marca: "Dell",
+    modelo: "Inspiron 15 3000",
+    numeroSerie: "DL15309992",
+    status: "manutencao",
+    processador: "Intel Core i7 12ª Geração",
+    memoriaRam: "16 GB DDR4",
+    armazenamento: "SSD 256 GB",
+    dataAquisicao: "2023-11-05",
+    valorAquisicao: 3800.00,
+    observacoes: "Enviado para a assistência: falha na porta USB-C de carregamento.",
+    criadoEm: "2023-11-05T08:00:00Z",
+    atualizadoEm: "2024-10-10T17:15:00Z",
+  },
+  {
+    id: "eq-5",
+    patrimonio: "PAT-00105",
+    tipo: "notebook",
+    marca: "Samsung",
+    modelo: "Galaxy Book3 360",
+    numeroSerie: "SMGB301293",
+    status: "disponivel",
+    processador: "Intel Core i7 13ª Geração",
+    memoriaRam: "16 GB LPDDR4x",
+    armazenamento: "SSD 512 GB NVMe",
+    dataAquisicao: "2024-08-01",
+    valorAquisicao: 5200.00,
+    observacoes: "Aparelho reserva do estoque TI.",
+    criadoEm: "2024-08-01T11:00:00Z",
+    atualizadoEm: "2024-08-01T11:00:00Z",
+  },
+];
+
+/**
+ * Histórico de movimentações de exemplo.
+ */
+export const MOCK_MOVIMENTACOES: Movimentacao[] = [
+  {
+    id: "mov-1",
+    equipamentoId: "eq-1",
+    tipo: "atribuicao",
+    responsavelDestinoId: "resp-1",
+    data: "2024-03-01T14:30:00Z",
+    motivo: "Notebook de trabalho para nova contratação na Engenharia.",
+    registradoPor: "Admin TI",
+  },
+  {
+    id: "mov-2",
+    equipamentoId: "eq-2",
+    tipo: "atribuicao",
+    responsavelDestinoId: "resp-2",
+    data: "2024-01-15T11:00:00Z",
+    motivo: "Upgrade de máquina para designer de produto.",
+    registradoPor: "Admin TI",
+  },
+  {
+    id: "mov-3",
+    equipamentoId: "eq-4",
+    tipo: "manutencao",
+    data: "2024-10-10T17:15:00Z",
+    motivo: "Conector USB-C com mau contato, enviado para garantia Dell.",
+    registradoPor: "Admin TI",
+  },
+];
