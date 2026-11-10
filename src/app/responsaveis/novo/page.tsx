@@ -7,6 +7,7 @@ import { ArrowLeft, UserPlus, Save, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { equipamentosService } from "@/services/equipamentos.service";
 
 export default function NovoResponsavelPage() {
   const router = useRouter();
@@ -26,18 +27,28 @@ export default function NovoResponsavelPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSalvando(true);
 
-    // Simulação de salvamento
-    setTimeout(() => {
+    try {
+      await equipamentosService.criarResponsavel({
+        nome: form.nome,
+        email: form.email,
+        departamento: form.departamento,
+        cargo: form.cargo,
+      });
+
       setSalvando(false);
       setSucesso(true);
       setTimeout(() => {
         router.push("/responsaveis");
-      }, 1200);
-    }, 600);
+        router.refresh();
+      }, 1000);
+    } catch (err) {
+      setSalvando(false);
+      console.error(err);
+    }
   };
 
   return (

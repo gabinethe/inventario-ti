@@ -60,29 +60,29 @@ ALTER TABLE public.responsaveis ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.equipamentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.movimentacoes ENABLE ROW LEVEL SECURITY;
 
--- Políticas de Leitura: Usuários autenticados podem consultar os registros
-CREATE POLICY "Permitir leitura para usuários autenticados" ON public.responsaveis
-    FOR SELECT TO authenticated USING (true);
+-- Políticas de Leitura: Usuários da aplicação (anônimos e autenticados) podem consultar os registros
+CREATE POLICY "Permitir leitura geral" ON public.responsaveis
+    FOR SELECT TO anon, authenticated USING (true);
 
-CREATE POLICY "Permitir leitura para usuários autenticados" ON public.equipamentos
-    FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Permitir leitura geral" ON public.equipamentos
+    FOR SELECT TO anon, authenticated USING (true);
 
-CREATE POLICY "Permitir leitura para usuários autenticados" ON public.movimentacoes
-    FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Permitir leitura geral" ON public.movimentacoes
+    FOR SELECT TO anon, authenticated USING (true);
 
--- Políticas de Modificação: Apenas administradores autenticados podem inserir/alterar
-CREATE POLICY "Permitir inserção e edição para autenticados" ON public.responsaveis
-    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+-- Políticas de Modificação: Permitir cadastro e edição
+CREATE POLICY "Permitir inserção e edição geral" ON public.responsaveis
+    FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
-CREATE POLICY "Permitir inserção e edição para autenticados" ON public.equipamentos
-    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Permitir inserção e edição geral" ON public.equipamentos
+    FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
-CREATE POLICY "Permitir inserção e edição para autenticados" ON public.movimentacoes
-    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Permitir inserção e edição geral" ON public.movimentacoes
+    FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
 -- Política de Auditoria: Movimentações NUNCA podem ser excluídas (imutabilidade)
 CREATE POLICY "Impedir exclusão de histórico de movimentação" ON public.movimentacoes
-    FOR DELETE TO authenticated USING (false);
+    FOR DELETE TO anon, authenticated USING (false);
 
 -- ========================================================
 -- DADOS INICIAIS DE EXEMPLO (SEED DATA)

@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusEquipamento } from "@/types";
+import { equipamentosService } from "@/services/equipamentos.service";
 
 export default function NovoNotebookPage() {
   const router = useRouter();
@@ -32,18 +33,36 @@ export default function NovoNotebookPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSalvando(true);
 
-    // Simulação de salvamento
-    setTimeout(() => {
+    try {
+      await equipamentosService.criar({
+        patrimonio: form.patrimonio,
+        marca: form.marca,
+        modelo: form.modelo,
+        numeroSerie: form.numeroSerie,
+        status: form.status,
+        tipo: "notebook",
+        processador: form.processador,
+        memoriaRam: form.memoriaRam,
+        armazenamento: form.armazenamento,
+        dataAquisicao: form.dataAquisicao,
+        valorAquisicao: form.valorAquisicao ? Number(form.valorAquisicao) : undefined,
+        observacoes: form.observacoes,
+      });
+
       setSalvando(false);
       setSucesso(true);
       setTimeout(() => {
         router.push("/equipamentos");
-      }, 1200);
-    }, 600);
+        router.refresh();
+      }, 1000);
+    } catch (err) {
+      setSalvando(false);
+      console.error(err);
+    }
   };
 
   return (
