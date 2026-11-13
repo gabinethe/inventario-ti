@@ -195,8 +195,8 @@ export function Sidebar() {
           className={cn(
             "border-b border-indigo-900/30 bg-[#0e122b]/70 sticky top-0 z-10 transition-all duration-300 ease-in-out overflow-hidden flex",
             isCollapsed 
-              ? "h-[94px] flex-col items-center justify-center gap-2 px-2 py-2.5" 
-              : "h-16 flex-row items-center justify-between px-3.5"
+              ? "h-20 flex-col items-center justify-center gap-2 px-3 py-2" 
+              : "h-16 flex-row items-center justify-between px-3"
           )}
         >
           {/* Logo da caixinha quadrada sem título conforme solicitado */}
@@ -206,7 +206,7 @@ export function Sidebar() {
             className="flex items-center justify-center group cursor-pointer flex-shrink-0"
             title="TI Inventory - Início"
           >
-            <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600/30 to-purple-600/20 border border-indigo-500/40 p-1 flex-shrink-0 group-hover:scale-105 group-hover:border-indigo-400 transition-all duration-200 shadow-md shadow-indigo-950/50">
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600/30 to-purple-600/20 border border-indigo-500/40 p-1 flex-shrink-0 group-hover:scale-105 group-hover:border-indigo-400 transition-all duration-200 shadow-md shadow-indigo-950/50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/logo-icon.png"
@@ -223,7 +223,7 @@ export function Sidebar() {
             className={cn(
               "rounded-xl text-indigo-300 hover:text-white transition-all cursor-pointer flex items-center justify-center flex-shrink-0",
               isCollapsed 
-                ? "w-8 h-7 bg-indigo-950/80 hover:bg-indigo-900/80 border border-indigo-900/60" 
+                ? "w-10 h-6 bg-indigo-950/80 hover:bg-indigo-900/80 border border-indigo-900/60" 
                 : "p-2 hover:bg-indigo-900/60"
             )}
             title={isCollapsed ? "Expandir barra lateral (Ctrl+B)" : "Recolher barra lateral (Ctrl+B)"}
@@ -236,7 +236,7 @@ export function Sidebar() {
           </button>
         </div>
 
-        {/* Barra de Busca Integrada na Sidebar - Fluida sem desmontar input e sem badge ⌘K */}
+        {/* Barra de Busca Integrada na Sidebar - Fluida e Rigorosamente Centralizada */}
         <div ref={buscaRef} className="px-3 pt-3 pb-1 relative transition-all duration-300 ease-in-out">
           <div
             onClick={() => {
@@ -246,14 +246,14 @@ export function Sidebar() {
               }
             }}
             className={cn(
-              "relative flex items-center rounded-xl bg-indigo-950/40 hover:bg-indigo-950/60 border border-indigo-900/50 transition-all duration-300 h-9 overflow-hidden group",
-              isCollapsed 
-                ? "w-10 mx-auto justify-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-900/40" 
-                : "w-full px-2.5"
+              "relative flex items-center rounded-xl bg-indigo-950/40 hover:bg-indigo-950/60 border border-indigo-900/50 transition-all duration-300 h-10 overflow-hidden group cursor-pointer",
+              isCollapsed ? "w-12 mx-auto justify-center" : "w-full"
             )}
             title={isCollapsed ? "Pesquisar ativos ou pessoas" : undefined}
           >
-            <Search className={cn("w-4 h-4 text-indigo-400/80 flex-shrink-0 transition-colors", isCollapsed ? "mx-auto" : "mr-2")} />
+            <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
+              <Search className="w-4 h-4 text-indigo-400/80" />
+            </div>
 
             <input
               type="text"
@@ -268,7 +268,7 @@ export function Sidebar() {
               }}
               placeholder="Buscar ativo ou pessoa..."
               className={cn(
-                "text-xs bg-transparent text-white placeholder:text-indigo-400/50 focus:outline-none transition-all duration-300 flex-1",
+                "text-xs bg-transparent text-white placeholder:text-indigo-400/50 focus:outline-none transition-all duration-300 flex-1 pr-2",
                 isCollapsed ? "opacity-0 w-0 pointer-events-none p-0" : "opacity-100 w-full"
               )}
             />
@@ -281,7 +281,7 @@ export function Sidebar() {
                   setTermoBusca("");
                   setBuscaAtiva(false);
                 }}
-                className="p-1 text-indigo-400 hover:text-white flex-shrink-0"
+                className="p-1 mr-1 text-indigo-400 hover:text-white flex-shrink-0"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -387,13 +387,13 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? "Dashboard" : undefined}
               className={cn(
-                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                 isLinkActive("/")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                 <LayoutDashboard className="h-4 w-4" />
               </div>
               <span
@@ -426,16 +426,11 @@ export function Sidebar() {
                   setAtivosAberto(!ativosAberto);
                 }
               }}
-              className={cn(
-                "w-full h-10 flex items-center text-xs font-semibold text-indigo-200 hover:text-white bg-indigo-950/40 hover:bg-indigo-950/70 border border-indigo-900/40 rounded-xl transition-all duration-300 ease-in-out cursor-pointer group shadow-2xs relative",
-                isCollapsed && "justify-center"
-              )}
+              className="w-full h-10 flex items-center text-xs font-semibold text-indigo-200 hover:text-white bg-indigo-950/40 hover:bg-indigo-950/70 border border-indigo-900/40 rounded-xl transition-all duration-300 ease-in-out cursor-pointer group shadow-2xs relative overflow-hidden"
               title={isCollapsed ? "Inventário de Ativos" : "Clique para expandir ou recolher as categorias"}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-                <div className="p-1 rounded-lg bg-indigo-800/40 text-indigo-300 group-hover:text-white transition-colors">
-                  <Boxes className="w-4 h-4" />
-                </div>
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
+                <Boxes className="w-4 h-4 text-indigo-300 group-hover:text-white transition-colors" />
               </div>
 
               <span
@@ -481,13 +476,13 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Notebooks (${totais.notebook})` : undefined}
                   className={cn(
-                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                     isLinkActive("/equipamentos", "notebook")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                     <Laptop className="h-4 w-4" />
                   </div>
                   <span
@@ -519,13 +514,13 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Monitores (${totais.monitor})` : undefined}
                   className={cn(
-                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                     isLinkActive("/equipamentos", "monitor")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                     <Monitor className="h-4 w-4" />
                   </div>
                   <span
@@ -557,13 +552,13 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Celulares (${totais.smartphone})` : undefined}
                   className={cn(
-                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                     isLinkActive("/equipamentos", "smartphone")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                     <Smartphone className="h-4 w-4" />
                   </div>
                   <span
@@ -595,13 +590,13 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Periféricos (${totais.periferico})` : undefined}
                   className={cn(
-                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                     isLinkActive("/equipamentos", "periferico")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                     <Headphones className="h-4 w-4" />
                   </div>
                   <span
@@ -633,13 +628,13 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Todos os Ativos (${totais.todos})` : undefined}
                   className={cn(
-                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative border-t border-indigo-950/40 pt-1 mt-1",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative border-t border-indigo-950/40 pt-1 mt-1 overflow-hidden",
                     isLinkActive("/equipamentos", "todos")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/70 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                     <Boxes className="h-4 w-4" />
                   </div>
                   <span
@@ -682,13 +677,13 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? `Colaboradores (${totais.colaboradores})` : undefined}
               className={cn(
-                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                 isLinkActive("/responsaveis")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                 <Users className="h-4 w-4" />
               </div>
               <span
@@ -720,13 +715,13 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? `Movimentações (${totais.movimentacoes})` : undefined}
               className={cn(
-                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                 isLinkActive("/movimentacoes")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                 <ArrowLeftRight className="h-4 w-4" />
               </div>
               <span
@@ -758,13 +753,13 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? "Usuários e Acesso" : undefined}
               className={cn(
-                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                 isLinkActive("/usuarios")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                 <ShieldCheck className="h-4 w-4" />
               </div>
               <span
@@ -788,13 +783,13 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? "Configurações" : undefined}
               className={cn(
-                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative overflow-hidden",
                 isLinkActive("/configuracoes")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-10 flex items-center justify-center flex-shrink-0">
                 <Settings className="h-4 w-4" />
               </div>
               <span
@@ -815,8 +810,8 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Rodapé da Sidebar: Status do Sistema e Versão */}
-      <div className={cn("border-t border-indigo-900/30 bg-[#0e122b]/50 transition-all duration-300 ease-in-out", isCollapsed ? "p-2" : "p-3")}>
+      {/* Rodapé da Sidebar: Status do Sistema e Versão - Rigorosamente Centralizado */}
+      <div className="border-t border-indigo-900/30 bg-[#0e122b]/50 transition-all duration-300 ease-in-out p-3">
         {!isCollapsed ? (
           <div className="flex items-center justify-between gap-2.5 rounded-xl bg-indigo-950/40 p-2.5 border border-indigo-900/40">
             <div className="flex items-center gap-2">
@@ -836,10 +831,10 @@ export function Sidebar() {
         ) : (
           <Link
             href="/usuarios"
-            className="flex justify-center group relative cursor-pointer"
+            className="w-12 h-10 mx-auto flex items-center justify-center group relative cursor-pointer"
             title="TI Inventory v1.2 (Gerenciar Usuários)"
           >
-            <div className="h-9 w-9 rounded-xl bg-indigo-950/60 flex items-center justify-center border border-indigo-900/40 text-emerald-400 group-hover:text-white transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-indigo-950/60 flex items-center justify-center border border-indigo-900/40 text-emerald-400 group-hover:text-white transition-colors">
               <ShieldCheck className="w-4 h-4" />
             </div>
             {/* Tooltip flutuante */}
