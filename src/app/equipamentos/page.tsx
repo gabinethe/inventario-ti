@@ -6,8 +6,26 @@ import { Button } from "@/components/ui/button";
 import { equipamentosService } from "@/services/equipamentos.service";
 import { TabelaEquipamentos } from "@/components/modules/equipamentos/tabela-equipamentos";
 
-export default async function EquipamentosPage() {
+interface EquipamentosPageProps {
+  searchParams: Promise<{ tipo?: string }>;
+}
+
+export default async function EquipamentosPage({ searchParams }: EquipamentosPageProps) {
+  const params = await searchParams;
+  const tipoAtual = params?.tipo || "notebook";
   const equipamentos = await equipamentosService.listar();
+
+  const rotuloBotao = {
+    notebook: "Cadastrar Notebook",
+    monitor: "Cadastrar Monitor",
+    smartphone: "Cadastrar Celular",
+    periferico: "Cadastrar Periférico",
+    todos: "Cadastrar Equipamento",
+  }[tipoAtual] || "Cadastrar Equipamento";
+
+  const linkCadastro = tipoAtual && tipoAtual !== "todos"
+    ? `/equipamentos/novo?tipo=${tipoAtual}`
+    : "/equipamentos/novo?tipo=notebook";
 
   return (
     <>
@@ -28,10 +46,10 @@ export default async function EquipamentosPage() {
             </p>
           </div>
 
-          <Link href="/equipamentos/novo" prefetch={true}>
+          <Link href={linkCadastro} prefetch={true}>
             <Button size="sm">
               <Plus className="w-4 h-4" />
-              Cadastrar Equipamento
+              {rotuloBotao}
             </Button>
           </Link>
         </div>

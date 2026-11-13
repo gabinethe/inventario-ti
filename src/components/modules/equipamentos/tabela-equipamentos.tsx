@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { 
   Laptop, 
   Search, 
@@ -16,7 +16,8 @@ import {
   Headphones,
   Boxes,
   ArrowRightLeft,
-  Undo2
+  Undo2,
+  Plus
 } from "lucide-react";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { StatusEquipamento, TipoEquipamento } from "@/types";
@@ -158,12 +159,34 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
     }
   };
 
+  const mudarAba = (novoTipo: TipoEquipamento | "todos") => {
+    setFiltroTipo(novoTipo);
+    if (typeof window !== "undefined") {
+      const url = novoTipo === "todos" ? "/equipamentos" : `/equipamentos?tipo=${novoTipo}`;
+      window.history.pushState(null, "", url);
+    }
+  };
+
+  const rotuloCadastro = (
+    {
+      notebook: "Cadastrar Notebook",
+      monitor: "Cadastrar Monitor",
+      smartphone: "Cadastrar Celular",
+      periferico: "Cadastrar Periférico",
+      todos: "Cadastrar Equipamento",
+    } as Record<string, string>
+  )[filtroTipo] || "Cadastrar Equipamento";
+
+  const linkCadastro = filtroTipo === "todos"
+    ? "/equipamentos/novo?tipo=notebook"
+    : `/equipamentos/novo?tipo=${filtroTipo}`;
+
   return (
     <div className="space-y-6">
       {/* 1. Barra de Seleção de Categorias de Equipamento */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
         <button
-          onClick={() => setFiltroTipo("notebook")}
+          onClick={() => mudarAba("notebook")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "notebook"
               ? "bg-indigo-600 text-white shadow-xs"
@@ -175,7 +198,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </button>
 
         <button
-          onClick={() => setFiltroTipo("monitor")}
+          onClick={() => mudarAba("monitor")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "monitor"
               ? "bg-indigo-600 text-white shadow-xs"
@@ -187,7 +210,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </button>
 
         <button
-          onClick={() => setFiltroTipo("smartphone")}
+          onClick={() => mudarAba("smartphone")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "smartphone"
               ? "bg-indigo-600 text-white shadow-xs"
@@ -199,7 +222,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </button>
 
         <button
-          onClick={() => setFiltroTipo("periferico")}
+          onClick={() => mudarAba("periferico")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "periferico"
               ? "bg-indigo-600 text-white shadow-xs"
@@ -211,7 +234,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </button>
 
         <button
-          onClick={() => setFiltroTipo("todos")}
+          onClick={() => mudarAba("todos")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
             filtroTipo === "todos"
               ? "bg-indigo-600 text-white shadow-xs"
@@ -223,8 +246,8 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         </button>
       </div>
 
-      {/* 2. Barra de Busca e Filtros de Estado Operacional */}
-      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      {/* 2. Barra de Busca, Filtros e Ação Contextual de Cadastro */}
+      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
         {/* Campo de Busca */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
@@ -237,54 +260,66 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           />
         </div>
 
-        {/* Botões de Filtro por Status */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          <button
-            onClick={() => setFiltroStatus("todos")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
-              filtroStatus === "todos"
-                ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
-            }`}
-          >
-            Todos ({contadoresStatus.todos})
-          </button>
+        {/* Botões de Filtro por Status e Botão Contextual de Cadastro */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
+            <button
+              onClick={() => setFiltroStatus("todos")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                filtroStatus === "todos"
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+              }`}
+            >
+              Todos ({contadoresStatus.todos})
+            </button>
 
-          <button
-            onClick={() => setFiltroStatus("disponivel")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-              filtroStatus === "disponivel"
-                ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-900"
-            }`}
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            Disponíveis ({contadoresStatus.disponivel})
-          </button>
+            <button
+              onClick={() => setFiltroStatus("disponivel")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+                filtroStatus === "disponivel"
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-900"
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              Disponíveis ({contadoresStatus.disponivel})
+            </button>
 
-          <button
-            onClick={() => setFiltroStatus("em_uso")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-              filtroStatus === "em_uso"
-                ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
-            }`}
-          >
-            <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
-            Em Uso ({contadoresStatus.em_uso})
-          </button>
+            <button
+              onClick={() => setFiltroStatus("em_uso")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+                filtroStatus === "em_uso"
+                  ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+              }`}
+            >
+              <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
+              Em Uso ({contadoresStatus.em_uso})
+            </button>
 
-          <button
-            onClick={() => setFiltroStatus("manutencao")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
-              filtroStatus === "manutencao"
-                ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-amber-50 hover:text-amber-900"
-            }`}
-          >
-            <Wrench className="w-3.5 h-3.5 text-amber-500" />
-            Manutenção ({contadoresStatus.manutencao})
-          </button>
+            <button
+              onClick={() => setFiltroStatus("manutencao")}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+                filtroStatus === "manutencao"
+                  ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:bg-amber-50 hover:text-amber-900"
+              }`}
+            >
+              <Wrench className="w-3.5 h-3.5 text-amber-500" />
+              Manutenção ({contadoresStatus.manutencao})
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-slate-200 hidden lg:block" />
+
+          {/* Botão Contextual de Cadastro por Rota/Categoria */}
+          <Link href={linkCadastro} prefetch={true} className="flex-shrink-0">
+            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs">
+              <Plus className="w-4 h-4" />
+              {rotuloCadastro}
+            </Button>
+          </Link>
         </div>
       </div>
 

@@ -1,16 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, CheckCircle2, Boxes, Laptop, Monitor, Smartphone, Headphones } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Save, 
+  CheckCircle2, 
+  AlertCircle, 
+  Laptop, 
+  Monitor, 
+  Smartphone, 
+  Headphones, 
+  Info 
+} from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusEquipamento, TipoEquipamento, Responsavel } from "@/types";
+import { StatusEquipamento, TipoEquipamento, Responsavel, Equipamento } from "@/types";
 import { equipamentosService } from "@/services/equipamentos.service";
 
-const MARCAS_POR_TIPO = {
+const MARCAS_POR_TIPO: Record<TipoEquipamento, string[]> = {
   notebook: ["Dell", "Apple", "Lenovo", "HP", "Samsung", "Asus", "Acer", "Positivo", "Outra"],
   monitor: ["Dell", "LG", "Samsung", "AOC", "Philips", "BenQ", "Asus", "Outra"],
   smartphone: ["Apple", "Samsung", "Motorola", "Xiaomi", "Google", "Outra"],
@@ -18,19 +28,30 @@ const MARCAS_POR_TIPO = {
   outro: ["Dell", "HP", "Outra"],
 };
 
-export default function NovoEquipamentoPage() {
+function NovoEquipamentoForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tipoParam = searchParams?.get("tipo") as TipoEquipamento | null;
+
   const [salvando, setSalvando] = useState(false);
   const [sucesso, setSucesso] = useState(false);
-  const [colaboradores, setColaboradores] = useState<Responsavel[]>([]);
+  const [erro, setErro] = useState<string | null>(null);
+  const [erroSerial, setErroSerial] = useState<string | null>(null);
 
-  const [tipo, setTipo] = useState<TipoEquipamento>("notebook");
+  const [colaboradores, setColaboradores] = useState<Responsavel[]>([]);
+  const [equipamentosExistentes, setEquipamentosExistentes] = useState<Equipamento[]>([]);
+
+  // Inicializa a categoria de acordo com a rota de onde o usuário veio
+  const categoriaInicial: TipoEquipamento = 
+    tipoParam && MARCAS_POR_TIPO[tipoParam] ? tipoParam : "notebook";
+
+  const [tipo, setTipo] = useState<TipoEquipamento>(categoriaInicial);
   const [subtipo, setSubtipo] = useState("mouse");
   const [quantidadeEstoque, setQuantidadeEstoque] = useState(1);
 
   const [form, setForm] = useState({
     patrimonio: "",
-    marca: "Dell",
+    marca: MARCAS_POR_TIPO[categoriaInicial][0] || "Dell",
     modelo: "",
     numeroSerie: "",
     status: "disponivel" as StatusEquipamento,
@@ -39,30 +60,131 @@ export default function NovoEquipamentoPage() {
     armazenamento: "",
     especificacoes: "",
     responsavelId: "",
-    dataAquisicao: "2024-11-01",
+    dataAquisicao: new Date().toISOString().split("T")[0],
     valorAquisicao: "",
     observacoes: "",
   });
 
+  // Sincroniza com parâmetros de URL caso mude
   useEffect(() => {
-    equipamentosService.listarResponsaveis().then((lista) => {
-      setColaboradores(lista);
+    if (tipoParam && MARCAS_POR_TIPO[tipoParam]) {
+      handleTipoChange(tipoParam);
+    }
+  }, [tipoParam]);
+
+  // Carrega lista de responsáveis e equipamentos para validação de unicidade
+  useEffect(() => {
+    Promise.all([
+      equipamentosService.listarResponsaveis(),
+      equipamentosService.listar(),
+    ]).then(([resps, eqs]) => {
+      setColaboradores(resps);
+      setEquipamentosExistentes(eqs);
     });
   }, []);
 
-  // Ao mudar o tipo, ajusta a primeira marca sugerida
+  // Ao alterar a categoria
   const handleTipoChange = (novoTipo: TipoEquipamento) => {
     setTipo(novoTipo);
+    setErro(null);
+    setErroSerial(null);
     const primeiraMarca = MARCAS_POR_TIPO[novoTipo][0];
-    setForm((prev) => ({ ...prev, marca: primeiraMarca }));
+    setForm((prev) => ({
+      ...prev,
+      marca: primeiraMarca,
+      modelo: "",
+      numeroSerie: "",
+      especificacoes: "",
+      processador: "",
+      memoriaRam: "",
+      armazenamento: "",
+    }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Validação de unicidade em tempo real ao digitar o número de série
+    if (name === "numeroSerie") {
+      validarSerialEmTempoReal(value);
+    }
+  };
+
+  const validarSerialEmTempoReal = (serialDigitado: string) => {
+    const serialLimpo = serialDigitado.trim().toLowerCase();
+    if (!serialLimpo || serialLimpo === "s/n" || serialLimpo === "n/a" || serialLimpo.startsWith("lote estoque")) {
+      setErroSerial(null);
+      return;
+    }
+
+    const duplicado = equipamentosExistentes.find(
+      (eq) => eq.numeroSerie && eq.numeroSerie.trim().toLowerCase() === serialLimpo
+    );
+
+    if (duplicado) {
+      setErroSerial(
+        `Este número de série já está cadastrado no sistema para o equipamento: ${duplicado.marca} ${duplicado.modelo}. Cada ativo deve possuir um serial number exclusivo.`
+      );
+    } else {
+      setErroSerial(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro(null);
+
+    // 1. Validação de Unicidade de Número de Série
+    const serialLimpo = form.numeroSerie.trim().toLowerCase();
+    if (serialLimpo && serialLimpo !== "s/n" && serialLimpo !== "n/a" && !serialLimpo.startsWith("lote estoque")) {
+      const duplicado = equipamentosExistentes.find(
+        (eq) => eq.numeroSerie && eq.numeroSerie.trim().toLowerCase() === serialLimpo
+      );
+      if (duplicado) {
+        setErro(
+          `Impossível cadastrar: Já existe um equipamento cadastrado com o número de série '${form.numeroSerie.trim()}' (${duplicado.marca} ${duplicado.modelo}). Cada ativo deve ter um identificador exclusivo.`
+        );
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+    }
+
+    // 2. Validação Estrita de Campos Obrigatórios
+    const pendencias: string[] = [];
+
+    if (!form.marca.trim()) pendencias.push("Marca / Fabricante");
+    if (!form.modelo.trim()) pendencias.push("Modelo do Ativo");
+
+    if (tipo === "notebook") {
+      if (!form.numeroSerie.trim()) pendencias.push("Número de Série (S/N)");
+      if (!form.processador.trim()) pendencias.push("Processador");
+      if (!form.memoriaRam.trim()) pendencias.push("Memória RAM");
+      if (!form.armazenamento.trim()) pendencias.push("Armazenamento (SSD)");
+    } else if (tipo === "monitor") {
+      if (!form.numeroSerie.trim()) pendencias.push("Número de Série (S/N)");
+      if (!form.especificacoes.trim()) pendencias.push("Tamanho, Resolução e Entradas");
+    } else if (tipo === "smartphone") {
+      if (!form.numeroSerie.trim()) pendencias.push("Número de Série (S/N ou IMEI)");
+      if (!form.armazenamento.trim()) pendencias.push("Armazenamento Interno");
+    } else if (tipo === "periferico") {
+      if (!subtipo.trim()) pendencias.push("Tipo de Periférico / Acessório");
+      if (!quantidadeEstoque || quantidadeEstoque < 1) pendencias.push("Quantidade em Estoque (mínimo 1)");
+      if (!form.especificacoes.trim()) pendencias.push("Detalhes de Conexão / Especificações");
+    }
+
+    if (!form.dataAquisicao) pendencias.push("Data de Compra / Aquisição");
+
+    if (pendencias.length > 0) {
+      setErro(
+        `Preenchimento obrigatório incompleto. Por favor, informe: ${pendencias.join(", ")}.`
+      );
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setSalvando(true);
 
     try {
@@ -71,69 +193,102 @@ export default function NovoEquipamentoPage() {
       await equipamentosService.criar({
         tipo,
         subtipo: tipo === "periferico" ? subtipo : undefined,
-        marca: form.marca,
-        modelo: form.modelo,
-        numeroSerie: form.numeroSerie || (tipo === "periferico" ? `Lote Estoque (${quantidadeEstoque} un)` : "S/N"),
+        marca: form.marca.trim(),
+        modelo: form.modelo.trim(),
+        numeroSerie: form.numeroSerie.trim() || (tipo === "periferico" ? `Lote Estoque (${quantidadeEstoque} un)` : "S/N"),
         status: statusFinal,
         quantidadeTotal: tipo === "periferico" ? quantidadeEstoque : 1,
         quantidadeDisponivel: tipo === "periferico" ? (form.responsavelId ? quantidadeEstoque - 1 : quantidadeEstoque) : 1,
-        processador: tipo === "notebook" ? form.processador : undefined,
-        memoriaRam: tipo === "notebook" ? form.memoriaRam : undefined,
-        armazenamento: tipo === "notebook" || tipo === "smartphone" ? form.armazenamento : undefined,
-        especificacoes: form.especificacoes || undefined,
+        processador: tipo === "notebook" ? form.processador.trim() : undefined,
+        memoriaRam: tipo === "notebook" ? form.memoriaRam.trim() : undefined,
+        armazenamento: tipo === "notebook" || tipo === "smartphone" ? form.armazenamento.trim() : undefined,
+        especificacoes: form.especificacoes.trim() || undefined,
         responsavelId: form.responsavelId || undefined,
         dataAquisicao: form.dataAquisicao,
         valorAquisicao: form.valorAquisicao ? Number(form.valorAquisicao) : undefined,
-        observacoes: form.observacoes,
+        observacoes: form.observacoes?.trim() || undefined,
       });
 
       setSalvando(false);
       setSucesso(true);
       setTimeout(() => {
-        router.push("/equipamentos");
+        router.push(`/equipamentos?tipo=${tipo}`);
         router.refresh();
-      }, 300);
-    } catch (err) {
+      }, 400);
+    } catch (err: any) {
       setSalvando(false);
-      console.error(err);
+      setErro(err.message || "Erro ao salvar equipamento no inventário.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const getTituloCategoria = () => {
+    switch (tipo) {
+      case "monitor":
+        return "Cadastrar Monitor";
+      case "smartphone":
+        return "Cadastrar Celular Corporativo";
+      case "periferico":
+        return "Cadastrar Periférico / Acessório";
+      case "notebook":
+      default:
+        return "Cadastrar Notebook";
     }
   };
 
   return (
     <>
       <Header
-        title="Cadastrar Equipamento"
-        subtitle="Entrada de notebook, monitor, smartphone ou periférico no inventário"
+        title={getTituloCategoria()}
+        subtitle={`Cadastro no inventário corporativo com validação de dados e unicidade de serial`}
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-4xl">
         <div>
           <Link
-            href="/equipamentos"
+            href={`/equipamentos?tipo=${tipo}`}
             prefetch={true}
             className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Voltar para lista de equipamentos
+            Voltar para lista de {tipo}s
           </Link>
         </div>
 
+        {/* Alerta de Sucesso */}
         {sucesso && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 shadow-xs">
+          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 shadow-xs animate-in fade-in">
             <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
             <div>
-              <p className="font-bold text-sm">Ativo cadastrado com sucesso!</p>
-              <p className="text-xs text-emerald-700">Atualizando inventário e redirecionando...</p>
+              <p className="font-bold text-sm">Equipamento cadastrado com sucesso!</p>
+              <p className="text-xs text-emerald-700">Atualizando o inventário e retornando à lista de {tipo}s...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Alerta de Erro de Validação */}
+        {erro && (
+          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-3 shadow-xs animate-in fade-in">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+            <div>
+              <p className="font-bold text-sm">Não foi possível salvar o cadastro</p>
+              <p className="text-xs text-rose-700 mt-0.5">{erro}</p>
             </div>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
-          {/* 1. Seleção Visual do Tipo de Equipamento */}
+          {/* 1. Seleção Visual da Categoria */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-              1. Selecione a Categoria do Ativo *
-            </label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                1. Categoria do Ativo <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-xs text-slate-400 font-medium">
+                Campos com <span className="text-rose-500 font-bold">*</span> são obrigatórios
+              </span>
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button
                 type="button"
@@ -193,7 +348,7 @@ export default function NovoEquipamentoPage() {
           {tipo === "periferico" && (
             <div className="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-1.5 animate-in fade-in duration-150">
               <label htmlFor="subtipo" className="block text-xs font-semibold text-indigo-950">
-                Tipo de Periférico / Acessório *
+                Tipo de Periférico / Acessório <span className="text-rose-500">*</span>
               </label>
               <select
                 id="subtipo"
@@ -214,14 +369,14 @@ export default function NovoEquipamentoPage() {
 
           {/* 2. Dados de Identificação */}
           <div className="pt-4 border-t border-slate-200 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               2. Identificação do Fabricante & Modelo
             </h3>
 
             <div className={`grid grid-cols-1 ${tipo === "periferico" ? "md:grid-cols-3" : "md:grid-cols-2"} gap-4`}>
               <div className="w-full space-y-1.5">
                 <label htmlFor="marca" className="block text-xs font-semibold text-slate-700">
-                  Marca / Fabricante *
+                  Marca / Fabricante <span className="text-rose-500">*</span>
                 </label>
                 <select
                   id="marca"
@@ -238,28 +393,30 @@ export default function NovoEquipamentoPage() {
                 </select>
               </div>
 
-              <Input
-                id="modelo"
-                name="modelo"
-                label="Modelo do Ativo *"
-                placeholder={
-                  tipo === "notebook"
-                    ? "Ex: Latitude 3420"
-                    : tipo === "monitor"
-                    ? "Ex: UltraSharp 27 4K"
-                    : tipo === "smartphone"
-                    ? "Ex: iPhone 14 128GB"
-                    : "Ex: MX Master 3S"
-                }
-                required
-                value={form.modelo}
-                onChange={handleChange}
-              />
+              <div className="space-y-1.5">
+                <Input
+                  id="modelo"
+                  name="modelo"
+                  label="Modelo do Ativo *"
+                  placeholder={
+                    tipo === "notebook"
+                      ? "Ex: Latitude 3420 / MacBook Pro"
+                      : tipo === "monitor"
+                      ? "Ex: UltraSharp 27 4K"
+                      : tipo === "smartphone"
+                      ? "Ex: iPhone 14 128GB"
+                      : "Ex: MX Master 3S"
+                  }
+                  required
+                  value={form.modelo}
+                  onChange={handleChange}
+                />
+              </div>
 
               {tipo === "periferico" && (
                 <div className="w-full space-y-1.5">
                   <label htmlFor="quantidadeEstoque" className="block text-xs font-semibold text-slate-700">
-                    Quantidade em Estoque (Unidades) *
+                    Quantidade em Estoque (Unidades) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     id="quantidadeEstoque"
@@ -276,23 +433,32 @@ export default function NovoEquipamentoPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                id="numeroSerie"
-                name="numeroSerie"
-                label={
-                  tipo === "periferico"
-                    ? "Número de Série (Opcional - pode ser informado na entrega)"
-                    : "Número de Série (S/N) ou IMEI *"
-                }
-                placeholder={
-                  tipo === "periferico"
-                    ? "Ex: Lote geral ou serial específico"
-                    : "Ex: CN0897X12 / S/N fabricante"
-                }
-                required={tipo !== "periferico"}
-                value={form.numeroSerie}
-                onChange={handleChange}
-              />
+              <div className="space-y-1">
+                <Input
+                  id="numeroSerie"
+                  name="numeroSerie"
+                  label={
+                    tipo === "periferico"
+                      ? "Número de Série (Opcional - pode ser informado na entrega)"
+                      : "Número de Série (S/N) ou IMEI *"
+                  }
+                  placeholder={
+                    tipo === "periferico"
+                      ? "Ex: Opcional para lotes volumétricos"
+                      : "Ex: CN0897X12 / S/N do fabricante"
+                  }
+                  required={tipo !== "periferico"}
+                  value={form.numeroSerie}
+                  onChange={handleChange}
+                  className={erroSerial ? "border-rose-500 focus:border-rose-600 focus:ring-rose-500/20" : ""}
+                />
+                {erroSerial && (
+                  <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1 mt-1">
+                    <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    {erroSerial}
+                  </p>
+                )}
+              </div>
 
               <div className="w-full space-y-1.5">
                 <label htmlFor="responsavelId" className="block text-xs font-semibold text-slate-700">
@@ -318,7 +484,7 @@ export default function NovoEquipamentoPage() {
 
           {/* 3. Especificações Técnicas Dinâmicas */}
           <div className="pt-4 border-t border-slate-200 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               3. Especificações Técnicas ({tipo.toUpperCase()})
             </h3>
 
@@ -345,7 +511,7 @@ export default function NovoEquipamentoPage() {
                 <Input
                   id="armazenamento"
                   name="armazenamento"
-                  label="Armazenamento *"
+                  label="Armazenamento (SSD) *"
                   placeholder="Ex: SSD 512 GB NVMe"
                   required
                   value={form.armazenamento}
@@ -393,7 +559,7 @@ export default function NovoEquipamentoPage() {
 
           {/* 4. Aquisição e Detalhes Financeiros */}
           <div className="pt-4 border-t border-slate-200">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
               4. Dados de Aquisição
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -420,13 +586,13 @@ export default function NovoEquipamentoPage() {
 
             <div className="mt-4 space-y-1.5">
               <label htmlFor="observacoes" className="block text-xs font-semibold text-slate-700">
-                Observações de TI
+                Observações Adicionais de TI
               </label>
               <textarea
                 id="observacoes"
                 name="observacoes"
                 rows={3}
-                placeholder="Detalhes adicionais, acessórios inclusos, nota fiscal, etc."
+                placeholder="Detalhes adicionais, nota fiscal, número do pedido ou acessórios inclusos..."
                 value={form.observacoes}
                 onChange={handleChange}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15 shadow-2xs"
@@ -434,19 +600,28 @@ export default function NovoEquipamentoPage() {
             </div>
           </div>
 
+          {/* Rodapé do Formulário com Ações */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-            <Link href="/equipamentos">
+            <Link href={`/equipamentos?tipo=${tipo}`}>
               <Button type="button" variant="outline">
                 Cancelar
               </Button>
             </Link>
-            <Button type="submit" disabled={salvando}>
+            <Button type="submit" disabled={salvando || Boolean(erroSerial)}>
               <Save className="w-4 h-4" />
-              {salvando ? "Salvando..." : "Salvar no Inventário"}
+              {salvando ? "Validando e Salvando..." : `Salvar ${tipo}`}
             </Button>
           </div>
         </form>
       </main>
     </>
+  );
+}
+
+export default function NovoEquipamentoPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-slate-400">Carregando formulário...</div>}>
+      <NovoEquipamentoForm />
+    </Suspense>
   );
 }

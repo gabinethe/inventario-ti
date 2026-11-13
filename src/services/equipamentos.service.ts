@@ -263,6 +263,24 @@ export const equipamentosService = {
    * Cadastra um novo equipamento no inventário e registra na auditoria.
    */
   async criar(dados: Omit<Equipamento, "id" | "criadoEm" | "atualizadoEm">): Promise<Equipamento> {
+    const memoria = getMemoria();
+
+    // 1. Validação de Unicidade do Número de Série
+    if (dados.numeroSerie && dados.numeroSerie.trim()) {
+      const serialLimpo = dados.numeroSerie.trim().toLowerCase();
+      // Ignora rótulos genéricos de lotes sem serial individual
+      if (!serialLimpo.startsWith("lote estoque") && serialLimpo !== "s/n" && serialLimpo !== "n/a") {
+        const duplicado = memoria.eq.find(
+          (e) => e.numeroSerie && e.numeroSerie.trim().toLowerCase() === serialLimpo
+        );
+        if (duplicado) {
+          throw new Error(
+            `Já existe um equipamento cadastrado com o número de série '${dados.numeroSerie.trim()}'. Cada dispositivo deve possuir um serial number exclusivo.`
+          );
+        }
+      }
+    }
+
     const supabase = getSupabase();
     let novoEquipamento: Equipamento | null = null;
 
@@ -326,8 +344,8 @@ export const equipamentosService = {
       };
     }
 
-    const memoria = getMemoria();
-    const novaListaEq = [novoEquipamento, ...memoria.eq];
+    const memoriaAtualizada = getMemoria();
+    const novaListaEq = [novoEquipamento, ...memoriaAtualizada.eq];
     
     // Registra entrada de equipamento na auditoria
     const tipoLegivel = {
@@ -349,7 +367,7 @@ export const equipamentosService = {
       registradoPor: getAdminNome(),
     };
 
-    salvarMemoria(novaListaEq, memoria.resp, [novaMovimentacao, ...memoria.mov]);
+    salvarMemoria(novaListaEq, memoriaAtualizada.resp, [novaMovimentacao, ...memoriaAtualizada.mov]);
     return novoEquipamento;
   },
 

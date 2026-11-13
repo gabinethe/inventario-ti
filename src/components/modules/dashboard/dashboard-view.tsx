@@ -205,10 +205,15 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/equipamentos/novo" prefetch={true}>
+          <Link 
+            href={filtroTipo !== "todos" ? `/equipamentos/novo?tipo=${filtroTipo}` : "/equipamentos/novo"} 
+            prefetch={true}
+          >
             <Button size="md">
               <Plus className="w-4 h-4" />
-              Cadastrar Equipamento
+              {filtroTipo !== "todos" 
+                ? `Cadastrar ${filtroTipo === "smartphone" ? "Celular" : filtroTipo === "notebook" ? "Notebook" : filtroTipo === "monitor" ? "Monitor" : "Periférico"}`
+                : "Cadastrar Equipamento"}
             </Button>
           </Link>
         </div>
@@ -329,13 +334,22 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                       </div>
                     </button>
 
-                    <Link
-                      href={`/equipamentos?tipo=${cat.id}`}
-                      className="p-1 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-50 transition-colors"
-                      title="Abrir módulo completo"
-                    >
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="flex items-center gap-1">
+                      <Link
+                        href={`/equipamentos/novo?tipo=${cat.id}`}
+                        className="p-1 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
+                        title={`Cadastrar novo ${cat.nome}`}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </Link>
+                      <Link
+                        href={`/equipamentos?tipo=${cat.id}`}
+                        className="p-1 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-50 transition-colors"
+                        title="Abrir módulo completo"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
 
                   {/* Botões Rápidos de Estoque vs Em Uso */}
