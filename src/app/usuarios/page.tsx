@@ -115,6 +115,7 @@ export default function UsuariosPage() {
         cargo: form.cargo.trim(),
         departamento: form.departamento.trim(),
         papel: form.papel,
+        senhaProvisoria: form.senhaProvisoria,
       });
 
       setSucesso(true);
@@ -165,7 +166,7 @@ export default function UsuariosPage() {
         subtitle="Gerenciamento de contas com acesso administrativo à plataforma Inventário TI"
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-6xl">
+      <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Topo da Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

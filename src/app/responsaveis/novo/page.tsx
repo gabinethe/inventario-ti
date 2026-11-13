@@ -58,7 +58,7 @@ export default function NovoResponsavelPage() {
         subtitle="Adicionar novo profissional ao quadro de responsáveis por ativos"
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-4xl">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div>
           <Link
             href="/responsaveis"

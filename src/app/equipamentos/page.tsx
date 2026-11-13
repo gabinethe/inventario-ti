@@ -34,7 +34,7 @@ export default async function EquipamentosPage({ searchParams }: EquipamentosPag
         subtitle="Gerenciamento de notebooks, monitores, celulares corporativos e periféricos"
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-7xl">
+      <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">

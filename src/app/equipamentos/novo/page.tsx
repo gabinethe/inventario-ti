@@ -243,7 +243,7 @@ function NovoEquipamentoForm() {
         subtitle={`Cadastro no inventário corporativo com validação de dados e unicidade de serial`}
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-4xl">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div>
           <Link
             href={`/equipamentos?tipo=${tipo}`}

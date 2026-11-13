@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, ArrowRightLeft, Undo2 } from "lucide-react";
+import { Trash2, ArrowRightLeft, Undo2, Wrench, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
 import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
+import { ModalManutencao } from "@/components/ui/modal-manutencao";
 import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
 
 interface AcoesDetalhesEquipamentoProps {
@@ -19,6 +20,9 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
 
   const [modalAtribuicaoAberto, setModalAtribuicaoAberto] = useState(false);
   const [modoAtribuicao, setModoAtribuicao] = useState<"atribuir" | "devolver">("atribuir");
+
+  const [modalManutencaoAberto, setModalManutencaoAberto] = useState(false);
+  const [modoManutencao, setModoManutencao] = useState<"enviar" | "concluir">("enviar");
 
   const confirmarExclusao = async () => {
     setExcluindo(true);
@@ -42,14 +46,25 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
     setModalAtribuicaoAberto(true);
   };
 
+  const abrirEnvioManutencao = () => {
+    setModoManutencao("enviar");
+    setModalManutencaoAberto(true);
+  };
+
+  const abrirConclusaoManutencao = () => {
+    setModoManutencao("concluir");
+    setModalManutencaoAberto(true);
+  };
+
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Ação primária: Atribuir ou Devolver */}
         {equipamento.status === "disponivel" ? (
           <Button
             size="sm"
             onClick={abrirAtribuir}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs"
           >
             <ArrowRightLeft className="w-4 h-4" />
             Atribuir Colaborador
@@ -58,13 +73,36 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
           <Button
             size="sm"
             onClick={abrirDevolver}
-            className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white"
+            className="flex items-center gap-1.5 bg-indigo-700 hover:bg-indigo-800 text-white shadow-xs"
           >
             <Undo2 className="w-4 h-4" />
             Devolver ao Estoque
           </Button>
         ) : null}
 
+        {/* Ação de Manutenção Técnica */}
+        {equipamento.status === "manutencao" ? (
+          <Button
+            size="sm"
+            onClick={abrirConclusaoManutencao}
+            className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            Concluir Manutenção & Retornar ao Estoque
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={abrirEnvioManutencao}
+            className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-300 flex items-center gap-1.5"
+          >
+            <Wrench className="w-4 h-4" />
+            Enviar para Manutenção
+          </Button>
+        )}
+
+        {/* Excluir ativo */}
         <Button
           variant="outline"
           size="sm"
@@ -82,6 +120,17 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
         equipamento={equipamento}
         modo={modoAtribuicao}
         onFechar={() => setModalAtribuicaoAberto(false)}
+        onSucesso={() => {
+          router.refresh();
+        }}
+      />
+
+      {/* Modal de Manutenção Técnica */}
+      <ModalManutencao
+        aberto={modalManutencaoAberto}
+        equipamento={equipamento}
+        modo={modoManutencao}
+        onFechar={() => setModalManutencaoAberto(false)}
         onSucesso={() => {
           router.refresh();
         }}

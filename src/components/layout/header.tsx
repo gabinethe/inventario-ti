@@ -115,50 +115,52 @@ export function Header({ title, subtitle }: HeaderProps) {
 
   return (
     <>
-      <header className="h-16 border-b border-slate-200/80 bg-white px-8 flex items-center justify-between sticky top-0 z-10 shadow-xs">
-        <div>
-          <h2 className="text-base font-bold text-slate-900 tracking-tight">
-            {title}
-          </h2>
-          {subtitle && (
-            <p className="text-xs text-slate-500 font-medium">
-              {subtitle}
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          {/* Notificações */}
-          <button
-            type="button"
-            aria-label="Notificações"
-            className="relative rounded-xl p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/80 transition-colors cursor-pointer"
-          >
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-600 ring-2 ring-white" />
-          </button>
-
-          <div className="h-6 w-px bg-slate-200" />
-
-          {/* Perfil do Usuário Interativo */}
-          <button
-            type="button"
-            onClick={() => setModalAberto(true)}
-            className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100/80 transition-colors text-left cursor-pointer group"
-            title="Clique para editar seu perfil"
-          >
-            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform">
-              {iniciais}
-            </div>
-            <div className="text-left hidden sm:block">
-              <p className="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                {nome}
+      <header className="h-16 border-b border-slate-200/80 bg-white sticky top-0 z-20 shadow-xs">
+        <div className="w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          <div className="min-w-0 pr-4">
+            <h2 className="text-base font-bold text-slate-900 tracking-tight truncate">
+              {title}
+            </h2>
+            {subtitle && (
+              <p className="text-xs text-slate-500 font-medium truncate">
+                {subtitle}
               </p>
-              <p className="text-[11px] text-slate-500 font-medium">
-                {cargo}
-              </p>
-            </div>
-          </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            {/* Notificações */}
+            <button
+              type="button"
+              aria-label="Notificações"
+              className="relative rounded-xl p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/80 transition-colors cursor-pointer"
+            >
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-600 ring-2 ring-white" />
+            </button>
+
+            <div className="h-6 w-px bg-slate-200" />
+
+            {/* Perfil do Usuário Interativo */}
+            <button
+              type="button"
+              onClick={() => setModalAberto(true)}
+              className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-slate-100/80 transition-colors text-left cursor-pointer group"
+              title="Clique para editar seu perfil"
+            >
+              <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform">
+                {iniciais}
+              </div>
+              <div className="text-left hidden sm:block">
+                <p className="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                  {nome}
+                </p>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  {cargo}
+                </p>
+              </div>
+            </button>
+          </div>
         </div>
       </header>
 

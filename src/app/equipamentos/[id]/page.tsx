@@ -70,7 +70,7 @@ export default function DetalhesEquipamentoPage() {
     return (
       <>
         <Header title="Carregando Detalhes..." subtitle="Consultando base de ativos corporativos" />
-        <main className="flex-1 p-8 max-w-6xl">
+        <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="p-12 text-center text-slate-400 text-sm">
             Buscando dados do ativo...
           </div>
@@ -83,7 +83,7 @@ export default function DetalhesEquipamentoPage() {
     return (
       <>
         <Header title="Ativo não Encontrado" subtitle="O equipamento consultado não foi localizado" />
-        <main className="flex-1 p-8 space-y-6 max-w-6xl">
+        <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center space-y-4 shadow-xs">
             <Boxes className="w-12 h-12 mx-auto text-slate-300" />
             <h2 className="text-lg font-bold text-slate-900">Equipamento não encontrado</h2>
@@ -135,7 +135,7 @@ export default function DetalhesEquipamentoPage() {
         subtitle={getNomeTipo(equipamento.tipo)}
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-6xl">
+      <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Link para voltar */}
         <div>
           <Link

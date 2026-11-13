@@ -547,6 +547,137 @@ export const equipamentosService = {
   },
 
   /**
+   * Encaminha um equipamento para assistência técnica / manutenção.
+   * Altera status para 'manutencao', desassocia a custódia caso estivesse alocado e registra auditoria.
+   */
+  async enviarParaManutencao(
+    equipamentoId: string,
+    dados: {
+      motivo: string;
+      prestador: string;
+      previsaoRetorno?: string;
+      observacoes?: string;
+    }
+  ): Promise<boolean> {
+    const memoria = getMemoria();
+    const equipamento = memoria.eq.find((e) => e.id === equipamentoId);
+    if (!equipamento) return false;
+
+    const colaboradorOrigem = memoria.resp.find((r) => r.id === equipamento.responsavelId);
+
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        await supabase
+          .from("equipamentos")
+          .update({
+            responsavel_id: null,
+            status: "manutencao",
+            observacoes: dados.observacoes
+              ? `${dados.motivo} (Assistência: ${dados.prestador})`
+              : equipamento.observacoes,
+            atualizado_em: new Date().toISOString(),
+          })
+          .eq("id", equipamentoId);
+      } catch (err) {
+        console.error("Erro ao registrar manutenção no Supabase:", err);
+      }
+    }
+
+    const novaListaEq = memoria.eq.map((e) =>
+      e.id === equipamentoId
+        ? {
+            ...e,
+            responsavelId: undefined,
+            status: "manutencao" as StatusEquipamento,
+            atualizadoEm: new Date().toISOString(),
+          }
+        : e
+    );
+
+    const identificacao = formatarIdentificacaoEquipamento(equipamento);
+    const detalheColab = colaboradorOrigem ? ` (recolhido de ${colaboradorOrigem.nome})` : "";
+    const detalhePrevisao = dados.previsaoRetorno ? ` • Previsão retorno: ${dados.previsaoRetorno}` : "";
+    const detalheObs = dados.observacoes ? ` • Obs: ${dados.observacoes}` : "";
+
+    const motivoAuditoria = `Encaminhado para manutenção técnica${detalheColab}. Defeito: ${dados.motivo} • Prestador/Assistência: ${dados.prestador}${detalhePrevisao}${detalheObs}`;
+
+    const novaMov: Movimentacao = {
+      id: `mov-${Date.now()}`,
+      tipo: "manutencao",
+      equipamentoId,
+      equipamentoNome: identificacao,
+      responsavelOrigemId: colaboradorOrigem?.id,
+      responsavelNome: colaboradorOrigem?.nome,
+      motivo: motivoAuditoria,
+      data: new Date().toISOString(),
+      registradoPor: getAdminNome(),
+    };
+
+    salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    return true;
+  },
+
+  /**
+   * Conclui a manutenção técnica de um equipamento e o retorna ao estoque disponível.
+   */
+  async concluirManutencao(
+    equipamentoId: string,
+    dados?: {
+      observacoesRetorno?: string;
+    }
+  ): Promise<boolean> {
+    const memoria = getMemoria();
+    const equipamento = memoria.eq.find((e) => e.id === equipamentoId);
+    if (!equipamento) return false;
+
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        await supabase
+          .from("equipamentos")
+          .update({
+            responsavel_id: null,
+            status: "disponivel",
+            atualizado_em: new Date().toISOString(),
+          })
+          .eq("id", equipamentoId);
+      } catch (err) {
+        console.error("Erro ao concluir manutenção no Supabase:", err);
+      }
+    }
+
+    const novaListaEq = memoria.eq.map((e) =>
+      e.id === equipamentoId
+        ? {
+            ...e,
+            responsavelId: undefined,
+            status: "disponivel" as StatusEquipamento,
+            atualizadoEm: new Date().toISOString(),
+          }
+        : e
+    );
+
+    const identificacao = formatarIdentificacaoEquipamento(equipamento);
+    const detalheNota = dados?.observacoesRetorno
+      ? ` Observações do laudo/reparo: ${dados.observacoesRetorno}.`
+      : "";
+
+    const novaMov: Movimentacao = {
+      id: `mov-${Date.now()}`,
+      tipo: "devolucao",
+      equipamentoId,
+      equipamentoNome: identificacao,
+      motivo: `Manutenção técnica concluída. Equipamento revisado, testado e reintegrado ao estoque disponível.${detalheNota}`,
+      data: new Date().toISOString(),
+      registradoPor: getAdminNome(),
+    };
+
+    salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    return true;
+  },
+
+  /**
    * Exclui um equipamento com segurança (Supabase + Persistência local).
    */
   async excluirEquipamento(id: string): Promise<boolean> {

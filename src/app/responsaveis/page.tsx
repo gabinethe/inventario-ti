@@ -152,7 +152,7 @@ export default function ResponsaveisPage() {
         subtitle="Rastreamento centralizado de equipamentos sob a responsabilidade de cada profissional"
       />
 
-      <main className="flex-1 p-8 space-y-6 max-w-6xl">
+      <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Cabeçalho da Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

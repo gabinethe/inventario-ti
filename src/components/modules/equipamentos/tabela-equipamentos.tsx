@@ -25,6 +25,7 @@ import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
 import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
+import { ModalManutencao } from "@/components/ui/modal-manutencao";
 
 interface TabelaEquipamentosProps {
   equipamentosIniciais: EquipamentoComResponsavel[];
@@ -70,6 +71,11 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
   const [modalAtribuicaoAberto, setModalAtribuicaoAberto] = useState(false);
   const [equipamentoEmOperacao, setEquipamentoEmOperacao] = useState<EquipamentoComResponsavel | null>(null);
   const [modoOperacao, setModoOperacao] = useState<"atribuir" | "devolver">("atribuir");
+
+  // Modal de Manutenção Técnica
+  const [modalManutencaoAberto, setModalManutencaoAberto] = useState(false);
+  const [equipamentoEmManutencao, setEquipamentoEmManutencao] = useState<EquipamentoComResponsavel | null>(null);
+  const [modoManutencao, setModoManutencao] = useState<"enviar" | "concluir">("enviar");
 
   // Contadores por Tipo
   const contadoresTipo = useMemo(() => {
@@ -143,6 +149,18 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
     setEquipamentoEmOperacao(item);
     setModoOperacao("devolver");
     setModalAtribuicaoAberto(true);
+  };
+
+  const abrirEnvioManutencao = (item: EquipamentoComResponsavel) => {
+    setEquipamentoEmManutencao(item);
+    setModoManutencao("enviar");
+    setModalManutencaoAberto(true);
+  };
+
+  const abrirConclusaoManutencao = (item: EquipamentoComResponsavel) => {
+    setEquipamentoEmManutencao(item);
+    setModoManutencao("concluir");
+    setModalManutencaoAberto(true);
   };
 
   const getIconeTipo = (tipo: TipoEquipamento) => {
@@ -451,6 +469,31 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                           </Button>
                         ) : null}
 
+                        {/* Botão de Manutenção Técnica */}
+                        {item.status === "manutencao" ? (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => abrirConclusaoManutencao(item)}
+                            className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                            title="Concluir manutenção e retornar ao estoque disponível"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Concluir
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => abrirEnvioManutencao(item)}
+                            className="bg-slate-100 text-slate-700 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-200 border border-slate-200"
+                            title="Encaminhar equipamento para manutenção"
+                          >
+                            <Wrench className="w-3.5 h-3.5" />
+                            Manutenção
+                          </Button>
+                        )}
+
                         <Link href={`/equipamentos/${item.id}`} prefetch={true}>
                           <Button variant="outline" size="sm">
                             <Eye className="w-3.5 h-3.5" />
@@ -505,6 +548,18 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
         }}
         onConfirmar={confirmarExclusao}
         processando={excluindo}
+      />
+
+      {/* Modal de Manutenção Técnica */}
+      <ModalManutencao
+        aberto={modalManutencaoAberto}
+        equipamento={equipamentoEmManutencao}
+        modo={modoManutencao}
+        onFechar={() => {
+          setModalManutencaoAberto(false);
+          setEquipamentoEmManutencao(null);
+        }}
+        onSucesso={() => recarregar()}
       />
     </div>
   );

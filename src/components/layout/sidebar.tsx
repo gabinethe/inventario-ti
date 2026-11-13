@@ -62,6 +62,9 @@ export function Sidebar() {
       const salvo = localStorage.getItem("inventario_sidebar_collapsed");
       if (salvo !== null) {
         setIsCollapsed(salvo === "true");
+      } else if (window.innerWidth < 1024) {
+        // Em telas menores que 1024px, inicia recolhido para liberar o espaço do painel
+        setIsCollapsed(true);
       }
     }
   }, []);
