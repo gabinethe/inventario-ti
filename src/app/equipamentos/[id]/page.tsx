@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
 import { AcoesDetalhesEquipamento } from "@/components/modules/equipamentos/acoes-detalhes-equipamento";
 import { Movimentacao } from "@/types";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 export default function DetalhesEquipamentoPage() {
   const params = useParams();
@@ -151,7 +152,7 @@ export default function DetalhesEquipamentoPage() {
         <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl border border-indigo-100 dark:border-indigo-900/60">
-              {getIconeTipo(equipamento.tipo)}
+              {getIconeEquipamento(equipamento, "w-8 h-8")}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-3">

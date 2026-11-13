@@ -25,6 +25,7 @@ import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { StatusEquipamento, TipoEquipamento } from "@/types";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 interface DashboardViewProps {
   notebooksIniciais: EquipamentoComResponsavel[];
@@ -591,7 +592,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                               ? "bg-indigo-600 text-white border-indigo-700 shadow-2xs"
                               : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                           }`}>
-                            {getIconeTipo(item.tipo)}
+                            {getIconeEquipamento(item)}
                           </div>
                           <div>
                             <div className="font-bold text-slate-900 dark:text-white">

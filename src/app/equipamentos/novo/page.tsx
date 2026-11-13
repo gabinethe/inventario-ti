@@ -12,6 +12,12 @@ import {
   Monitor, 
   Smartphone, 
   Headphones, 
+  Mouse,
+  Keyboard,
+  Webcam,
+  Usb,
+  Plug,
+  Package,
   Info 
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
@@ -344,26 +350,43 @@ function NovoEquipamentoForm() {
             </div>
           </div>
 
-          {/* Subtipo de Periférico se aplicável */}
+          {/* Subtipo de Periférico se aplicável com Ícones Reais */}
           {tipo === "periferico" && (
-            <div className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 space-y-1.5 animate-in fade-in duration-150">
-              <label htmlFor="subtipo" className="block text-xs font-semibold text-indigo-950 dark:text-indigo-200">
-                Tipo de Periférico / Acessório <span className="text-rose-500">*</span>
+            <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 space-y-3 animate-in fade-in duration-150">
+              <label className="block text-xs font-semibold text-indigo-950 dark:text-indigo-200">
+                Selecione o Tipo de Periférico / Acessório <span className="text-rose-500">*</span>
               </label>
-              <select
-                id="subtipo"
-                value={subtipo}
-                onChange={(e) => setSubtipo(e.target.value)}
-                className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
-              >
-                <option value="headset">Headset / Fone de Ouvido</option>
-                <option value="mouse">Mouse</option>
-                <option value="teclado">Teclado</option>
-                <option value="webcam">Webcam</option>
-                <option value="hub_usb">Hub USB-C / Dock Station</option>
-                <option value="carregador">Carregador / Fonte</option>
-                <option value="outro">Outro Acessório</option>
-              </select>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                {[
+                  { id: "mouse", label: "Mouse", icone: Mouse },
+                  { id: "teclado", label: "Teclado", icone: Keyboard },
+                  { id: "headset", label: "Headset", icone: Headphones },
+                  { id: "webcam", label: "Webcam", icone: Webcam },
+                  { id: "hub_usb", label: "Hub / Dock", icone: Usb },
+                  { id: "carregador", label: "Carregador", icone: Plug },
+                  { id: "outro", label: "Outro", icone: Package },
+                ].map((item) => {
+                  const Icone = item.icone;
+                  const selecionado = subtipo === item.id;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setSubtipo(item.id)}
+                      className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 text-center transition-all cursor-pointer ${
+                        selecionado
+                          ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
+                          : "bg-white dark:bg-[#0b0f19] border-slate-200 dark:border-indigo-950/60 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-indigo-950/40"
+                      }`}
+                    >
+                      <Icone className={`w-4 h-4 ${selecionado ? "text-white" : "text-indigo-600 dark:text-indigo-400"}`} />
+                      <span className="text-[11px] font-bold">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 

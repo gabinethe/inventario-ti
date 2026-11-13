@@ -5,6 +5,7 @@ import { UserCheck, Undo2, X, AlertCircle, ArrowRight, Laptop } from "lucide-rea
 import { Button } from "./button";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { Responsavel } from "@/types";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 interface ModalAtribuicaoProps {
   aberto: boolean;
@@ -126,7 +127,7 @@ export function ModalAtribuicao({
         {/* Resumo do Equipamento */}
         <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0a0e20] border border-slate-200/80 dark:border-indigo-950/70 flex items-center gap-3">
           <div className="p-2 rounded-lg bg-white dark:bg-[#0f142b] border border-slate-200 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-            <Laptop className="h-4 w-4" />
+            {getIconeEquipamento(equipamento, "h-4 w-4")}
           </div>
           <div className="text-xs">
             <p className="font-bold text-slate-900 dark:text-white">

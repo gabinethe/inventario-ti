@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
 import { Responsavel, TipoEquipamento } from "@/types";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -315,13 +316,18 @@ export function Sidebar() {
                             }}
                             className="flex items-center justify-between p-2 rounded-lg hover:bg-indigo-950 text-slate-200 hover:text-white transition-colors group"
                           >
-                            <div className="truncate">
-                              <p className="font-semibold text-white truncate">
-                                {eq.marca} {eq.modelo}
-                              </p>
-                              <p className="text-[10px] text-indigo-300/70 font-mono truncate">
-                                S/N: {eq.numeroSerie} • {eq.tipo}
-                              </p>
+                            <div className="flex items-center gap-2 min-w-0 truncate">
+                              <div className="p-1 rounded bg-indigo-900/60 text-indigo-300 flex-shrink-0">
+                                {getIconeEquipamento(eq, "w-3 h-3")}
+                              </div>
+                              <div className="truncate">
+                                <p className="font-semibold text-white truncate">
+                                  {eq.marca} {eq.modelo}
+                                </p>
+                                <p className="text-[10px] text-indigo-300/70 font-mono truncate">
+                                  S/N: {eq.numeroSerie} • {eq.subtipo || eq.tipo}
+                                </p>
+                              </div>
                             </div>
                             <ExternalLink className="w-3 h-3 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0" />
                           </Link>

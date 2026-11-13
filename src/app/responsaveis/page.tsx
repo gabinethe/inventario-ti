@@ -24,6 +24,7 @@ import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
 import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
 import { equipamentosService, EquipamentoComResponsavel } from "@/services/equipamentos.service";
 import { Responsavel, TipoEquipamento } from "@/types";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 interface ColaboradorComAtivos extends Responsavel {
   ativos: EquipamentoComResponsavel[];
@@ -351,7 +352,7 @@ export default function ResponsaveisPage() {
                             className="flex items-center gap-2.5 flex-1 min-w-0"
                           >
                             <div className="p-1.5 rounded-lg bg-white dark:bg-[#131938] border border-slate-200 dark:border-indigo-900/60">
-                              {getIconeAtivo(item.tipo)}
+                              {getIconeEquipamento(item, "w-4 h-4 text-indigo-600 dark:text-indigo-400")}
                             </div>
                             <div className="truncate">
                               <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">

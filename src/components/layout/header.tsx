@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { useTheme } from "@/context/theme-context";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { Responsavel } from "@/types";
+import { getIconeEquipamento as getIconeUniversal } from "@/components/common/icone-equipamento";
 
 interface HeaderProps {
   title: string;
@@ -314,8 +315,8 @@ export function Header({ title, subtitle }: HeaderProps) {
                           className="flex items-center justify-between p-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/60 transition-colors group cursor-pointer"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="p-2 rounded-lg bg-slate-100 dark:bg-indigo-950 border border-slate-200/80 dark:border-indigo-900/50 flex-shrink-0">
-                              {getIconeEquipamento(eq.tipo)}
+                            <div className="p-2 rounded-lg bg-slate-100 dark:bg-indigo-950 border border-slate-200/80 dark:border-indigo-900/50 flex-shrink-0 text-indigo-600 dark:text-indigo-400">
+                              {getIconeUniversal(eq, "w-3.5 h-3.5")}
                             </div>
                             <div className="min-w-0">
                               <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400">

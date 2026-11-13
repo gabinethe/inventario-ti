@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { ModalConfirmacao } from "@/components/ui/modal-confirmacao";
 import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
 import { ModalManutencao } from "@/components/ui/modal-manutencao";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 interface TabelaEquipamentosProps {
   equipamentosIniciais: EquipamentoComResponsavel[];
@@ -377,7 +378,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
-                          {getIconeTipo(item.tipo)}
+                          {getIconeEquipamento(item)}
                         </div>
                         <div>
                           <div className="font-bold text-slate-900 dark:text-white">

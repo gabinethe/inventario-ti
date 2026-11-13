@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "./button";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
+import { getIconeEquipamento } from "@/components/common/icone-equipamento";
 
 interface ModalManutencaoProps {
   aberto: boolean;
@@ -167,7 +168,7 @@ export function ModalManutencao({
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0a0e20] border border-slate-200/80 dark:border-indigo-950/60 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-white dark:bg-[#0f142b] border border-slate-200 dark:border-indigo-900/50 shadow-2xs">
-                {getIconeTipo(equipamento.tipo)}
+                {getIconeEquipamento(equipamento, "w-4 h-4 text-indigo-600 dark:text-indigo-400")}
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-white">
