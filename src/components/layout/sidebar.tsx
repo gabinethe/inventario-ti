@@ -661,6 +661,31 @@ export function Sidebar() {
               )}
             </Link>
 
+            {/* Usuários & Acesso Administrativo */}
+            <Link
+              href="/usuarios"
+              prefetch={true}
+              className={cn(
+                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
+                isCollapsed
+                  ? "justify-center p-2.5"
+                  : "justify-between px-3.5 py-2",
+                isLinkActive("/usuarios")
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
+                  : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                {!isCollapsed && <span>Usuários & Acesso</span>}
+              </div>
+              {isCollapsed && (
+                <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
+                  Usuários & Acesso
+                </div>
+              )}
+            </Link>
+
             {/* Configurações */}
             <Link
               href="/configuracoes"
@@ -689,32 +714,38 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Rodapé da Sidebar: Perfil do Administrador */}
+      {/* Rodapé da Sidebar: Status do Sistema & Versão (sem duplicação do perfil do Header) */}
       <div className={cn("border-t border-indigo-900/30 bg-[#0e122b]/50 transition-all", isCollapsed ? "p-2" : "p-3")}>
         {!isCollapsed ? (
-          <div className="flex items-center justify-between gap-2.5 rounded-xl bg-indigo-950/60 p-2.5 border border-indigo-900/40">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-2xs">
-                GC
-              </div>
-              <div className="text-xs overflow-hidden">
-                <p className="font-bold text-white truncate">Gabriela Chagas</p>
-                <p className="text-[10px] text-indigo-300/70 truncate">Administradora TI</p>
-              </div>
+          <div className="flex items-center justify-between gap-2.5 rounded-xl bg-indigo-950/40 p-2.5 border border-indigo-900/40">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-emerald-500/20 flex-shrink-0 animate-pulse" />
+              <span className="text-[11px] font-semibold text-slate-300">
+                Inventário TI
+              </span>
             </div>
-
-            <div className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-emerald-500/20 flex-shrink-0" title="Sistema Online" />
+            <Link
+              href="/usuarios"
+              className="text-[10px] font-mono text-indigo-400 hover:text-indigo-200 bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-800/40 hover:border-indigo-700 transition-colors"
+              title="Gerenciar usuários"
+            >
+              v1.2 • Acesso
+            </Link>
           </div>
         ) : (
-          <div className="flex justify-center group relative cursor-pointer" title="Gabriela Chagas (Administradora TI)">
-            <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
-              GC
+          <Link
+            href="/usuarios"
+            className="flex justify-center group relative cursor-pointer"
+            title="Inventário TI v1.2 (Gerenciar Usuários)"
+          >
+            <div className="h-8 w-8 rounded-lg bg-indigo-950/60 flex items-center justify-center border border-indigo-900/40 text-emerald-400 group-hover:text-white transition-colors">
+              <ShieldCheck className="w-4 h-4" />
             </div>
             {/* Tooltip flutuante */}
             <div className="absolute left-[76px] bottom-0 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
-              Gabriela Chagas (Admin)
+              Usuários & Acesso (v1.2)
             </div>
-          </div>
+          </Link>
         )}
       </div>
     </aside>

@@ -7,25 +7,22 @@ import {
   UserCheck, 
   CheckCircle2, 
   Wrench, 
-  Plus, 
   Search, 
   ArrowRight, 
-  Eye,
-  Monitor,
-  Smartphone,
-  Headphones,
-  Boxes,
-  ArrowRightLeft,
-  Undo2,
-  Filter,
-  Check,
-  Building2,
-  Sparkles
+  Eye, 
+  Monitor, 
+  Smartphone, 
+  Headphones, 
+  Boxes, 
+  Sparkles,
+  Layers,
+  Activity,
+  AlertTriangle,
+  ArrowUpRight
 } from "lucide-react";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ModalAtribuicao } from "@/components/ui/modal-atribuicao";
 import { EquipamentoComResponsavel, equipamentosService } from "@/services/equipamentos.service";
 import { StatusEquipamento, TipoEquipamento } from "@/types";
 
@@ -51,16 +48,11 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
   const [metricas, setMetricas] = useState(metricasIniciais);
   const [busca, setBusca] = useState("");
   
-  // Categorias: Notebooks como padrão inicial, Todos os Ativos como última opção
+  // Categorias e status da visualização simplificada do inventário
   const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">("notebook");
   const [filtroStatus, setFiltroStatus] = useState<StatusEquipamento | "todos">("todos");
 
-  // Modal de Atribuição / Devolução rápida no Dashboard
-  const [modalAtribuicaoAberto, setModalAtribuicaoAberto] = useState(false);
-  const [equipamentoEmOperacao, setEquipamentoEmOperacao] = useState<EquipamentoComResponsavel | null>(null);
-  const [modoOperacao, setModoOperacao] = useState<"atribuir" | "devolver">("atribuir");
-
-  // Sincronização em tempo real com o banco de dados e eventos locais
+  // Sincronização em tempo real
   const sincronizar = async () => {
     try {
       const [lista, met] = await Promise.all([
@@ -81,13 +73,13 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     return () => window.removeEventListener("inventario_alterado", handleAtualizacao);
   }, []);
 
-  // Balanço detalhado de Estoque vs Em Uso por Categoria (reativo e dinâmico)
-  const categoriasBalanco = useMemo(() => {
+  // Análise detalhada de métricas por categoria
+  const categoriasAnalise = useMemo(() => {
     const tipos = [
-      { id: "notebook" as const, nome: "Notebooks", icone: Laptop, cor: "indigo" },
-      { id: "monitor" as const, nome: "Monitores", icone: Monitor, cor: "indigo" },
-      { id: "smartphone" as const, nome: "Celulares Corporativos", icone: Smartphone, cor: "indigo" },
-      { id: "periferico" as const, nome: "Periféricos", icone: Headphones, cor: "indigo" },
+      { id: "notebook" as const, nome: "Notebooks", icone: Laptop },
+      { id: "monitor" as const, nome: "Monitores", icone: Monitor },
+      { id: "smartphone" as const, nome: "Celulares Corporativos", icone: Smartphone },
+      { id: "periferico" as const, nome: "Periféricos", icone: Headphones },
     ];
 
     return tipos.map((cat) => {
@@ -103,6 +95,24 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         : disponivel;
 
       const taxaUso = total > 0 ? Math.round((emUso / total) * 100) : 0;
+      const taxaDisponivel = total > 0 ? Math.round((disponivel / total) * 100) : 0;
+
+      // Classificação de saúde de reserva
+      let saude = {
+        label: "Reserva Saudável",
+        cor: "text-emerald-700 bg-emerald-50 border-emerald-200",
+      };
+      if (disponivel === 0 && qtdFisicaEstoque === 0) {
+        saude = {
+          label: "Sem Reserva Livre",
+          cor: "text-rose-700 bg-rose-50 border-rose-200",
+        };
+      } else if (disponivel <= 1 && qtdFisicaEstoque <= 2) {
+        saude = {
+          label: "Estoque em Alerta",
+          cor: "text-amber-700 bg-amber-50 border-amber-200",
+        };
+      }
 
       return {
         ...cat,
@@ -112,11 +122,29 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         qtdFisicaEstoque,
         manutencao,
         taxaUso,
+        taxaDisponivel,
+        saude,
       };
     });
   }, [equipamentos]);
 
-  // Contadores para as abas da tabela do Dashboard
+  // Cálculo da prontidão de Onboarding (Kits completos de novos funcionários: Notebook + Periférico + Monitor)
+  const prontidaoOnboarding = useMemo(() => {
+    const notebooksLivres = categoriasAnalise.find((c) => c.id === "notebook")?.disponivel || 0;
+    const monitoresLivres = categoriasAnalise.find((c) => c.id === "monitor")?.disponivel || 0;
+    const perifericosLivres = categoriasAnalise.find((c) => c.id === "periferico")?.qtdFisicaEstoque || 0;
+
+    const kitsCompletos = Math.min(notebooksLivres, perifericosLivres);
+
+    return {
+      notebooksLivres,
+      monitoresLivres,
+      perifericosLivres,
+      kitsCompletos,
+    };
+  }, [categoriasAnalise]);
+
+  // Contadores para as abas do inventário simplificado
   const contadoresAbasTipo = useMemo(() => {
     return {
       notebook: equipamentos.filter((e) => e.tipo === "notebook").length,
@@ -127,7 +155,6 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     };
   }, [equipamentos]);
 
-  // Contadores de status conforme o tipo atualmente filtrado
   const contadoresStatus = useMemo(() => {
     const base = filtroTipo === "todos" ? equipamentos : equipamentos.filter((e) => e.tipo === filtroTipo);
     return {
@@ -138,7 +165,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     };
   }, [equipamentos, filtroTipo]);
 
-  // Filtragem na tabela de equipamentos
+  // Filtragem da tabela simplificada
   const equipamentosFiltrados = useMemo(() => {
     return equipamentos.filter((eq) => {
       const matchTipo = filtroTipo === "todos" || eq.tipo === filtroTipo;
@@ -159,24 +186,6 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     });
   }, [equipamentos, busca, filtroTipo, filtroStatus]);
 
-  // Disparar ações rápidas de atribuição / devolução
-  const abrirAtribuicao = (item: EquipamentoComResponsavel) => {
-    setEquipamentoEmOperacao(item);
-    setModoOperacao("atribuir");
-    setModalAtribuicaoAberto(true);
-  };
-
-  const abrirDevolucao = (item: EquipamentoComResponsavel) => {
-    setEquipamentoEmOperacao(item);
-    setModoOperacao("devolver");
-    setModalAtribuicaoAberto(true);
-  };
-
-  const aplicarFiltroRapido = (tipo: TipoEquipamento, status: StatusEquipamento | "todos") => {
-    setFiltroTipo(tipo);
-    setFiltroStatus(status);
-  };
-
   const getIconeTipo = (tipo: TipoEquipamento) => {
     switch (tipo) {
       case "monitor":
@@ -191,238 +200,145 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
     }
   };
 
+  const taxaAlocacaoGeral = metricas.total > 0 ? Math.round((metricas.emUso / metricas.total) * 100) : 0;
+  const taxaDisponibilidadeGeral = metricas.total > 0 ? Math.round((metricas.disponiveis / metricas.total) * 100) : 0;
+
   return (
     <div className="space-y-8">
-      {/* Barra Superior de Boas-vindas e Ação Principal */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      {/* 1. Cabeçalho Executivo do Painel */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Painel Geral de Ativos
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+            <Activity className="w-6 h-6 text-indigo-600" />
+            Painel Executivo & Métricas do Parque
           </h1>
           <p className="text-sm text-slate-500 font-medium">
-            Visão consolidada em tempo real da alocação de equipamentos e disponibilidade no estoque de TI.
+            Indicadores analíticos consolidados em tempo real, taxas de disponibilidade e saúde do inventário corporativo.
           </p>
         </div>
 
+        {/* Botão de Ação Executiva: Acesso ao Inventário Completo */}
         <div className="flex items-center gap-3">
-          <Link 
-            href={filtroTipo !== "todos" ? `/equipamentos/novo?tipo=${filtroTipo}` : "/equipamentos/novo"} 
-            prefetch={true}
-          >
-            <Button size="md">
-              <Plus className="w-4 h-4" />
-              {filtroTipo !== "todos" 
-                ? `Cadastrar ${filtroTipo === "smartphone" ? "Celular" : filtroTipo === "notebook" ? "Notebook" : filtroTipo === "monitor" ? "Monitor" : "Periférico"}`
-                : "Cadastrar Equipamento"}
+          <Link href="/equipamentos" prefetch={true}>
+            <Button size="md" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs">
+              <Boxes className="w-4 h-4" />
+              Acessar Inventário Completo
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Grid de Cards de Indicadores Globais (KPIs) */}
+      {/* 2. KPIs Globais de Alto Nível */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div 
-          onClick={() => { setFiltroTipo("todos"); setFiltroStatus("todos"); }}
-          className="cursor-pointer transition-transform hover:-translate-y-0.5"
-          title="Clique para ver todos os ativos no inventário"
-        >
-          <StatCard
-            title="Total de Equipamentos"
-            value={metricas.total}
-            subtitle="Ativos cadastrados no parque"
-            icon={Laptop}
-            color="indigo"
-          />
-        </div>
+        <StatCard
+          title="Total de Equipamentos"
+          value={metricas.total}
+          subtitle="Ativos cadastrados no parque"
+          icon={Laptop}
+          color="indigo"
+        />
 
-        <div 
-          onClick={() => { setFiltroStatus("em_uso"); }}
-          className="cursor-pointer transition-transform hover:-translate-y-0.5"
-          title="Clique para filtrar ativos em posse de colaboradores"
-        >
-          <StatCard
-            title="Equipamentos em Uso"
-            value={metricas.emUso}
-            subtitle="Atribuídos a colaboradores"
-            icon={UserCheck}
-            color="indigo"
-          />
-        </div>
+        <StatCard
+          title="Equipamentos em Uso"
+          value={metricas.emUso}
+          subtitle={`${taxaAlocacaoGeral}% da frota alocada a pessoas`}
+          icon={UserCheck}
+          color="indigo"
+        />
 
-        <div 
-          onClick={() => { setFiltroStatus("disponivel"); }}
-          className="cursor-pointer transition-transform hover:-translate-y-0.5"
-          title="Clique para filtrar itens disponíveis no estoque"
-        >
-          <StatCard
-            title="Disponíveis no Estoque"
-            value={metricas.disponiveis}
-            subtitle="Prontos para atribuição imediata"
-            icon={CheckCircle2}
-            color="emerald"
-          />
-        </div>
+        <StatCard
+          title="Reserva no Estoque"
+          value={metricas.disponiveis}
+          subtitle={`${taxaDisponibilidadeGeral}% prontos para entrega`}
+          icon={CheckCircle2}
+          color="emerald"
+        />
 
-        <div 
-          onClick={() => { setFiltroStatus("manutencao"); }}
-          className="cursor-pointer transition-transform hover:-translate-y-0.5"
-          title="Clique para filtrar ativos em assistência técnica"
-        >
-          <StatCard
-            title="Em Manutenção"
-            value={metricas.emManutencao}
-            subtitle="Aguardando assistência de TI"
-            icon={Wrench}
-            color="amber"
-          />
-        </div>
+        <StatCard
+          title="Em Assistência Técnica"
+          value={metricas.emManutencao}
+          subtitle="Aguardando reparo ou garantia"
+          icon={Wrench}
+          color="amber"
+        />
       </div>
 
-      {/* SEÇÃO PRINCIPAL: Balanço por Categoria (Estoque vs Em Uso) */}
+      {/* 3. Métricas de Disponibilidade & Saúde por Categoria */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div>
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Boxes className="w-5 h-5 text-indigo-600" />
-              Divisão por Categoria: Estoque vs Em Uso
+              <Layers className="w-4 h-4 text-indigo-600" />
+              Métricas de Disponibilidade & Alocação por Categoria
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              Acesse e diferencie instantaneamente o que está livre no estoque e o que está alocado com colaboradores.
+              Acompanhamento analítico da proporção de hardware alocado versus estoque de reserva.
             </p>
           </div>
-          <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100 hidden sm:inline-block">
-            Clique nas opções para filtrar a tabela abaixo
-          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categoriasBalanco.map((cat) => {
+          {categoriasAnalise.map((cat) => {
             const Icone = cat.icone;
-            const selecionada = filtroTipo === cat.id;
 
             return (
               <div
                 key={cat.id}
-                className={`p-4 rounded-2xl bg-white border transition-all duration-200 flex flex-col justify-between ${
-                  selecionada
-                    ? "border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm"
-                    : "border-slate-200 hover:border-indigo-300 hover:shadow-xs"
-                }`}
+                className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all space-y-4"
               >
-                {/* Topo do Card de Categoria */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFiltroTipo(cat.id);
-                        setFiltroStatus("todos");
-                      }}
-                      className="flex items-center gap-2.5 text-left group cursor-pointer"
-                      title={`Ver todos os ${cat.nome}`}
-                    >
-                      <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                        <Icone className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                          {cat.nome}
-                        </h3>
-                        <p className="text-[11px] text-slate-400 font-medium">
-                          Total: <span className="font-semibold text-slate-700">{cat.total} cadastrados</span>
-                        </p>
-                      </div>
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      <Link
-                        href={`/equipamentos/novo?tipo=${cat.id}`}
-                        className="p-1 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors"
-                        title={`Cadastrar novo ${cat.nome}`}
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </Link>
-                      <Link
-                        href={`/equipamentos?tipo=${cat.id}`}
-                        className="p-1 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-50 transition-colors"
-                        title="Abrir módulo completo"
-                      >
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                {/* Cabeçalho do Card */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-2xs">
+                      <Icone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                        {cat.nome}
+                      </h3>
+                      <p className="text-[11px] text-slate-400 font-medium">
+                        Total: <span className="font-bold text-slate-700">{cat.total} unidades</span>
+                      </p>
                     </div>
                   </div>
 
-                  {/* Botões Rápidos de Estoque vs Em Uso */}
-                  <div className="grid grid-cols-2 gap-2 my-2">
-                    {/* Botão No Estoque */}
-                    <button
-                      type="button"
-                      onClick={() => aplicarFiltroRapido(cat.id, "disponivel")}
-                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        filtroTipo === cat.id && filtroStatus === "disponivel"
-                          ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
-                          : "bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-100/70 text-emerald-950"
-                      }`}
-                      title={`Filtrar ${cat.nome} disponíveis no estoque`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[10px] uppercase font-bold tracking-wider ${
-                          filtroTipo === cat.id && filtroStatus === "disponivel" ? "text-emerald-100" : "text-emerald-700"
-                        }`}>
-                          No Estoque
-                        </span>
-                        <CheckCircle2 className={`w-3 h-3 ${
-                          filtroTipo === cat.id && filtroStatus === "disponivel" ? "text-white" : "text-emerald-600"
-                        }`} />
-                      </div>
-                      <p className="text-lg font-black mt-0.5">
-                        {cat.id === "periferico" ? cat.qtdFisicaEstoque : cat.disponivel}
-                      </p>
-                      <p className={`text-[10px] ${
-                        filtroTipo === cat.id && filtroStatus === "disponivel" ? "text-emerald-100" : "text-emerald-600/90"
-                      }`}>
-                        {cat.id === "periferico" ? "unid. livres" : "livres para entrega"}
-                      </p>
-                    </button>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cat.saude.cor}`}>
+                    {cat.saude.label}
+                  </span>
+                </div>
 
-                    {/* Botão Em Uso */}
-                    <button
-                      type="button"
-                      onClick={() => aplicarFiltroRapido(cat.id, "em_uso")}
-                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        filtroTipo === cat.id && filtroStatus === "em_uso"
-                          ? "bg-indigo-600 text-white border-indigo-600 shadow-2xs"
-                          : "bg-indigo-50/70 border-indigo-200/80 hover:bg-indigo-100/70 text-indigo-950"
-                      }`}
-                      title={`Filtrar ${cat.nome} em uso com colaboradores`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[10px] uppercase font-bold tracking-wider ${
-                          filtroTipo === cat.id && filtroStatus === "em_uso" ? "text-indigo-100" : "text-indigo-700"
-                        }`}>
-                          Em Uso
-                        </span>
-                        <UserCheck className={`w-3 h-3 ${
-                          filtroTipo === cat.id && filtroStatus === "em_uso" ? "text-white" : "text-indigo-600"
-                        }`} />
-                      </div>
-                      <p className="text-lg font-black mt-0.5">{cat.emUso}</p>
-                      <p className={`text-[10px] ${
-                        filtroTipo === cat.id && filtroStatus === "em_uso" ? "text-indigo-100" : "text-indigo-600/90"
-                      }`}>
-                        com colaboradores
-                      </p>
-                    </button>
+                {/* Grid de Métricas Numéricas */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Disponível
+                    </div>
+                    <p className="text-xl font-black text-slate-900 mt-1">
+                      {cat.id === "periferico" ? cat.qtdFisicaEstoque : cat.disponivel}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-medium">
+                      {cat.id === "periferico" ? "unid. livres" : "livres no estoque"}
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <div className="flex items-center gap-1.5 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                      <UserCheck className="w-3 h-3" />
+                      Em Uso
+                    </div>
+                    <p className="text-xl font-black text-slate-900 mt-1">{cat.emUso}</p>
+                    <p className="text-[10px] text-slate-400 font-medium">com colaboradores</p>
                   </div>
                 </div>
 
-                {/* Barra de Proporção Visual de Ocupação */}
-                <div className="pt-2 border-t border-slate-100 mt-2">
-                  <div className="flex items-center justify-between text-[11px] mb-1">
+                {/* Barra de Proporção Visual */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between text-[11px]">
                     <span className="text-slate-400 font-medium">Taxa de Ocupação</span>
-                    <span className="font-bold text-slate-700">{cat.taxaUso}% em uso</span>
+                    <span className="font-bold text-indigo-900">{cat.taxaUso}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
                     <div 
                       className="bg-indigo-600 h-full transition-all duration-300"
                       style={{ width: `${cat.taxaUso}%` }}
@@ -430,9 +346,13 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                     />
                     <div 
                       className="bg-emerald-500 h-full transition-all duration-300"
-                      style={{ width: `${100 - cat.taxaUso}%` }}
+                      style={{ width: `${cat.taxaDisponivel}%` }}
                       title={`${cat.disponivel} disponíveis`}
                     />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+                    <span>{cat.taxaUso}% alocado</span>
+                    <span>{cat.taxaDisponivel}% livre</span>
                   </div>
                 </div>
               </div>
@@ -441,60 +361,72 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         </div>
       </div>
 
-      {/* SEÇÃO DA TABELA DO DASHBOARD */}
+      {/* 4. Card Estratégico: Prontidão de Onboarding & Kits de TI */}
+      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-white to-indigo-50/40 p-5 shadow-2xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-indigo-600 text-white shadow-2xs">
+                <Sparkles className="w-4 h-4" />
+              </span>
+              <h3 className="text-sm font-bold text-slate-900">
+                Prontidão de Onboarding de Novos Colaboradores
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 max-w-2xl font-medium">
+              Com base nos notebooks e periféricos livres no almoxarifado, seu parque de TI tem capacidade para admissão imediata de:
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-indigo-100/80 shadow-2xs">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Kits de Entrada Prontos
+              </p>
+              <p className="text-2xl font-black text-indigo-600 leading-tight">
+                {prontidaoOnboarding.kitsCompletos}{" "}
+                <span className="text-xs font-semibold text-slate-500 font-sans">
+                  {prontidaoOnboarding.kitsCompletos === 1 ? "novo contratado" : "novos contratados"}
+                </span>
+              </p>
+            </div>
+            <div className="h-8 w-px bg-slate-200" />
+            <div className="text-[11px] text-slate-500 space-y-0.5">
+              <p>💻 {prontidaoOnboarding.notebooksLivres} notebooks livres</p>
+              <p>🎧 {prontidaoOnboarding.perifericosLivres} periféricos no estoque</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Visualização Simplificada do Inventário */}
       <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
-        {/* Topo da Tabela: Abas de Categoria com "Todos os Ativos" no final */}
+        {/* Topo: Abas de Categoria e Busca */}
         <div className="p-5 border-b border-slate-200/80 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-bold text-slate-900">
-                Inventário Operacional
+                Visualização Simplificada do Inventário
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                {filtroTipo === "todos" ? (
-                  "Exibindo visão geral de todos os ativos do parque"
-                ) : (
-                  <>
-                    Exibindo <span className="font-semibold text-slate-800 capitalize">{filtroTipo}s</span>
-                    {filtroStatus === "disponivel" && " disponíveis no estoque"}
-                    {filtroStatus === "em_uso" && " em posse de colaboradores"}
-                    {filtroStatus === "manutencao" && " em assistência técnica"}
-                    {filtroStatus === "todos" && " (todos os estados)"}
-                  </>
-                )}
+                Consulte de forma rápida os equipamentos mais recentes com status e custódia nominal
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              {(filtroTipo !== "notebook" || filtroStatus !== "todos" || busca) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFiltroTipo("notebook");
-                    setFiltroStatus("todos");
-                    setBusca("");
-                  }}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
-                >
-                  Restaurar padrão
-                </button>
-              )}
-
-              <Link
-                href="/equipamentos"
-                prefetch={true}
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors"
-              >
-                Gerenciar módulo completo <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+            <Link
+              href="/equipamentos"
+              prefetch={true}
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors"
+            >
+              Ver tabela completa detalhada <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          {/* Abas de Categorias: Notebooks, Monitores, Celulares, Periféricos, e Todos os Ativos no final */}
+          {/* Abas de Categorias: Notebooks, Monitores, Celulares, Periféricos, e Todos no final */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-100">
             <button
               onClick={() => setFiltroTipo("notebook")}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "notebook"
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "text-slate-600 hover:bg-slate-100"
@@ -506,7 +438,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
             <button
               onClick={() => setFiltroTipo("monitor")}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "monitor"
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "text-slate-600 hover:bg-slate-100"
@@ -518,7 +450,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
             <button
               onClick={() => setFiltroTipo("smartphone")}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "smartphone"
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "text-slate-600 hover:bg-slate-100"
@@ -530,7 +462,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
             <button
               onClick={() => setFiltroTipo("periferico")}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "periferico"
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "text-slate-600 hover:bg-slate-100"
@@ -542,19 +474,18 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
             <button
               onClick={() => setFiltroTipo("todos")}
-              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
                 filtroTipo === "todos"
                   ? "bg-indigo-600 text-white shadow-xs"
                   : "text-slate-500 hover:bg-slate-100"
               }`}
-              title="Exibir todos os ativos consolidadores"
             >
               <Boxes className="w-4 h-4" />
-              Todos os Ativos ({contadoresAbasTipo.todos})
+              Todos ({contadoresAbasTipo.todos})
             </button>
           </div>
 
-          {/* Barra de Pesquisa e Filtros de Estado Operacional */}
+          {/* Barra de Pesquisa e Filtros de Estado */}
           <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between pt-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
@@ -562,25 +493,25 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Pesquisar por modelo, serial, marca ou colaborador..."
-                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white transition-all placeholder:text-slate-400 text-slate-800"
+                placeholder="Pesquisar por modelo, serial ou responsável..."
+                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white text-slate-800 placeholder:text-slate-400 transition-all"
               />
             </div>
 
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
               <button
                 onClick={() => setFiltroStatus("todos")}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                   filtroStatus === "todos"
                     ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 Todos ({contadoresStatus.todos})
               </button>
               <button
                 onClick={() => setFiltroStatus("disponivel")}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
                   filtroStatus === "disponivel"
                     ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
                     : "bg-white text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-900"
@@ -591,7 +522,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
               </button>
               <button
                 onClick={() => setFiltroStatus("em_uso")}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
                   filtroStatus === "em_uso"
                     ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
                     : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
@@ -600,31 +531,20 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 <UserCheck className="w-3 h-3 text-indigo-300" />
                 Em Uso ({contadoresStatus.em_uso})
               </button>
-              <button
-                onClick={() => setFiltroStatus("manutencao")}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
-                  filtroStatus === "manutencao"
-                    ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-amber-50 hover:text-amber-900"
-                }`}
-              >
-                <Wrench className="w-3 h-3 text-amber-500" />
-                Manutenção ({contadoresStatus.manutencao})
-              </button>
             </div>
           </div>
         </div>
 
-        {/* Tabela de Dados com Destaque Visual para Ativos em Uso */}
+        {/* Tabela de Dados Simplificada */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
               <tr>
                 <th className="px-6 py-3.5">Ativo / Identificação</th>
-                <th className="px-6 py-3.5">Categoria & Especificação</th>
+                <th className="px-6 py-3.5">Categoria & Detalhes</th>
                 <th className="px-6 py-3.5">Situação</th>
                 <th className="px-6 py-3.5">Custódia / Responsável</th>
-                <th className="px-6 py-3.5 text-right">Ações</th>
+                <th className="px-6 py-3.5 text-right">Ação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -633,10 +553,10 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
                     <Laptop className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
                     <p className="font-semibold text-slate-600 text-sm">
-                      Nenhum equipamento encontrado com estes filtros
+                      Nenhum equipamento encontrado com estes critérios
                     </p>
                     <p className="text-xs text-slate-400 mt-1">
-                      Tente alterar a categoria ou clique em &quot;Restaurar padrão&quot;.
+                      Tente alterar a categoria ou limpar a busca.
                     </p>
                   </td>
                 </tr>
@@ -653,10 +573,9 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                           : "hover:bg-slate-50/80"
                       }`}
                     >
-                      {/* Ativo e Serial */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2.5 rounded-xl border transition-colors ${
+                          <div className={`p-2 rounded-xl border transition-colors ${
                             estaEmUso
                               ? "bg-indigo-600 text-white border-indigo-700 shadow-2xs"
                               : "bg-slate-100 text-slate-700 border-slate-200"
@@ -664,8 +583,8 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                             {getIconeTipo(item.tipo)}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900 flex items-center gap-2">
-                              <span>{item.marca} {item.modelo}</span>
+                            <div className="font-bold text-slate-900">
+                              {item.marca} {item.modelo}
                             </div>
                             <div className="text-xs text-slate-500 mt-0.5">
                               {item.tipo === "periferico" && item.quantidadeDisponivel !== undefined ? (
@@ -682,7 +601,6 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                         </div>
                       </td>
 
-                      {/* Categoria & Specs */}
                       <td className="px-6 py-4 text-xs text-slate-600">
                         <div className="font-semibold text-slate-800 uppercase text-[11px] tracking-wider text-indigo-600">
                           {item.tipo} {item.subtipo ? `• ${item.subtipo}` : ""}
@@ -694,12 +612,10 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                         </div>
                       </td>
 
-                      {/* Status */}
                       <td className="px-6 py-4">
                         <StatusBadge status={item.status} />
                       </td>
 
-                      {/* Responsável / Custódia com Destaque Visual Forte */}
                       <td className="px-6 py-3.5 text-xs">
                         {estaEmUso ? (
                           <div className="flex items-center gap-2.5 bg-indigo-50/80 border border-indigo-100 rounded-xl p-2 max-w-[260px] shadow-2xs">
@@ -727,40 +643,13 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                         )}
                       </td>
 
-                      {/* Ações: Atribuir, Devolver ou Detalhes */}
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {item.status === "disponivel" ? (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => abrirAtribuicao(item)}
-                              className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 text-xs"
-                              title="Atribuir a um colaborador"
-                            >
-                              <ArrowRightLeft className="w-3.5 h-3.5" />
-                              Atribuir
-                            </Button>
-                          ) : item.status === "em_uso" ? (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => abrirDevolucao(item)}
-                              className="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 text-xs"
-                              title="Devolver ao estoque de TI"
-                            >
-                              <Undo2 className="w-3.5 h-3.5" />
-                              Devolver
-                            </Button>
-                          ) : null}
-
-                          <Link href={`/equipamentos/${item.id}`} prefetch={true}>
-                            <Button variant="outline" size="sm" className="text-xs">
-                              <Eye className="w-3.5 h-3.5" />
-                              Detalhes
-                            </Button>
-                          </Link>
-                        </div>
+                        <Link href={`/equipamentos/${item.id}`} prefetch={true}>
+                          <Button variant="outline" size="sm" className="text-xs">
+                            <Eye className="w-3.5 h-3.5" />
+                            Detalhes
+                          </Button>
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -770,22 +659,6 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
           </table>
         </div>
       </div>
-
-      {/* Modal de Atribuição / Devolução Integrado */}
-      <ModalAtribuicao
-        aberto={modalAtribuicaoAberto}
-        equipamento={equipamentoEmOperacao}
-        modo={modoOperacao}
-        onFechar={() => {
-          setModalAtribuicaoAberto(false);
-          setEquipamentoEmOperacao(null);
-        }}
-        onSucesso={() => {
-          setModalAtribuicaoAberto(false);
-          setEquipamentoEmOperacao(null);
-          sincronizar();
-        }}
-      />
     </div>
   );
 }
