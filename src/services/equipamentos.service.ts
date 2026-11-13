@@ -72,6 +72,33 @@ function getAdminNome(): string {
   return "Gabriela Chagas";
 }
 
+/**
+ * Formata a identificação legível do equipamento sem expor IDs técnicos ou parênteses vazios.
+ */
+function formatarIdentificacaoEquipamento(eq?: { marca?: string; modelo?: string; numeroSerie?: string; subtipo?: string } | null): string {
+  if (!eq) return "Equipamento de TI";
+  const base = `${eq.marca || ""} ${eq.modelo || ""}`.trim() || (eq.subtipo || "Equipamento");
+  if (eq.numeroSerie && eq.numeroSerie !== "N/A" && eq.numeroSerie.trim()) {
+    return `${base} (S/N: ${eq.numeroSerie})`;
+  }
+  return base;
+}
+
+/**
+ * Remove resíduos de IDs de banco, parênteses vazios ou '(undefined)' de textos antigos.
+ */
+function limparTextoResidual(texto?: string): string {
+  if (!texto) return "";
+  return texto
+    .replace(/\s*\(\s*\)/g, "")
+    .replace(/\s*\(undefined\)/gi, "")
+    .replace(/\s*\(null\)/gi, "")
+    .replace(/\([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\)/gi, "")
+    .replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi, "Equipamento")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export interface EquipamentoComResponsavel extends Equipamento {
   responsavel?: Responsavel;
 }
@@ -311,12 +338,13 @@ export const equipamentosService = {
       outro: "Equipamento",
     }[dados.tipo] || "Equipamento";
 
+    const identificacao = formatarIdentificacaoEquipamento(novoEquipamento);
     const novaMovimentacao: Movimentacao = {
       id: `mov-${Date.now()}`,
       tipo: "entrada",
       equipamentoId: novoEquipamento.id,
-      equipamentoNome: `${novoEquipamento.marca} ${novoEquipamento.modelo} (${novoEquipamento.patrimonio})`,
-      motivo: `Novo ${tipoLegivel} adicionado ao estoque corporativo.`,
+      equipamentoNome: identificacao,
+      motivo: `Novo ${tipoLegivel} adicionado ao estoque corporativo: ${identificacao}.`,
       data: new Date().toISOString(),
       registradoPor: getAdminNome(),
     };
@@ -428,11 +456,12 @@ export const equipamentosService = {
 
     const motivo = motivoCustomizado || `Equipamento atribuído para ${colaborador.nome} (${colaborador.departamento}).`;
 
+    const identificacaoAtribuicao = formatarIdentificacaoEquipamento(equipamento);
     const novaMov: Movimentacao = {
       id: `mov-${Date.now()}`,
       tipo: "atribuicao",
       equipamentoId,
-      equipamentoNome: `${equipamento.marca} ${equipamento.modelo}`,
+      equipamentoNome: identificacaoAtribuicao,
       responsavelDestinoId: responsavelId,
       responsavelNome: colaborador.nome,
       data: new Date().toISOString(),
@@ -482,11 +511,12 @@ export const equipamentosService = {
         ? `Equipamento devolvido ao estoque de TI por ${colaboradorOrigem.nome}.`
         : "Equipamento devolvido ao estoque de TI.");
 
+    const identificacaoDevolucao = formatarIdentificacaoEquipamento(equipamento);
     const novaMov: Movimentacao = {
       id: `mov-${Date.now()}`,
       tipo: "devolucao",
       equipamentoId,
-      equipamentoNome: `${equipamento.marca} ${equipamento.modelo} (${equipamento.patrimonio})`,
+      equipamentoNome: identificacaoDevolucao,
       responsavelOrigemId: colaboradorOrigem?.id,
       responsavelNome: colaboradorOrigem?.nome,
       data: new Date().toISOString(),
@@ -516,12 +546,13 @@ export const equipamentosService = {
 
     const novaListaEq = memoria.eq.filter((e) => e.id !== id);
 
+    const identificacaoExclusao = formatarIdentificacaoEquipamento(equipamento);
     const novaMov: Movimentacao = {
       id: `mov-${Date.now()}`,
       tipo: "exclusao",
       equipamentoId: id,
-      equipamentoNome: equipamento ? `${equipamento.marca} ${equipamento.modelo} (${equipamento.patrimonio})` : "Equipamento",
-      motivo: `Baixa patrimonial do equipamento ${equipamento?.patrimonio || id} registrada no inventário.`,
+      equipamentoNome: identificacaoExclusao,
+      motivo: `Baixa patrimonial do equipamento ${identificacaoExclusao} registrada no inventário.`,
       data: new Date().toISOString(),
       registradoPor: getAdminNome(),
     };
@@ -654,11 +685,12 @@ export const equipamentosService = {
       e.responsavelId === id ? { ...e, responsavelId: undefined, status: "disponivel" as StatusEquipamento } : e
     );
 
+    const nomeColaborador = colaborador?.nome || "Colaborador";
     const novaMov: Movimentacao = {
       id: `mov-${Date.now()}`,
       tipo: "exclusao",
-      responsavelNome: colaborador?.nome,
-      motivo: `Desligamento/Exclusão do colaborador ${colaborador?.nome || id}. Seus ativos retornaram ao estoque de TI.`,
+      responsavelNome: nomeColaborador,
+      motivo: `Desligamento do colaborador ${nomeColaborador}. Seus ativos retornaram ao estoque de TI.`,
       data: new Date().toISOString(),
       registradoPor: getAdminNome(),
     };
@@ -669,10 +701,18 @@ export const equipamentosService = {
 
   /**
    * Retorna a lista completa de movimentações de auditoria em ordem cronológica decrescente.
+   * Aplica sanitização automática para eliminar resíduos de IDs de banco ou parênteses vazios.
    */
   async listarMovimentacoes(filtros?: { tipo?: TipoMovimentacao | "todos"; busca?: string }): Promise<Movimentacao[]> {
     const memoria = getMemoria();
     let lista = [...memoria.mov].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+
+    // Sanitiza qualquer texto legado para exibição impecável
+    lista = lista.map((m) => ({
+      ...m,
+      equipamentoNome: m.equipamentoNome ? limparTextoResidual(m.equipamentoNome) : undefined,
+      motivo: limparTextoResidual(m.motivo),
+    }));
 
     if (filtros?.tipo && filtros.tipo !== "todos") {
       lista = lista.filter((m) => m.tipo === filtros.tipo);

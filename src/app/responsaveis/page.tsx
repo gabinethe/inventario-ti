@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { 
   Users, 
@@ -13,7 +13,10 @@ import {
   Smartphone, 
   Headphones, 
   Undo2,
-  Boxes
+  Boxes,
+  Search,
+  X,
+  Filter
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
@@ -29,6 +32,10 @@ interface ColaboradorComAtivos extends Responsavel {
 export default function ResponsaveisPage() {
   const [colaboradores, setColaboradores] = useState<ColaboradorComAtivos[]>([]);
   const [carregando, setCarregando] = useState(true);
+
+  // Barra de Pesquisa e Filtros
+  const [busca, setBusca] = useState("");
+  const [departamentoFiltro, setDepartamentoFiltro] = useState<string>("todos");
 
   // Modal de exclusão segura
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
@@ -67,6 +74,36 @@ export default function ResponsaveisPage() {
       setCarregando(false);
     }
   }
+
+  // Lista dinâmica de departamentos únicos para os filtros rápidos
+  const departamentosDisponiveis = useMemo(() => {
+    const deps = new Set(colaboradores.map((c) => c.departamento).filter(Boolean));
+    return Array.from(deps);
+  }, [colaboradores]);
+
+  // Filtragem dinâmica de colaboradores
+  const colaboradoresFiltrados = useMemo(() => {
+    return colaboradores.filter((colab) => {
+      const termo = busca.toLowerCase();
+      const matchBusca =
+        !busca ||
+        colab.nome.toLowerCase().includes(termo) ||
+        colab.email.toLowerCase().includes(termo) ||
+        colab.cargo.toLowerCase().includes(termo) ||
+        colab.departamento.toLowerCase().includes(termo) ||
+        colab.ativos.some((ativo) =>
+          ativo.modelo.toLowerCase().includes(termo) ||
+          ativo.marca.toLowerCase().includes(termo) ||
+          ativo.numeroSerie.toLowerCase().includes(termo) ||
+          (ativo.subtipo && ativo.subtipo.toLowerCase().includes(termo))
+        );
+
+      const matchDepartamento =
+        departamentoFiltro === "todos" || colab.departamento === departamentoFiltro;
+
+      return matchBusca && matchDepartamento;
+    });
+  }, [colaboradores, busca, departamentoFiltro]);
 
   const abrirModalExclusao = (colab: ColaboradorComAtivos) => {
     setColaboradorParaExcluir(colab);
@@ -116,6 +153,7 @@ export default function ResponsaveisPage() {
       />
 
       <main className="flex-1 p-8 space-y-6 max-w-6xl">
+        {/* Cabeçalho da Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
@@ -123,7 +161,7 @@ export default function ResponsaveisPage() {
               Quadro de Colaboradores & Custódia
             </h1>
             <p className="text-sm text-slate-500 font-medium">
-              Consulte quem está em posse de cada computador, monitor, celular ou acessório da empresa.
+              Consulte quem está em posse de cada computador, monitor, celular ou periférico da empresa.
             </p>
           </div>
 
@@ -135,19 +173,109 @@ export default function ResponsaveisPage() {
           </Link>
         </div>
 
+        {/* Barra de Pesquisa e Filtros de Colaboradores */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-3">
+          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+            {/* Campo de Pesquisa em Tempo Real */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-500" />
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Pesquisar por nome, cargo, departamento ou ativo em posse..."
+                className="w-full pl-10 pr-10 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white transition-all text-slate-900 placeholder:text-slate-400"
+              />
+              {busca && (
+                <button
+                  type="button"
+                  onClick={() => setBusca("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Contador de Resultados */}
+            <div className="text-xs font-semibold text-slate-500 self-center">
+              Mostrando <strong className="text-slate-800">{colaboradoresFiltrados.length}</strong> de{" "}
+              {colaboradores.length} colaboradores
+            </div>
+          </div>
+
+          {/* Filtros Rápidos por Departamento */}
+          {departamentosDisponiveis.length > 0 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 border-t border-slate-100 text-xs">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                <Filter className="w-3 h-3 text-indigo-500" />
+                Filtrar:
+              </span>
+
+              <button
+                onClick={() => setDepartamentoFiltro("todos")}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  departamentoFiltro === "todos"
+                    ? "bg-indigo-600 text-white shadow-2xs"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
+                }`}
+              >
+                Todos ({colaboradores.length})
+              </button>
+
+              {departamentosDisponiveis.map((dep) => {
+                const count = colaboradores.filter((c) => c.departamento === dep).length;
+                return (
+                  <button
+                    key={dep}
+                    onClick={() => setDepartamentoFiltro(dep)}
+                    className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                      departamentoFiltro === dep
+                        ? "bg-indigo-600 text-white shadow-2xs"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
+                    }`}
+                  >
+                    {dep} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Lista de Colaboradores e seus Ativos */}
         {carregando ? (
           <div className="p-12 text-center text-slate-400">
             <p className="text-sm">Carregando lista de colaboradores...</p>
           </div>
-        ) : colaboradores.length === 0 ? (
+        ) : colaboradoresFiltrados.length === 0 ? (
           <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/80">
             <Users className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-            <p className="font-semibold text-slate-700 text-sm">Nenhum colaborador cadastrado</p>
-            <p className="text-xs text-slate-400 mt-1">Clique em "Novo Colaborador" para adicionar.</p>
+            <p className="font-semibold text-slate-700 text-sm">
+              {busca || departamentoFiltro !== "todos"
+                ? "Nenhum colaborador encontrado com estes critérios"
+                : "Nenhum colaborador cadastrado"}
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              {busca || departamentoFiltro !== "todos" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBusca("");
+                    setDepartamentoFiltro("todos");
+                  }}
+                  className="text-indigo-600 font-semibold hover:underline"
+                >
+                  Limpar filtros e busca
+                </button>
+              ) : (
+                "Clique em 'Novo Colaborador' para adicionar."
+              )}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {colaboradores.map((colab) => (
+            {colaboradoresFiltrados.map((colab) => (
               <div
                 key={colab.id}
                 className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-4 hover:border-indigo-200/80 hover:shadow-sm transition-all"

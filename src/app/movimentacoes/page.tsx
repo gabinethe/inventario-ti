@@ -29,7 +29,34 @@ export default function MovimentacoesPage() {
   const carregarDados = async () => {
     try {
       const lista = await equipamentosService.listarMovimentacoes();
-      setMovimentacoes(lista);
+      const sanitizadas = lista.map((m) => {
+        let motivoLimpo = m.motivo
+          .replace(/\s*\(\s*\)/g, "")
+          .replace(/\s*\(undefined\)/gi, "")
+          .replace(/\s*\(null\)/gi, "")
+          .replace(/\([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\)/gi, "")
+          .replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi, "Equipamento")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+
+        let nomeLimpo = m.equipamentoNome
+          ? m.equipamentoNome
+              .replace(/\s*\(\s*\)/g, "")
+              .replace(/\s*\(undefined\)/gi, "")
+              .replace(/\s*\(null\)/gi, "")
+              .replace(/\([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\)/gi, "")
+              .replace(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/gi, "Equipamento")
+              .replace(/\s{2,}/g, " ")
+              .trim()
+          : undefined;
+
+        return {
+          ...m,
+          motivo: motivoLimpo,
+          equipamentoNome: nomeLimpo,
+        };
+      });
+      setMovimentacoes(sanitizadas);
     } catch (err) {
       console.error("Erro ao carregar movimentações:", err);
     } finally {
