@@ -298,13 +298,13 @@ export default function ResponsaveisPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/60">
                       {colab.ativos.length} {colab.ativos.length === 1 ? "ativo em posse" : "ativos em posse"}
                     </span>
                     <button
                       type="button"
                       onClick={() => abrirModalExclusao(colab)}
-                      className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition-colors cursor-pointer"
+                      className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 p-1.5 rounded-lg transition-colors cursor-pointer"
                       title="Excluir colaborador com segurança"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -312,53 +312,53 @@ export default function ResponsaveisPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-600 pt-2 border-t border-slate-100">
+                <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-100 dark:border-indigo-950/60">
                   <div className="flex items-center gap-2">
-                    <Building2 className="w-3.5 h-3.5 text-indigo-400" />
-                    <span className="font-medium text-slate-700">{colab.departamento}</span>
+                    <Building2 className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{colab.departamento}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-indigo-400" />
-                    <span className="font-medium text-slate-700">{colab.email}</span>
+                    <Mail className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{colab.email}</span>
                   </div>
                 </div>
 
                 {/* Ativos em posse deste colaborador */}
-                <div className="pt-2 border-t border-slate-100 space-y-2">
+                <div className="pt-2 border-t border-slate-100 dark:border-indigo-950/60 space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       Equipamentos sob custódia ({colab.ativos.length}):
                     </p>
                     <Link
                       href="/equipamentos"
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700"
+                      className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                     >
                       + Atribuir Ativo
                     </Link>
                   </div>
 
                   {colab.ativos.length === 0 ? (
-                    <p className="text-xs text-slate-400 italic py-2">Nenhum equipamento em posse no momento.</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 italic py-2">Nenhum equipamento em posse no momento.</p>
                   ) : (
                     <div className="space-y-1.5">
                       {colab.ativos.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-200/60 text-xs transition-colors group"
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 dark:bg-[#090d1f] hover:bg-indigo-50/50 dark:hover:bg-indigo-950/40 border border-slate-200/60 dark:border-indigo-950/80 text-xs transition-colors group"
                         >
                           <Link
                             href={`/equipamentos/${item.id}`}
                             className="flex items-center gap-2.5 flex-1 min-w-0"
                           >
-                            <div className="p-1.5 rounded-lg bg-white border border-slate-200">
+                            <div className="p-1.5 rounded-lg bg-white dark:bg-[#131938] border border-slate-200 dark:border-indigo-900/60">
                               {getIconeAtivo(item.tipo)}
                             </div>
                             <div className="truncate">
-                              <span className="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                              <span className="font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                                 {item.marca} {item.modelo}
                               </span>
                               {item.numeroSerie && (
-                                <span className="text-slate-400 ml-1.5 font-mono text-[11px]">
+                                <span className="text-slate-400 dark:text-slate-500 ml-1.5 font-mono text-[11px]">
                                   • S/N: {item.numeroSerie}
                                 </span>
                               )}
@@ -368,7 +368,7 @@ export default function ResponsaveisPage() {
                           <button
                             type="button"
                             onClick={() => abrirDevolucaoAtivo(item)}
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg text-amber-700 hover:bg-amber-100/80 transition-colors cursor-pointer ml-2"
+                            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg text-amber-700 dark:text-amber-400 hover:bg-amber-100/80 dark:hover:bg-amber-950/60 transition-colors cursor-pointer ml-2"
                             title="Devolver equipamento para o estoque de TI"
                           >
                             <Undo2 className="w-3 h-3" />

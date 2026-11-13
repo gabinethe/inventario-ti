@@ -558,15 +558,15 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 <th className="px-6 py-3.5 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100/80 dark:divide-indigo-950/40">
               {equipamentosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                     <Laptop className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
-                    <p className="font-semibold text-slate-600 text-sm">
+                    <p className="font-semibold text-slate-600 dark:text-slate-300 text-sm">
                       Nenhum equipamento encontrado com estes critérios
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                       Tente alterar a categoria ou limpar a busca.
                     </p>
                   </td>
@@ -581,7 +581,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                       className={`transition-colors ${
                         estaEmUso 
                           ? "bg-indigo-50/20 dark:bg-indigo-950/20 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/40" 
-                          : "hover:bg-slate-50/80 dark:hover:bg-indigo-950/20"
+                          : "hover:bg-slate-50/80 dark:hover:bg-indigo-950/30"
                       }`}
                     >
                       <td className="px-6 py-4">

@@ -278,9 +278,9 @@ export function Header({ title, subtitle }: HeaderProps) {
                 }}
                 onFocus={() => setBuscaAberta(true)}
                 placeholder="Pesquisar ativos, seriais, pessoas..."
-                className="w-full pl-9 pr-12 py-1.5 text-xs bg-slate-100/80 dark:bg-[#131938] hover:bg-slate-100 dark:hover:bg-[#182046] border border-slate-200/90 dark:border-indigo-900/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 focus:bg-white dark:focus:bg-[#131938] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all shadow-2xs"
+                className="w-full pl-9 pr-9 py-1.5 text-xs bg-slate-100/80 dark:bg-[#131938] hover:bg-slate-100 dark:hover:bg-[#182046] border border-slate-200/90 dark:border-indigo-900/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 focus:bg-white dark:focus:bg-[#131938] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all shadow-2xs"
               />
-              {termoBusca ? (
+              {termoBusca && (
                 <button
                   type="button"
                   onClick={() => {
@@ -291,10 +291,6 @@ export function Header({ title, subtitle }: HeaderProps) {
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
-              ) : (
-                <kbd className="absolute right-2.5 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-white dark:bg-[#0b0e24] border border-slate-200 dark:border-indigo-950 rounded shadow-2xs">
-                  Ctrl K
-                </kbd>
               )}
             </div>
 

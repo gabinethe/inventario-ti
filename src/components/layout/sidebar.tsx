@@ -185,25 +185,25 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex-shrink-0 bg-[#0b0e24] text-indigo-200 flex flex-col justify-between border-r border-indigo-950/80 min-h-screen transition-all duration-300 ease-in-out relative z-30 select-none shadow-xl",
+        "flex-shrink-0 bg-[#0b0e24] text-indigo-200 flex flex-col justify-between border-r border-indigo-950/80 min-h-screen transition-all duration-300 ease-in-out relative z-30 select-none shadow-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         isCollapsed ? "w-[72px]" : "w-64"
       )}
     >
-      <div className={cn("overflow-y-auto flex-1 flex flex-col", isCollapsed ? "overflow-x-visible" : "overflow-x-hidden")}>
+      <div className={cn("overflow-y-auto flex-1 flex flex-col [scrollbar-width:none] [&::-webkit-scrollbar]:hidden", isCollapsed ? "overflow-x-hidden" : "overflow-x-hidden")}>
         {/* Cabeçalho da Sidebar: Apenas o ícone da caixinha (sem título) + Botão de Toggle */}
         <div
           className={cn(
-            "border-b border-indigo-900/30 bg-[#0e122b]/70 sticky top-0 z-10 transition-all duration-300 ease-in-out",
+            "border-b border-indigo-900/30 bg-[#0e122b]/70 sticky top-0 z-10 transition-all duration-300 ease-in-out overflow-hidden flex",
             isCollapsed 
-              ? "py-3 px-2 flex flex-col items-center justify-center gap-2.5" 
-              : "h-16 flex items-center justify-between px-3.5"
+              ? "h-[94px] flex-col items-center justify-center gap-2 px-2 py-2.5" 
+              : "h-16 flex-row items-center justify-between px-3.5"
           )}
         >
           {/* Logo da caixinha quadrada sem título conforme solicitado */}
           <Link
             href="/"
             prefetch={true}
-            className="flex items-center justify-center group cursor-pointer"
+            className="flex items-center justify-center group cursor-pointer flex-shrink-0"
             title="TI Inventory - Início"
           >
             <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600/30 to-purple-600/20 border border-indigo-500/40 p-1 flex-shrink-0 group-hover:scale-105 group-hover:border-indigo-400 transition-all duration-200 shadow-md shadow-indigo-950/50">
@@ -221,71 +221,81 @@ export function Sidebar() {
             type="button"
             onClick={alternarColapso}
             className={cn(
-              "p-2 rounded-xl text-indigo-300 hover:text-white hover:bg-indigo-900/60 transition-colors cursor-pointer flex-shrink-0",
-              isCollapsed && "bg-indigo-950/80 border border-indigo-900/60 p-1.5"
+              "rounded-xl text-indigo-300 hover:text-white transition-all cursor-pointer flex items-center justify-center flex-shrink-0",
+              isCollapsed 
+                ? "w-8 h-7 bg-indigo-950/80 hover:bg-indigo-900/80 border border-indigo-900/60" 
+                : "p-2 hover:bg-indigo-900/60"
             )}
             title={isCollapsed ? "Expandir barra lateral (Ctrl+B)" : "Recolher barra lateral (Ctrl+B)"}
           >
             {isCollapsed ? (
-              <PanelLeftOpen className="w-4 h-4" />
+              <PanelLeftOpen className="w-3.5 h-3.5" />
             ) : (
               <PanelLeftClose className="w-4 h-4" />
             )}
           </button>
         </div>
 
-        {/* Barra de Busca Integrada na Sidebar */}
+        {/* Barra de Busca Integrada na Sidebar - Fluida sem desmontar input e sem badge ⌘K */}
         <div ref={buscaRef} className="px-3 pt-3 pb-1 relative transition-all duration-300 ease-in-out">
-          {isCollapsed ? (
-            <button
-              type="button"
-              onClick={() => {
+          <div
+            onClick={() => {
+              if (isCollapsed) {
                 setIsCollapsed(false);
                 setBuscaAtiva(true);
-              }}
-              className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl text-indigo-400 hover:text-white hover:bg-indigo-950/80 border border-transparent hover:border-indigo-900/50 transition-all cursor-pointer group relative"
-              title="Pesquisar ativos ou pessoas (Ctrl+K)"
-            >
-              <Search className="w-4 h-4" />
-              {/* Tooltip flutuante */}
-              <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
-                Buscar (Ctrl+K)
-              </div>
-            </button>
-          ) : (
-            <div className="relative">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3 w-3.5 h-3.5 text-indigo-400/80 pointer-events-none" />
-                <input
-                  type="text"
-                  value={termoBusca}
-                  onChange={(e) => {
-                    setTermoBusca(e.target.value);
-                    setBuscaAtiva(true);
-                  }}
-                  onFocus={() => setBuscaAtiva(true)}
-                  placeholder="Buscar ativo ou pessoa..."
-                  className="w-full pl-8 pr-12 py-1.5 text-xs bg-indigo-950/40 hover:bg-indigo-950/60 focus:bg-indigo-950/80 text-white placeholder:text-indigo-400/50 border border-indigo-900/50 rounded-xl focus:outline-none focus:border-indigo-500 transition-all"
-                />
-                {termoBusca ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTermoBusca("");
-                      setBuscaAtiva(false);
-                    }}
-                    className="absolute right-2.5 p-0.5 text-indigo-400 hover:text-white"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                ) : (
-                  <span className="absolute right-2.5 text-[9px] font-mono text-indigo-400/50 bg-indigo-900/40 px-1 py-0.5 rounded border border-indigo-800/40">
-                    ⌘K
-                  </span>
-                )}
-              </div>
+              }
+            }}
+            className={cn(
+              "relative flex items-center rounded-xl bg-indigo-950/40 hover:bg-indigo-950/60 border border-indigo-900/50 transition-all duration-300 h-9 overflow-hidden group",
+              isCollapsed 
+                ? "w-10 mx-auto justify-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-900/40" 
+                : "w-full px-2.5"
+            )}
+            title={isCollapsed ? "Pesquisar ativos ou pessoas" : undefined}
+          >
+            <Search className={cn("w-4 h-4 text-indigo-400/80 flex-shrink-0 transition-colors", isCollapsed ? "mx-auto" : "mr-2")} />
 
-              {/* Dropdown de Resultados da Busca Rápida */}
+            <input
+              type="text"
+              value={termoBusca}
+              onChange={(e) => {
+                setTermoBusca(e.target.value);
+                setBuscaAtiva(true);
+              }}
+              onFocus={() => {
+                if (isCollapsed) setIsCollapsed(false);
+                setBuscaAtiva(true);
+              }}
+              placeholder="Buscar ativo ou pessoa..."
+              className={cn(
+                "text-xs bg-transparent text-white placeholder:text-indigo-400/50 focus:outline-none transition-all duration-300 flex-1",
+                isCollapsed ? "opacity-0 w-0 pointer-events-none p-0" : "opacity-100 w-full"
+              )}
+            />
+
+            {!isCollapsed && termoBusca && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTermoBusca("");
+                  setBuscaAtiva(false);
+                }}
+                className="p-1 text-indigo-400 hover:text-white flex-shrink-0"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Tooltip flutuante quando colapsado */}
+          {isCollapsed && (
+            <div className="absolute left-[76px] top-3.5 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
+              Buscar
+            </div>
+          )}
+
+          {/* Dropdown de Resultados da Busca Rápida */}
               {buscaAtiva && resultadosBusca && (
                 <div className="absolute left-0 right-0 top-full mt-1.5 bg-[#0e122b] border border-indigo-900/80 rounded-xl shadow-2xl p-2 z-50 text-xs space-y-2 animate-in fade-in zoom-in-95 duration-100 max-h-80 overflow-y-auto">
                   {/* Equipamentos encontrados */}
@@ -359,8 +369,6 @@ export function Sidebar() {
                   )}
                 </div>
               )}
-            </div>
-          )}
         </div>
 
         {/* Links de Navegação com Posicionamento Estável dos Ícones */}

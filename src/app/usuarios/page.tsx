@@ -43,8 +43,10 @@ export default function UsuariosPage() {
     senhaProvisoria: "Mudar@123",
   });
 
-  const carregarUsuarios = async () => {
-    setCarregando(true);
+  const carregarUsuarios = async (mostrarCarregamento = false) => {
+    if (mostrarCarregamento || usuarios.length === 0) {
+      setCarregando(true);
+    }
     try {
       const lista = await usuariosService.listar();
       setUsuarios(lista);
@@ -56,9 +58,9 @@ export default function UsuariosPage() {
   };
 
   useEffect(() => {
-    carregarUsuarios();
+    carregarUsuarios(true);
 
-    const handleAtualizacao = () => carregarUsuarios();
+    const handleAtualizacao = () => carregarUsuarios(false);
     window.addEventListener("inventario_usuarios_alterado", handleAtualizacao);
     return () => window.removeEventListener("inventario_usuarios_alterado", handleAtualizacao);
   }, []);
@@ -305,11 +307,11 @@ export default function UsuariosPage() {
 
                         <td className="px-6 py-4">
                           {u.status === "ativo" ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-                              <CheckCircle2 className="w-3 h-3" /> Ativo
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/80 shadow-2xs">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Ativo
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs">
                               Inativo
                             </span>
                           )}
