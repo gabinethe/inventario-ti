@@ -52,34 +52,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50">
+    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50 dark:bg-[#070913] transition-colors">
       <div className="w-full max-w-md space-y-6">
         {/* Logotipo e Cabeçalho */}
         <div className="text-center space-y-2">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b0e24] text-white shadow-md shadow-indigo-950/30 mb-2 border border-indigo-900/40">
             <Box className="h-6 w-6 text-indigo-400" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Inventário TI
           </h1>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             Painel Administrativo • Gestão de Ativos Corporativos
           </p>
         </div>
 
         {/* Card do Formulário */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs space-y-6">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-8 shadow-xs space-y-6">
           <div className="space-y-1">
-            <h2 className="text-base font-bold text-slate-800">
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
               Acesso ao Sistema
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Entre com suas credenciais de administrador para continuar.
             </p>
           </div>
 
           {erro && (
-            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5">
+            <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{erro}</span>
             </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="email" className="block text-xs font-semibold text-slate-700">
+              <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 E-mail de Administrador
               </label>
               <div className="relative">
@@ -99,13 +99,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu-email@dominio.com"
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-[#0b0f19] border border-slate-300 dark:border-indigo-950/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="password" className="block text-xs font-semibold text-slate-700">
+              <label htmlFor="password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Senha
               </label>
               <div className="relative">
@@ -117,7 +117,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-[#0b0f19] border border-slate-300 dark:border-indigo-950/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
             </div>
@@ -134,9 +134,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-4 border-t border-slate-100 dark:border-indigo-950/70 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Autenticação Segura (Supabase)</span>
             </div>
             <span>v0.2 MVP</span>

@@ -192,12 +192,14 @@ export function Sidebar() {
         isCollapsed ? "w-[72px]" : "w-64"
       )}
     >
-      <div className="overflow-y-auto overflow-x-hidden flex-1 flex flex-col">
+      <div className={cn("overflow-y-auto flex-1 flex flex-col", isCollapsed ? "overflow-x-visible" : "overflow-x-hidden")}>
         {/* Cabeçalho da Sidebar */}
         <div
           className={cn(
-            "h-16 flex items-center border-b border-indigo-900/30 bg-[#0e122b]/60 sticky top-0 z-10 transition-all",
-            isCollapsed ? "justify-center px-2" : "justify-between px-4"
+            "border-b border-indigo-900/30 bg-[#0e122b]/60 sticky top-0 z-10 transition-all",
+            isCollapsed 
+              ? "flex flex-col items-center justify-center py-3 gap-2 px-2" 
+              : "h-16 flex items-center justify-between px-4"
           )}
         >
           {/* Logo e Nome */}
@@ -229,7 +231,7 @@ export function Sidebar() {
             onClick={alternarColapso}
             className={cn(
               "p-1.5 rounded-lg text-indigo-400 hover:text-white hover:bg-indigo-900/50 transition-colors cursor-pointer flex-shrink-0",
-              isCollapsed && "mt-1"
+              isCollapsed && "bg-indigo-950/70 border border-indigo-900/50"
             )}
             title={isCollapsed ? "Expandir barra lateral (Ctrl+B)" : "Recolher barra lateral (Ctrl+B)"}
           >
@@ -384,6 +386,7 @@ export function Sidebar() {
             <Link
               href="/"
               prefetch={true}
+              title={isCollapsed ? "Dashboard" : undefined}
               className={cn(
                 "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 isCollapsed
@@ -447,6 +450,7 @@ export function Sidebar() {
                 <Link
                   href="/equipamentos?tipo=notebook"
                   prefetch={true}
+                  title={isCollapsed ? `Notebooks (${totais.notebook})` : undefined}
                   className={cn(
                     "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                     isCollapsed
@@ -477,6 +481,7 @@ export function Sidebar() {
                 <Link
                   href="/equipamentos?tipo=monitor"
                   prefetch={true}
+                  title={isCollapsed ? `Monitores (${totais.monitor})` : undefined}
                   className={cn(
                     "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                     isCollapsed
@@ -507,6 +512,7 @@ export function Sidebar() {
                 <Link
                   href="/equipamentos?tipo=smartphone"
                   prefetch={true}
+                  title={isCollapsed ? `Celulares (${totais.smartphone})` : undefined}
                   className={cn(
                     "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                     isCollapsed
@@ -537,6 +543,7 @@ export function Sidebar() {
                 <Link
                   href="/equipamentos?tipo=periferico"
                   prefetch={true}
+                  title={isCollapsed ? `Periféricos (${totais.periferico})` : undefined}
                   className={cn(
                     "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                     isCollapsed
@@ -567,6 +574,7 @@ export function Sidebar() {
                 <Link
                   href="/equipamentos?tipo=todos"
                   prefetch={true}
+                  title={isCollapsed ? `Todos os Ativos (${totais.todos})` : undefined}
                   className={cn(
                     "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative mt-1 pt-1.5 border-t border-indigo-900/30",
                     isCollapsed
@@ -608,6 +616,7 @@ export function Sidebar() {
             <Link
               href="/responsaveis"
               prefetch={true}
+              title={isCollapsed ? `Colaboradores (${totais.colaboradores})` : undefined}
               className={cn(
                 "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 isCollapsed
@@ -638,6 +647,7 @@ export function Sidebar() {
             <Link
               href="/movimentacoes"
               prefetch={true}
+              title={isCollapsed ? `Movimentações (${totais.movimentacoes})` : undefined}
               className={cn(
                 "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 isCollapsed
@@ -668,6 +678,7 @@ export function Sidebar() {
             <Link
               href="/usuarios"
               prefetch={true}
+              title={isCollapsed ? "Usuários & Acesso" : undefined}
               className={cn(
                 "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 isCollapsed
@@ -693,6 +704,7 @@ export function Sidebar() {
             <Link
               href="/configuracoes"
               prefetch={true}
+              title={isCollapsed ? "Configurações" : undefined}
               className={cn(
                 "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 isCollapsed

@@ -103,37 +103,37 @@ export default function MovimentacoesPage() {
       case "atribuicao":
         return {
           label: "Atribuição",
-          classes: "bg-indigo-50 text-indigo-700 border-indigo-200",
+          classes: "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60",
           icone: <UserCheck className="w-3.5 h-3.5" />,
         };
       case "devolucao":
         return {
           label: "Devolução",
-          classes: "bg-amber-50 text-amber-700 border-amber-200",
+          classes: "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60",
           icone: <Undo2 className="w-3.5 h-3.5" />,
         };
       case "entrada":
         return {
           label: "Entrada Estoque",
-          classes: "bg-emerald-50 text-emerald-700 border-emerald-200",
+          classes: "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60",
           icone: <PackagePlus className="w-3.5 h-3.5" />,
         };
       case "colaborador":
         return {
           label: "Novo Colaborador",
-          classes: "bg-sky-50 text-sky-700 border-sky-200",
+          classes: "bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800/60",
           icone: <UserPlus className="w-3.5 h-3.5" />,
         };
       case "exclusao":
         return {
           label: "Baixa / Exclusão",
-          classes: "bg-rose-50 text-rose-700 border-rose-200",
+          classes: "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60",
           icone: <Trash2 className="w-3.5 h-3.5" />,
         };
       default:
         return {
           label: tipo,
-          classes: "bg-slate-100 text-slate-700 border-slate-200",
+          classes: "bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
           icone: <Clock className="w-3.5 h-3.5" />,
         };
     }
@@ -149,11 +149,11 @@ export default function MovimentacoesPage() {
       <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-              <ArrowLeftRight className="h-6 w-6 text-indigo-600" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+              <ArrowLeftRight className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               Linha do Tempo de Movimentações
             </h1>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Trilha de auditoria cronológica gerada automaticamente a cada ação no inventário corporativo.
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function MovimentacoesPage() {
           {movimentacoes.length > 0 && (
             <button
               onClick={() => setModalLimparAberto(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer shadow-2xs self-start sm:self-auto"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-900/50 rounded-xl transition-all cursor-pointer shadow-2xs self-start sm:self-auto"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Limpar Histórico
@@ -178,7 +178,7 @@ export default function MovimentacoesPage() {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar em motivos, ativos ou colaboradores..."
-              className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400"
+              className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-[#0f142b] border border-slate-300 dark:border-indigo-950/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
           </div>
 
@@ -188,7 +188,7 @@ export default function MovimentacoesPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroTipo === "todos"
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
               Todas ({movimentacoes.length})
@@ -199,7 +199,7 @@ export default function MovimentacoesPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroTipo === "atribuicao_devolucao"
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
               Custódia & Devoluções
@@ -210,7 +210,7 @@ export default function MovimentacoesPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroTipo === "entrada"
                   ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
               Entradas no Estoque
@@ -221,7 +221,7 @@ export default function MovimentacoesPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroTipo === "colaborador"
                   ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
               Colaboradores
@@ -232,7 +232,7 @@ export default function MovimentacoesPage() {
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroTipo === "exclusao"
                   ? "bg-rose-600 text-white border-rose-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
               Baixas / Exclusões
@@ -241,29 +241,29 @@ export default function MovimentacoesPage() {
         </div>
 
         {/* Linha do Tempo Dinâmica */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs">
           {carregando ? (
-            <div className="p-8 text-center text-slate-400 text-sm">
+            <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-sm">
               Carregando histórico de auditoria...
             </div>
           ) : movimentacoesFiltradas.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
+            <div className="p-12 text-center text-slate-400 dark:text-slate-500">
               <Boxes className="w-8 h-8 mx-auto mb-2 opacity-30" />
-              <p className="font-semibold text-slate-600 text-sm">Nenhuma movimentação encontrada</p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="font-semibold text-slate-600 dark:text-slate-300 text-sm">Nenhuma movimentação encontrada</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Todas as ações (adicionar equipamentos, vincular pessoas ou devolver ao estoque) aparecerão registradas aqui.
               </p>
             </div>
           ) : (
-            <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+            <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-indigo-950/80">
               {movimentacoesFiltradas.map((mov) => {
                 const badge = getBadgeTipo(mov.tipo);
 
                 return (
                   <div key={mov.id} className="relative animate-in fade-in duration-150">
-                    <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 ring-2 ring-indigo-100 shadow-xs" />
+                    <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-[#0f142b] bg-indigo-600 ring-2 ring-indigo-100 dark:ring-indigo-950 shadow-xs" />
                     
-                    <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 space-y-3 hover:border-indigo-200/80 transition-all">
+                    <div className="bg-slate-50/80 dark:bg-[#0b0f19]/80 border border-slate-200/80 dark:border-indigo-950/70 rounded-2xl p-4 space-y-3 hover:border-indigo-200/80 dark:hover:border-indigo-700/50 transition-all">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
                           <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${badge.classes}`}>
@@ -272,32 +272,32 @@ export default function MovimentacoesPage() {
                           </span>
 
                           {mov.equipamentoNome && (
-                            <span className="text-xs font-bold text-slate-800">
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                               {mov.equipamentoNome}
                             </span>
                           )}
                         </div>
 
-                        <span className="text-xs text-slate-400 font-medium">
+                        <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                           {new Date(mov.data).toLocaleDateString("pt-BR")} às{" "}
                           {new Date(mov.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
 
-                      <p className="text-sm text-slate-700 font-medium">
+                      <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">
                         {mov.motivo}
                       </p>
 
-                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/60 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200/60 dark:border-indigo-950/60 text-xs text-slate-500 dark:text-slate-400">
                         <div>
                           {mov.responsavelNome && (
                             <span>
-                              Colaborador: <strong className="text-slate-800 font-semibold">{mov.responsavelNome}</strong>
+                              Colaborador: <strong className="text-slate-800 dark:text-slate-200 font-semibold">{mov.responsavelNome}</strong>
                             </span>
                           )}
                         </div>
-                        <div className="text-[11px] text-slate-400 font-mono">
-                          Registrado por: <strong>{mov.registradoPor}</strong>
+                        <div className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+                          Registrado por: <strong className="text-slate-600 dark:text-slate-300">{mov.registradoPor}</strong>
                         </div>
                       </div>
                     </div>

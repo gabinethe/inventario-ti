@@ -248,7 +248,7 @@ function NovoEquipamentoForm() {
           <Link
             href={`/equipamentos?tipo=${tipo}`}
             prefetch={true}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar para lista de {tipo}s
@@ -257,34 +257,34 @@ function NovoEquipamentoForm() {
 
         {/* Alerta de Sucesso */}
         {sucesso && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3 shadow-xs animate-in fade-in">
-            <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center gap-3 shadow-xs animate-in fade-in">
+            <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
             <div>
               <p className="font-bold text-sm">Equipamento cadastrado com sucesso!</p>
-              <p className="text-xs text-emerald-700">Atualizando o inventário e retornando à lista de {tipo}s...</p>
+              <p className="text-xs text-emerald-700 dark:text-emerald-300">Atualizando o inventário e retornando à lista de {tipo}s...</p>
             </div>
           </div>
         )}
 
         {/* Alerta de Erro de Validação */}
         {erro && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-3 shadow-xs animate-in fade-in">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-200 flex items-start gap-3 shadow-xs animate-in fade-in">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
             <div>
               <p className="font-bold text-sm">Não foi possível salvar o cadastro</p>
-              <p className="text-xs text-rose-700 mt-0.5">{erro}</p>
+              <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">{erro}</p>
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs space-y-6">
           {/* 1. Seleção Visual da Categoria */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 1. Categoria do Ativo <span className="text-rose-500">*</span>
               </label>
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                 Campos com <span className="text-rose-500 font-bold">*</span> são obrigatórios
               </span>
             </div>
@@ -295,11 +295,11 @@ function NovoEquipamentoForm() {
                 onClick={() => handleTipoChange("notebook")}
                 className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
                   tipo === "notebook"
-                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
-                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-600 dark:border-indigo-500 text-indigo-900 dark:text-indigo-200 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 dark:border-indigo-950/60 hover:bg-slate-50 dark:hover:bg-indigo-950/30 text-slate-600 dark:text-slate-400"
                 }`}
               >
-                <Laptop className={`w-5 h-5 ${tipo === "notebook" ? "text-indigo-600" : "text-slate-400"}`} />
+                <Laptop className={`w-5 h-5 ${tipo === "notebook" ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`} />
                 <span className="text-xs font-bold">Notebook</span>
               </button>
 
@@ -308,11 +308,11 @@ function NovoEquipamentoForm() {
                 onClick={() => handleTipoChange("monitor")}
                 className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
                   tipo === "monitor"
-                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
-                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-600 dark:border-indigo-500 text-indigo-900 dark:text-indigo-200 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 dark:border-indigo-950/60 hover:bg-slate-50 dark:hover:bg-indigo-950/30 text-slate-600 dark:text-slate-400"
                 }`}
               >
-                <Monitor className={`w-5 h-5 ${tipo === "monitor" ? "text-indigo-600" : "text-slate-400"}`} />
+                <Monitor className={`w-5 h-5 ${tipo === "monitor" ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`} />
                 <span className="text-xs font-bold">Monitor</span>
               </button>
 
@@ -321,11 +321,11 @@ function NovoEquipamentoForm() {
                 onClick={() => handleTipoChange("smartphone")}
                 className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
                   tipo === "smartphone"
-                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
-                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-600 dark:border-indigo-500 text-indigo-900 dark:text-indigo-200 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 dark:border-indigo-950/60 hover:bg-slate-50 dark:hover:bg-indigo-950/30 text-slate-600 dark:text-slate-400"
                 }`}
               >
-                <Smartphone className={`w-5 h-5 ${tipo === "smartphone" ? "text-indigo-600" : "text-slate-400"}`} />
+                <Smartphone className={`w-5 h-5 ${tipo === "smartphone" ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`} />
                 <span className="text-xs font-bold">Celular</span>
               </button>
 
@@ -334,11 +334,11 @@ function NovoEquipamentoForm() {
                 onClick={() => handleTipoChange("periferico")}
                 className={`p-3.5 rounded-xl border flex flex-col items-center gap-2 text-center transition-all cursor-pointer ${
                   tipo === "periferico"
-                    ? "bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-2 ring-indigo-600/15"
-                    : "border-slate-200 hover:bg-slate-50 text-slate-600"
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/60 border-indigo-600 dark:border-indigo-500 text-indigo-900 dark:text-indigo-200 ring-2 ring-indigo-600/15"
+                    : "border-slate-200 dark:border-indigo-950/60 hover:bg-slate-50 dark:hover:bg-indigo-950/30 text-slate-600 dark:text-slate-400"
                 }`}
               >
-                <Headphones className={`w-5 h-5 ${tipo === "periferico" ? "text-indigo-600" : "text-slate-400"}`} />
+                <Headphones className={`w-5 h-5 ${tipo === "periferico" ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400"}`} />
                 <span className="text-xs font-bold">Periférico</span>
               </button>
             </div>
@@ -346,15 +346,15 @@ function NovoEquipamentoForm() {
 
           {/* Subtipo de Periférico se aplicável */}
           {tipo === "periferico" && (
-            <div className="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-1.5 animate-in fade-in duration-150">
-              <label htmlFor="subtipo" className="block text-xs font-semibold text-indigo-950">
+            <div className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 space-y-1.5 animate-in fade-in duration-150">
+              <label htmlFor="subtipo" className="block text-xs font-semibold text-indigo-950 dark:text-indigo-200">
                 Tipo de Periférico / Acessório <span className="text-rose-500">*</span>
               </label>
               <select
                 id="subtipo"
                 value={subtipo}
                 onChange={(e) => setSubtipo(e.target.value)}
-                className="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                className="w-full rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
               >
                 <option value="headset">Headset / Fone de Ouvido</option>
                 <option value="mouse">Mouse</option>
@@ -368,14 +368,14 @@ function NovoEquipamentoForm() {
           )}
 
           {/* 2. Dados de Identificação */}
-          <div className="pt-4 border-t border-slate-200 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="pt-4 border-t border-slate-200 dark:border-indigo-950/70 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               2. Identificação do Fabricante & Modelo
             </h3>
 
             <div className={`grid grid-cols-1 ${tipo === "periferico" ? "md:grid-cols-3" : "md:grid-cols-2"} gap-4`}>
               <div className="w-full space-y-1.5">
-                <label htmlFor="marca" className="block text-xs font-semibold text-slate-700">
+                <label htmlFor="marca" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Marca / Fabricante <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -383,7 +383,7 @@ function NovoEquipamentoForm() {
                   name="marca"
                   value={form.marca}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                  className="w-full rounded-xl border border-slate-300 dark:border-indigo-950/70 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
                 >
                   {MARCAS_POR_TIPO[tipo].map((m) => (
                     <option key={m} value={m}>
@@ -415,7 +415,7 @@ function NovoEquipamentoForm() {
 
               {tipo === "periferico" && (
                 <div className="w-full space-y-1.5">
-                  <label htmlFor="quantidadeEstoque" className="block text-xs font-semibold text-slate-700">
+                  <label htmlFor="quantidadeEstoque" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Quantidade em Estoque (Unidades) <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -425,7 +425,7 @@ function NovoEquipamentoForm() {
                     max="999"
                     value={quantidadeEstoque}
                     onChange={(e) => setQuantidadeEstoque(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                    className="w-full rounded-xl border border-slate-300 dark:border-indigo-950/70 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
                     required
                   />
                 </div>
@@ -453,7 +453,7 @@ function NovoEquipamentoForm() {
                   className={erroSerial ? "border-rose-500 focus:border-rose-600 focus:ring-rose-500/20" : ""}
                 />
                 {erroSerial && (
-                  <p className="text-[11px] font-semibold text-rose-600 flex items-center gap-1 mt-1">
+                  <p className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 mt-1">
                     <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
                     {erroSerial}
                   </p>
@@ -461,7 +461,7 @@ function NovoEquipamentoForm() {
               </div>
 
               <div className="w-full space-y-1.5">
-                <label htmlFor="responsavelId" className="block text-xs font-semibold text-slate-700">
+                <label htmlFor="responsavelId" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Atribuir a um Colaborador Imediatamente? (Opcional)
                 </label>
                 <select
@@ -469,7 +469,7 @@ function NovoEquipamentoForm() {
                   name="responsavelId"
                   value={form.responsavelId}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
+                  className="w-full rounded-xl border border-slate-300 dark:border-indigo-950/70 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white shadow-2xs focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15"
                 >
                   <option value="">Não (Manter Disponível no Estoque de TI)</option>
                   {colaboradores.map((colab) => (
@@ -483,8 +483,8 @@ function NovoEquipamentoForm() {
           </div>
 
           {/* 3. Especificações Técnicas Dinâmicas */}
-          <div className="pt-4 border-t border-slate-200 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="pt-4 border-t border-slate-200 dark:border-indigo-950/70 space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               3. Especificações Técnicas ({tipo.toUpperCase()})
             </h3>
 
@@ -558,8 +558,8 @@ function NovoEquipamentoForm() {
           </div>
 
           {/* 4. Aquisição e Detalhes Financeiros */}
-          <div className="pt-4 border-t border-slate-200">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+          <div className="pt-4 border-t border-slate-200 dark:border-indigo-950/70">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
               4. Dados de Aquisição
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -585,7 +585,7 @@ function NovoEquipamentoForm() {
             </div>
 
             <div className="mt-4 space-y-1.5">
-              <label htmlFor="observacoes" className="block text-xs font-semibold text-slate-700">
+              <label htmlFor="observacoes" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Observações Adicionais de TI
               </label>
               <textarea
@@ -595,13 +595,13 @@ function NovoEquipamentoForm() {
                 placeholder="Detalhes adicionais, nota fiscal, número do pedido ou acessórios inclusos..."
                 value={form.observacoes}
                 onChange={handleChange}
-                className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15 shadow-2xs"
+                className="w-full rounded-xl border border-slate-300 dark:border-indigo-950/70 bg-white dark:bg-[#0b0f19] px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-600/15 shadow-2xs"
               />
             </div>
           </div>
 
           {/* Rodapé do Formulário com Ações */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-indigo-950/70">
             <Link href={`/equipamentos?tipo=${tipo}`}>
               <Button type="button" variant="outline">
                 Cancelar

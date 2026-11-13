@@ -202,13 +202,13 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
   return (
     <div className="space-y-6">
       {/* 1. Barra de Seleção de Categorias de Equipamento */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-200 dark:border-indigo-950/80">
         <button
           onClick={() => mudarAba("notebook")}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "notebook"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
           }`}
         >
           <Laptop className="w-4 h-4" />
@@ -220,7 +220,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "monitor"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
           }`}
         >
           <Monitor className="w-4 h-4" />
@@ -232,7 +232,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "smartphone"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
           }`}
         >
           <Smartphone className="w-4 h-4" />
@@ -244,7 +244,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "periferico"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
           }`}
         >
           <Headphones className="w-4 h-4" />
@@ -256,7 +256,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
             filtroTipo === "todos"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-500 hover:bg-slate-100"
+              : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
           }`}
         >
           <Boxes className="w-4 h-4" />
@@ -274,7 +274,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Pesquisar por patrimônio, modelo, serial ou colaborador..."
-            className="w-full pl-10 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 placeholder:text-slate-400 transition-all"
+            className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-[#0e132c] border border-slate-300 dark:border-indigo-900/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 shadow-2xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
           />
         </div>
 
@@ -286,7 +286,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroStatus === "todos"
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
               }`}
             >
               Todos ({contadoresStatus.todos})
@@ -297,7 +297,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "disponivel"
                   ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-900"
+                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-900 dark:hover:text-emerald-400"
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
@@ -309,7 +309,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "em_uso"
                   ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-900 dark:hover:text-indigo-400"
               }`}
             >
               <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
@@ -321,7 +321,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "manutencao"
                   ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-amber-50 hover:text-amber-900"
+                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-900 dark:hover:text-amber-400"
               }`}
             >
               <Wrench className="w-3.5 h-3.5 text-amber-500" />
@@ -329,7 +329,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             </button>
           </div>
 
-          <div className="h-6 w-px bg-slate-200 hidden lg:block" />
+          <div className="h-6 w-px bg-slate-200 dark:bg-indigo-950 hidden lg:block" />
 
           {/* Botão Contextual de Cadastro por Rota/Categoria */}
           <Link href={linkCadastro} prefetch={true} className="flex-shrink-0">
@@ -342,19 +342,19 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
       </div>
 
       {/* 3. Tabela de Resultados Integrada */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50/80 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="bg-slate-50/80 dark:bg-[#0a0e20] text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-indigo-950/70">
               <tr>
-                <th className="px-6 py-3.5">Ativo / Patrimônio</th>
+                <th className="px-6 py-3.5">Ativo / Identificação</th>
                 <th className="px-6 py-3.5">Categoria & Detalhes</th>
                 <th className="px-6 py-3.5">Status</th>
                 <th className="px-6 py-3.5">Custódia / Responsável</th>
                 <th className="px-6 py-3.5 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-indigo-950/50">
               {equipamentosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-slate-400">

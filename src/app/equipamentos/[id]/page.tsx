@@ -148,31 +148,31 @@ export default function DetalhesEquipamentoPage() {
         </div>
 
         {/* Banner do Equipamento */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+            <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl border border-indigo-100 dark:border-indigo-900/60">
               {getIconeTipo(equipamento.tipo)}
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                   {equipamento.marca} {equipamento.modelo}
                 </h1>
                 <StatusBadge status={equipamento.status} />
                 {equipamento.subtipo && (
-                  <span className="text-[11px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full border border-slate-200">
+                  <span className="text-[11px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-indigo-950/60 text-slate-700 dark:text-slate-300 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-indigo-900/60">
                     {equipamento.subtipo}
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mt-1">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1">
                 {equipamento.quantidadeDisponivel !== undefined ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                     Estoque: {equipamento.quantidadeDisponivel} disponíveis {equipamento.quantidadeTotal ? `de ${equipamento.quantidadeTotal}` : ""}
                   </span>
                 ) : (
-                  <span>Serial (S/N): <strong className="font-mono text-slate-800">{equipamento.numeroSerie}</strong></span>
+                  <span>Serial (S/N): <strong className="font-mono text-slate-800 dark:text-slate-200">{equipamento.numeroSerie}</strong></span>
                 )}
               </div>
             </div>
@@ -187,8 +187,8 @@ export default function DetalhesEquipamentoPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Coluna 1 e 2: Especificações Técnicas */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
+            <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
                 Especificações & Detalhes Técnicos
               </h2>
 
@@ -196,31 +196,31 @@ export default function DetalhesEquipamentoPage() {
                 {/* Se for notebook */}
                 {equipamento.tipo === "notebook" && (
                   <>
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                      <Cpu className="w-5 h-5 text-indigo-600" />
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                      <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold">Processador</p>
-                        <p className="text-sm font-semibold text-slate-800">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Processador</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           {equipamento.processador || "Padrão"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                      <MemoryStick className="w-5 h-5 text-indigo-600" />
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                      <MemoryStick className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold">Memória RAM</p>
-                        <p className="text-sm font-semibold text-slate-800">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Memória RAM</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           {equipamento.memoriaRam || "Padrão"}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                      <HardDrive className="w-5 h-5 text-emerald-600" />
+                    <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                      <HardDrive className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase font-bold">Armazenamento</p>
-                        <p className="text-sm font-semibold text-slate-800">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Armazenamento</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           {equipamento.armazenamento || "Padrão"}
                         </p>
                       </div>
@@ -230,11 +230,11 @@ export default function DetalhesEquipamentoPage() {
 
                 {/* Se for smartphone */}
                 {equipamento.tipo === "smartphone" && equipamento.armazenamento && (
-                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <HardDrive className="w-5 h-5 text-emerald-600" />
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                    <HardDrive className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold">Armazenamento Interno</p>
-                      <p className="text-sm font-semibold text-slate-800">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Armazenamento Interno</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                         {equipamento.armazenamento}
                       </p>
                     </div>
@@ -243,11 +243,11 @@ export default function DetalhesEquipamentoPage() {
 
                 {/* Se for periférico em lote */}
                 {equipamento.tipo === "periferico" && equipamento.quantidadeDisponivel !== undefined && (
-                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
-                    <Layers className="w-5 h-5 text-emerald-600" />
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/60">
+                    <Layers className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <p className="text-[10px] text-emerald-700 uppercase font-bold">Estoque do Lote</p>
-                      <p className="text-sm font-bold text-emerald-900">
+                      <p className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-bold">Estoque do Lote</p>
+                      <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
                         {equipamento.quantidadeDisponivel} unidades disponíveis
                       </p>
                     </div>
@@ -256,32 +256,32 @@ export default function DetalhesEquipamentoPage() {
 
                 {/* Especificações Livres */}
                 {equipamento.especificacoes && (
-                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100 sm:col-span-2">
-                    <Sparkles className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                  <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70 sm:col-span-2">
+                    <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                     <div>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold">Configuração & Recursos</p>
-                      <p className="text-sm font-medium text-slate-800">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Configuração & Recursos</p>
+                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                         {equipamento.especificacoes}
                       </p>
                     </div>
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <Calendar className="w-5 h-5 text-amber-600" />
+                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                  <Calendar className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Data de Aquisição</p>
-                    <p className="text-sm font-semibold text-slate-800">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Data de Aquisição</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                       {new Date(equipamento.dataAquisicao).toLocaleDateString("pt-BR")}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                  <Barcode className="w-5 h-5 text-slate-600" />
+                <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70">
+                  <Barcode className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">Número de Série / Lote</p>
-                    <p className="text-sm font-semibold text-slate-800 font-mono">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Número de Série / Lote</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 font-mono">
                       {equipamento.numeroSerie}
                     </p>
                   </div>
@@ -289,43 +289,43 @@ export default function DetalhesEquipamentoPage() {
               </div>
 
               {equipamento.observacoes && (
-                <div className="mt-4 p-3.5 rounded-xl border border-slate-200 bg-slate-50/60">
-                  <p className="text-xs font-bold text-slate-600">Observações de TI:</p>
-                  <p className="text-xs text-slate-600 mt-1">{equipamento.observacoes}</p>
+                <div className="mt-4 p-3.5 rounded-xl border border-slate-200 dark:border-indigo-950/70 bg-slate-50/60 dark:bg-[#0b0f19]/60">
+                  <p className="text-xs font-bold text-slate-600 dark:text-slate-300">Observações de TI:</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{equipamento.observacoes}</p>
                 </div>
               )}
             </div>
 
             {/* Linha do Tempo / Histórico de Auditoria */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-600" />
+            <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 Histórico de Movimentações (Auditoria)
               </h2>
 
               {historico.length === 0 ? (
-                <p className="text-xs text-slate-400 py-4 text-center">
+                <p className="text-xs text-slate-400 dark:text-slate-500 py-4 text-center">
                   Nenhuma movimentação registrada para este equipamento ainda.
                 </p>
               ) : (
-                <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-indigo-950/80">
                   {historico.map((mov) => (
                     <div key={mov.id} className="relative">
-                      <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-indigo-600 shadow-xs" />
-                      <div className="bg-slate-50/70 border border-slate-200/60 rounded-xl p-3.5 space-y-1">
+                      <div className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-[#0f142b] bg-indigo-600 shadow-xs" />
+                      <div className="bg-slate-50/70 dark:bg-[#0b0f19]/70 border border-slate-200/60 dark:border-indigo-950/60 rounded-xl p-3.5 space-y-1">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                          <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-900/50">
                             {mov.tipo}
                           </span>
-                          <span className="text-[11px] text-slate-400 font-medium">
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
                             {new Date(mov.data).toLocaleDateString("pt-BR")} às{" "}
                             {new Date(mov.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-700 font-medium pt-1">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 font-medium pt-1">
                           {mov.motivo}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-mono">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                           Registrado por: {mov.registradoPor}
                         </p>
                       </div>
@@ -338,16 +338,16 @@ export default function DetalhesEquipamentoPage() {
 
           {/* Coluna 3: Responsável Atual */}
           <div className="space-y-6">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                <User className="w-4 h-4 text-indigo-600" />
+            <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+                <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 Responsável Atual
               </h2>
 
               {equipamento.responsavel ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-sm flex items-center justify-center border border-indigo-100">
+                    <div className="h-12 w-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold text-sm flex items-center justify-center border border-indigo-100 dark:border-indigo-900/60">
                       {equipamento.responsavel.nome
                         .split(" ")
                         .map((n) => n[0])
@@ -355,31 +355,31 @@ export default function DetalhesEquipamentoPage() {
                         .join("")}
                     </div>
                     <div>
-                      <p className="font-bold text-sm text-slate-900">
+                      <p className="font-bold text-sm text-slate-900 dark:text-white">
                         {equipamento.responsavel.nome}
                       </p>
-                      <p className="text-xs text-slate-500 font-medium">{equipamento.responsavel.cargo}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{equipamento.responsavel.cargo}</p>
                     </div>
                   </div>
 
-                  <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs">
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Building2 className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-800">{equipamento.responsavel.departamento}</span>
+                  <div className="space-y-2.5 pt-3 border-t border-slate-100 dark:border-indigo-950/70 text-xs">
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                      <Building2 className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-medium text-slate-800 dark:text-slate-200">{equipamento.responsavel.departamento}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Mail className="w-4 h-4 text-slate-400" />
-                      <span className="font-medium text-slate-800 break-all">{equipamento.responsavel.email}</span>
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                      <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                      <span className="font-medium text-slate-800 dark:text-slate-200 break-all">{equipamento.responsavel.email}</span>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-6">
                   <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto mb-2 opacity-80" />
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
                     Disponível no Estoque
                   </p>
-                  <p className="text-xs text-slate-500 mt-1 max-w-[200px] mx-auto">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[200px] mx-auto">
                     {equipamento.tipo === "periferico" && equipamento.quantidadeDisponivel !== undefined
                       ? `${equipamento.quantidadeDisponivel} unidades prontas para distribuição.`
                       : "Este equipamento não possui colaborador vinculado no momento."}

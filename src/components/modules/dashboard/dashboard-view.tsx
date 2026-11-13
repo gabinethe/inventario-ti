@@ -206,13 +206,13 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
   return (
     <div className="space-y-8">
       {/* 1. Cabeçalho Executivo do Painel */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-indigo-950/80">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Activity className="w-6 h-6 text-indigo-600" />
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <Activity className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             Painel Executivo & Métricas do Parque
           </h1>
-          <p className="text-sm text-slate-500 font-medium">
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
             Indicadores analíticos consolidados em tempo real, taxas de disponibilidade e saúde do inventário corporativo.
           </p>
         </div>
@@ -267,11 +267,11 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div>
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-indigo-600" />
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               Métricas de Disponibilidade & Alocação por Categoria
             </h2>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Acompanhamento analítico da proporção de hardware alocado versus estoque de reserva.
             </p>
           </div>
@@ -284,20 +284,20 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
             return (
               <div
                 key={cat.id}
-                className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-indigo-300 transition-all space-y-4"
+                className="p-5 rounded-2xl bg-white dark:bg-[#0f142b] border border-slate-200/90 dark:border-indigo-950/70 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-800 transition-all space-y-4"
               >
                 {/* Cabeçalho do Card */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-2xs">
+                    <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
                       <Icone className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {cat.nome}
                       </h3>
-                      <p className="text-[11px] text-slate-400 font-medium">
-                        Total: <span className="font-bold text-slate-700">{cat.total} unidades</span>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                        Total: <span className="font-bold text-slate-700 dark:text-slate-300">{cat.total} unidades</span>
                       </p>
                     </div>
                   </div>
@@ -309,36 +309,36 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
                 {/* Grid de Métricas Numéricas */}
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-1.5 text-emerald-700 text-[10px] font-bold uppercase tracking-wider">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#0a0e20] border border-slate-100 dark:border-indigo-950/50">
+                    <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
                       <CheckCircle2 className="w-3 h-3" />
                       Disponível
                     </div>
-                    <p className="text-xl font-black text-slate-900 mt-1">
+                    <p className="text-xl font-black text-slate-900 dark:text-white mt-1">
                       {cat.id === "periferico" ? cat.qtdFisicaEstoque : cat.disponivel}
                     </p>
-                    <p className="text-[10px] text-slate-400 font-medium">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                       {cat.id === "periferico" ? "unid. livres" : "livres no estoque"}
                     </p>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center gap-1.5 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#0a0e20] border border-slate-100 dark:border-indigo-950/50">
+                    <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">
                       <UserCheck className="w-3 h-3" />
                       Em Uso
                     </div>
-                    <p className="text-xl font-black text-slate-900 mt-1">{cat.emUso}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">com colaboradores</p>
+                    <p className="text-xl font-black text-slate-900 dark:text-white mt-1">{cat.emUso}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">com colaboradores</p>
                   </div>
                 </div>
 
                 {/* Barra de Proporção Visual */}
                 <div className="space-y-1.5 pt-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-slate-400 font-medium">Taxa de Ocupação</span>
-                    <span className="font-bold text-indigo-900">{cat.taxaUso}%</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-medium">Taxa de Ocupação</span>
+                    <span className="font-bold text-indigo-900 dark:text-indigo-300">{cat.taxaUso}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
+                  <div className="w-full h-2 bg-slate-100 dark:bg-[#0a0e20] rounded-full overflow-hidden flex">
                     <div 
                       className="bg-indigo-600 h-full transition-all duration-300"
                       style={{ width: `${cat.taxaUso}%` }}
@@ -362,36 +362,36 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
       </div>
 
       {/* 4. Card Estratégico: Prontidão de Onboarding & Kits de TI */}
-      <div className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-white to-indigo-50/40 p-5 shadow-2xs">
+      <div className="rounded-2xl border border-indigo-100 dark:border-indigo-950/70 bg-gradient-to-r from-indigo-50/70 via-white to-indigo-50/40 dark:from-[#0f142b] dark:via-[#131938] dark:to-[#0f142b] p-5 shadow-2xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="p-1.5 rounded-lg bg-indigo-600 text-white shadow-2xs">
                 <Sparkles className="w-4 h-4" />
               </span>
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 Prontidão de Onboarding de Novos Colaboradores
               </h3>
             </div>
-            <p className="text-xs text-slate-500 max-w-2xl font-medium">
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-2xl font-medium">
               Com base nos notebooks e periféricos livres no almoxarifado, seu parque de TI tem capacidade para admissão imediata de:
             </p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white px-5 py-3 rounded-2xl border border-indigo-100/80 shadow-2xs">
+          <div className="flex items-center gap-4 bg-white dark:bg-[#0c1022] px-5 py-3 rounded-2xl border border-indigo-100/80 dark:border-indigo-950/70 shadow-2xs">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Kits de Entrada Prontos
               </p>
-              <p className="text-2xl font-black text-indigo-600 leading-tight">
+              <p className="text-2xl font-black text-indigo-600 dark:text-indigo-400 leading-tight">
                 {prontidaoOnboarding.kitsCompletos}{" "}
-                <span className="text-xs font-semibold text-slate-500 font-sans">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans">
                   {prontidaoOnboarding.kitsCompletos === 1 ? "novo contratado" : "novos contratados"}
                 </span>
               </p>
             </div>
-            <div className="h-8 w-px bg-slate-200" />
-            <div className="text-[11px] text-slate-500 space-y-0.5">
+            <div className="h-8 w-px bg-slate-200 dark:bg-indigo-950" />
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
               <p>💻 {prontidaoOnboarding.notebooksLivres} notebooks livres</p>
               <p>🎧 {prontidaoOnboarding.perifericosLivres} periféricos no estoque</p>
             </div>
@@ -400,15 +400,15 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
       </div>
 
       {/* 5. Visualização Simplificada do Inventário */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] shadow-xs overflow-hidden">
         {/* Topo: Abas de Categoria e Busca */}
-        <div className="p-5 border-b border-slate-200/80 space-y-4">
+        <div className="p-5 border-b border-slate-200/80 dark:border-indigo-950/70 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Visualização Simplificada do Inventário
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                 Consulte de forma rápida os equipamentos mais recentes com status e custódia nominal
               </p>
             </div>
@@ -416,20 +416,20 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
             <Link
               href="/equipamentos"
               prefetch={true}
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors"
+              className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 transition-colors"
             >
               Ver tabela completa detalhada <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {/* Abas de Categorias: Notebooks, Monitores, Celulares, Periféricos, e Todos no final */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-100">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-100 dark:border-indigo-950/70">
             <button
               onClick={() => setFiltroTipo("notebook")}
               className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "notebook"
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
               }`}
             >
               <Laptop className="w-4 h-4" />
@@ -441,7 +441,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
               className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "monitor"
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
               }`}
             >
               <Monitor className="w-4 h-4" />
@@ -453,7 +453,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
               className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "smartphone"
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
               }`}
             >
               <Smartphone className="w-4 h-4" />
@@ -465,7 +465,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
               className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
                 filtroTipo === "periferico"
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
               }`}
             >
               <Headphones className="w-4 h-4" />
@@ -477,7 +477,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
               className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
                 filtroTipo === "todos"
                   ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-500 hover:bg-slate-100"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
               }`}
             >
               <Boxes className="w-4 h-4" />
@@ -494,7 +494,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar por modelo, serial ou responsável..."
-                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white text-slate-800 placeholder:text-slate-400 transition-all"
+                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 dark:bg-[#0a0e20] border border-slate-200 dark:border-indigo-900/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white dark:focus:bg-[#0a0e20] text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
               />
             </div>
 
@@ -504,7 +504,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                   filtroStatus === "todos"
                     ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                    : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/50"
                 }`}
               >
                 Todos ({contadoresStatus.todos})
@@ -514,7 +514,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
                   filtroStatus === "disponivel"
                     ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-emerald-50 hover:text-emerald-900"
+                    : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-900 dark:hover:text-emerald-400"
                 }`}
               >
                 <CheckCircle2 className="w-3 h-3 text-emerald-500" />
@@ -525,7 +525,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                 className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
                   filtroStatus === "em_uso"
                     ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
-                    : "bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:text-indigo-900"
+                    : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-900 dark:hover:text-indigo-400"
                 }`}
               >
                 <UserCheck className="w-3 h-3 text-indigo-300" />
@@ -538,7 +538,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
         {/* Tabela de Dados Simplificada */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+            <thead className="bg-slate-50 dark:bg-[#0a0e20] text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-indigo-950/70">
               <tr>
                 <th className="px-6 py-3.5">Ativo / Identificação</th>
                 <th className="px-6 py-3.5">Categoria & Detalhes</th>
@@ -569,8 +569,8 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                       key={item.id}
                       className={`transition-colors ${
                         estaEmUso 
-                          ? "bg-indigo-50/20 hover:bg-indigo-50/40" 
-                          : "hover:bg-slate-50/80"
+                          ? "bg-indigo-50/20 dark:bg-indigo-950/20 hover:bg-indigo-50/40 dark:hover:bg-indigo-950/40" 
+                          : "hover:bg-slate-50/80 dark:hover:bg-indigo-950/20"
                       }`}
                     >
                       <td className="px-6 py-4">
@@ -578,21 +578,21 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                           <div className={`p-2 rounded-xl border transition-colors ${
                             estaEmUso
                               ? "bg-indigo-600 text-white border-indigo-700 shadow-2xs"
-                              : "bg-slate-100 text-slate-700 border-slate-200"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                           }`}>
                             {getIconeTipo(item.tipo)}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900">
+                            <div className="font-bold text-slate-900 dark:text-white">
                               {item.marca} {item.modelo}
                             </div>
-                            <div className="text-xs text-slate-500 mt-0.5">
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                               {item.tipo === "periferico" && item.quantidadeDisponivel !== undefined ? (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                                   Estoque: {item.quantidadeDisponivel} unid. disponíveis
                                 </span>
                               ) : (
-                                <span className="font-mono text-slate-400 text-[11px]">
+                                <span className="font-mono text-slate-400 dark:text-slate-500 text-[11px]">
                                   S/N: {item.numeroSerie}
                                 </span>
                               )}
@@ -601,11 +601,11 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-xs text-slate-600">
-                        <div className="font-semibold text-slate-800 uppercase text-[11px] tracking-wider text-indigo-600">
+                      <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
+                        <div className="font-semibold uppercase text-[11px] tracking-wider text-indigo-600 dark:text-indigo-400">
                           {item.tipo} {item.subtipo ? `• ${item.subtipo}` : ""}
                         </div>
-                        <div className="text-slate-500 line-clamp-1">
+                        <div className="text-slate-500 dark:text-slate-400 line-clamp-1">
                           {item.processador
                             ? `${item.processador} • ${item.memoriaRam || ""}`
                             : item.especificacoes || "Configuração corporativa"}
@@ -618,7 +618,7 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
 
                       <td className="px-6 py-3.5 text-xs">
                         {estaEmUso ? (
-                          <div className="flex items-center gap-2.5 bg-indigo-50/80 border border-indigo-100 rounded-xl p-2 max-w-[260px] shadow-2xs">
+                          <div className="flex items-center gap-2.5 bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 rounded-xl p-2 max-w-[260px] shadow-2xs">
                             <div className="h-7 w-7 rounded-lg bg-indigo-600 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 shadow-2xs">
                               {item.responsavel!.nome
                                 .split(" ")
@@ -627,10 +627,10 @@ export function DashboardView({ notebooksIniciais, metricas: metricasIniciais }:
                                 .join("")}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-slate-900 text-xs truncate">
+                              <p className="font-bold text-slate-900 dark:text-white text-xs truncate">
                                 {item.responsavel!.nome}
                               </p>
-                              <p className="text-[11px] text-indigo-700 truncate font-medium">
+                              <p className="text-[11px] text-indigo-700 dark:text-indigo-300 truncate font-medium">
                                 {item.responsavel!.departamento}
                               </p>
                             </div>

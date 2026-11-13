@@ -170,11 +170,11 @@ export default function UsuariosPage() {
         {/* Topo da Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-              <ShieldCheck className="h-6 w-6 text-indigo-600" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+              <ShieldCheck className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               Gestão de Usuários do Sistema
             </h1>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Controle quem pode acessar, visualizar e operar os registros de ativos de TI.
             </p>
           </div>
@@ -187,35 +187,35 @@ export default function UsuariosPage() {
 
         {/* Cards de Métricas de Contas */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-            <p className="text-xs font-semibold text-slate-500">Total de Contas</p>
-            <p className="text-2xl font-black text-slate-900 mt-1">{metricas.total}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">usuários cadastrados</p>
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f142b] border border-slate-200/80 dark:border-indigo-950/70 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total de Contas</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{metricas.total}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">usuários cadastrados</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-            <p className="text-xs font-semibold text-indigo-600">Administradores</p>
-            <p className="text-2xl font-black text-indigo-900 mt-1">{metricas.admins}</p>
-            <p className="text-[11px] text-indigo-400 mt-0.5">acesso irrestrito</p>
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f142b] border border-slate-200/80 dark:border-indigo-950/70 shadow-xs">
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">Administradores</p>
+            <p className="text-2xl font-black text-indigo-900 dark:text-indigo-200 mt-1">{metricas.admins}</p>
+            <p className="text-[11px] text-indigo-400 dark:text-indigo-500 mt-0.5">acesso irrestrito</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-            <p className="text-xs font-semibold text-slate-600">Operadores de TI</p>
-            <p className="text-2xl font-black text-slate-900 mt-1">{metricas.operadores}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">atribuição e consulta</p>
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f142b] border border-slate-200/80 dark:border-indigo-950/70 shadow-xs">
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Operadores de TI</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{metricas.operadores}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">atribuição e consulta</p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-            <p className="text-xs font-semibold text-emerald-600">Contas Ativas</p>
-            <p className="text-2xl font-black text-emerald-900 mt-1">{metricas.ativos}</p>
-            <p className="text-[11px] text-emerald-500 mt-0.5">habilitadas para login</p>
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0f142b] border border-slate-200/80 dark:border-indigo-950/70 shadow-xs">
+            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Contas Ativas</p>
+            <p className="text-2xl font-black text-emerald-900 dark:text-emerald-200 mt-1">{metricas.ativos}</p>
+            <p className="text-[11px] text-emerald-500 dark:text-emerald-600 mt-0.5">habilitadas para login</p>
           </div>
         </div>
 
         {/* Tabela de Usuários */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] shadow-xs overflow-hidden">
           {/* Barra de Pesquisa */}
-          <div className="p-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 border-b border-slate-200/80 dark:border-indigo-950/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400" />
               <input
@@ -223,17 +223,17 @@ export default function UsuariosPage() {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar por nome, e-mail ou cargo..."
-                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white text-slate-900 placeholder:text-slate-400 transition-all"
+                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white dark:focus:bg-[#0b0f19] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
               />
             </div>
-            <div className="text-xs font-semibold text-slate-500">
+            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               Mostrando {usuariosFiltrados.length} usuário(s)
             </div>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-500 border-b border-slate-200">
+              <thead className="bg-slate-50 dark:bg-[#0b0f19]/80 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-indigo-950/70">
                 <tr>
                   <th className="px-6 py-3.5">Usuário / Identificação</th>
                   <th className="px-6 py-3.5">Cargo & Departamento</th>
@@ -242,16 +242,16 @@ export default function UsuariosPage() {
                   <th className="px-6 py-3.5 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-indigo-950/50">
                 {carregando ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                       Carregando usuários...
                     </td>
                   </tr>
                 ) : usuariosFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                       Nenhum usuário encontrado.
                     </td>
                   </tr>
@@ -260,7 +260,7 @@ export default function UsuariosPage() {
                     const isPrincipal = u.id === "usr-admin-principal";
 
                     return (
-                      <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={u.id} className="hover:bg-slate-50/80 dark:hover:bg-indigo-950/20 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-2xs">
@@ -271,33 +271,33 @@ export default function UsuariosPage() {
                                 .join("")}
                             </div>
                             <div>
-                              <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                              <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <span>{u.nome}</span>
                                 {isPrincipal && (
-                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                                     Titular
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-slate-400 font-mono mt-0.5">{u.email}</p>
+                              <p className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5">{u.email}</p>
                             </div>
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 text-xs text-slate-600">
-                          <p className="font-semibold text-slate-800">{u.cargo}</p>
-                          <p className="text-slate-400">{u.departamento}</p>
+                        <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">{u.cargo}</p>
+                          <p className="text-slate-400 dark:text-slate-500">{u.departamento}</p>
                         </td>
 
                         <td className="px-6 py-4">
                           {u.papel === "admin" ? (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                              <Shield className="w-3.5 h-3.5 text-indigo-600" />
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
+                              <Shield className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                               Administrador
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                              <User className="w-3.5 h-3.5 text-slate-500" />
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              <User className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                               Operador de TI
                             </span>
                           )}
@@ -305,11 +305,11 @@ export default function UsuariosPage() {
 
                         <td className="px-6 py-4">
                           {u.status === "ativo" ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                               <CheckCircle2 className="w-3 h-3" /> Ativo
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                               Inativo
                             </span>
                           )}
@@ -321,7 +321,7 @@ export default function UsuariosPage() {
                               <button
                                 type="button"
                                 onClick={() => handleAlternarStatus(u)}
-                                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                                className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
                                 title={u.status === "ativo" ? "Desativar conta" : "Ativar conta"}
                               >
                                 <Power className="w-4 h-4" />
@@ -329,7 +329,7 @@ export default function UsuariosPage() {
                               <button
                                 type="button"
                                 onClick={() => handleExcluir(u)}
-                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
                                 title="Excluir usuário"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -352,17 +352,17 @@ export default function UsuariosPage() {
       {/* Modal de Cadastro de Novo Usuário */}
       {modalCadastroAberto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="w-full max-w-lg bg-white dark:bg-[#0f142b] rounded-3xl border border-slate-200 dark:border-indigo-950 shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-indigo-950/70">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+                <div className="p-2.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
                     Cadastrar Usuário do Sistema
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
                     Crie uma credencial de acesso para outro membro da equipe de TI
                   </p>
                 </div>
@@ -371,29 +371,29 @@ export default function UsuariosPage() {
               <button
                 type="button"
                 onClick={() => setModalCadastroAberto(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {erro && (
-              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600" />
+              <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-200 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600 dark:text-rose-400" />
                 <span>{erro}</span>
               </div>
             )}
 
             {sucesso && (
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600" />
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
                 <span>Usuário cadastrado com sucesso!</span>
               </div>
             )}
 
             <form onSubmit={handleSubmitCadastro} className="space-y-4 text-xs">
               <div className="space-y-1.5">
-                <label className="block font-semibold text-slate-700">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
                   Nome Completo <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -403,12 +403,12 @@ export default function UsuariosPage() {
                   onChange={handleChange}
                   placeholder="Ex: Carlos Eduardo Mendes"
                   required
-                  className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900"
+                  className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:bg-white dark:focus:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block font-semibold text-slate-700">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
                   E-mail Corporativo <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -418,13 +418,13 @@ export default function UsuariosPage() {
                   onChange={handleChange}
                   placeholder="Ex: carlos.mendes@empresa.com"
                   required
-                  className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900"
+                  className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:bg-white dark:focus:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="block font-semibold text-slate-700">
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
                     Cargo Corporativo <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -434,12 +434,12 @@ export default function UsuariosPage() {
                     onChange={handleChange}
                     placeholder="Ex: Analista de TI Jr"
                     required
-                    className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900"
+                    className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:bg-white dark:focus:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block font-semibold text-slate-700">
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
                     Departamento <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -448,37 +448,37 @@ export default function UsuariosPage() {
                     value={form.departamento}
                     onChange={handleChange}
                     required
-                    className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900"
+                    className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:bg-white dark:focus:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block font-semibold text-slate-700">
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
                   Nível de Permissão & Acesso <span className="text-rose-500">*</span>
                 </label>
                 <select
                   name="papel"
                   value={form.papel}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900"
+                  className="w-full px-3.5 py-2 text-sm bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 rounded-xl focus:bg-white dark:focus:bg-[#0b0f19] focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 text-slate-900 dark:text-white"
                 >
                   <option value="operador">Operador de TI (Consulta e Atribuição de Ativos)</option>
                   <option value="admin">Administrador Geral (Acesso Total e Configurações)</option>
                 </select>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 space-y-1">
-                <p className="font-semibold text-slate-800 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-indigo-600" />
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-950/70 text-slate-600 dark:text-slate-300 space-y-1">
+                <p className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   Credencial de Primeiro Acesso
                 </p>
-                <p className="text-[11px] text-slate-500">
-                  Senha temporária inicial: <code className="font-mono font-bold text-indigo-700 bg-indigo-50 px-1 py-0.5 rounded border border-indigo-200">Mudar@123</code>. O usuário poderá alterá-la no primeiro acesso.
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Senha temporária inicial: <code className="font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/80 px-1 py-0.5 rounded border border-indigo-200 dark:border-indigo-800">Mudar@123</code>. O usuário poderá alterá-la no primeiro acesso.
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-indigo-950/70">
                 <Button
                   type="button"
                   variant="outline"

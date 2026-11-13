@@ -156,11 +156,11 @@ export default function ResponsaveisPage() {
         {/* Cabeçalho da Página */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-              <Users className="h-6 w-6 text-indigo-600" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+              <Users className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               Quadro de Colaboradores & Custódia
             </h1>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Consulte quem está em posse de cada computador, monitor, celular ou periférico da empresa.
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function ResponsaveisPage() {
         </div>
 
         {/* Barra de Pesquisa e Filtros de Colaboradores */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-3">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-4 shadow-xs space-y-3">
           <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             {/* Campo de Pesquisa em Tempo Real */}
             <div className="relative flex-1 max-w-md">
@@ -184,13 +184,13 @@ export default function ResponsaveisPage() {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Pesquisar por nome, cargo, departamento ou ativo em posse..."
-                className="w-full pl-10 pr-10 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white transition-all text-slate-900 placeholder:text-slate-400"
+                className="w-full pl-10 pr-10 py-2 text-sm bg-slate-50 dark:bg-[#0a0e20] border border-slate-200 dark:border-indigo-900/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600/15 focus:border-indigo-600 focus:bg-white dark:focus:bg-[#0a0e20] transition-all text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
               />
               {busca && (
                 <button
                   type="button"
                   onClick={() => setBusca("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -198,16 +198,16 @@ export default function ResponsaveisPage() {
             </div>
 
             {/* Contador de Resultados */}
-            <div className="text-xs font-semibold text-slate-500 self-center">
-              Mostrando <strong className="text-slate-800">{colaboradoresFiltrados.length}</strong> de{" "}
+            <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 self-center">
+              Mostrando <strong className="text-slate-800 dark:text-slate-200">{colaboradoresFiltrados.length}</strong> de{" "}
               {colaboradores.length} colaboradores
             </div>
           </div>
 
           {/* Filtros Rápidos por Departamento */}
           {departamentosDisponiveis.length > 0 && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 border-t border-slate-100 text-xs">
-              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 border-t border-slate-100 dark:border-indigo-950/70 text-xs">
+              <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-1 flex items-center gap-1">
                 <Filter className="w-3 h-3 text-indigo-500" />
                 Filtrar:
               </span>
@@ -217,7 +217,7 @@ export default function ResponsaveisPage() {
                 className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   departamentoFiltro === "todos"
                     ? "bg-indigo-600 text-white shadow-2xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
+                    : "bg-slate-100 dark:bg-[#0a0e20] text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-indigo-950/50"
                 }`}
               >
                 Todos ({colaboradores.length})
@@ -232,7 +232,7 @@ export default function ResponsaveisPage() {
                     className={`px-3 py-1 rounded-lg font-semibold transition-all cursor-pointer whitespace-nowrap ${
                       departamentoFiltro === dep
                         ? "bg-indigo-600 text-white shadow-2xs"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
+                        : "bg-slate-100 dark:bg-[#0a0e20] text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-indigo-950/50"
                     }`}
                   >
                     {dep} ({count})
@@ -249,9 +249,9 @@ export default function ResponsaveisPage() {
             <p className="text-sm">Carregando lista de colaboradores...</p>
           </div>
         ) : colaboradoresFiltrados.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/80">
-            <Users className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-            <p className="font-semibold text-slate-700 text-sm">
+          <div className="p-12 text-center bg-white dark:bg-[#0f142b] rounded-2xl border border-slate-200/80 dark:border-indigo-950/70">
+            <Users className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+            <p className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
               {busca || departamentoFiltro !== "todos"
                 ? "Nenhum colaborador encontrado com estes critérios"
                 : "Nenhum colaborador cadastrado"}
@@ -264,7 +264,7 @@ export default function ResponsaveisPage() {
                     setBusca("");
                     setDepartamentoFiltro("todos");
                   }}
-                  className="text-indigo-600 font-semibold hover:underline"
+                  className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
                 >
                   Limpar filtros e busca
                 </button>
@@ -278,11 +278,11 @@ export default function ResponsaveisPage() {
             {colaboradoresFiltrados.map((colab) => (
               <div
                 key={colab.id}
-                className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-4 hover:border-indigo-200/80 hover:shadow-sm transition-all"
+                className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-5 shadow-xs space-y-4 hover:border-indigo-200/80 dark:hover:border-indigo-800 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-11 w-11 rounded-2xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center border border-indigo-100 shadow-2xs">
+                    <div className="h-11 w-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
                       {colab.nome
                         .split(" ")
                         .map((n) => n[0])
@@ -290,10 +290,10 @@ export default function ResponsaveisPage() {
                         .join("")}
                     </div>
                     <div>
-                      <h2 className="font-bold text-sm text-slate-900">
+                      <h2 className="font-bold text-sm text-slate-900 dark:text-white">
                         {colab.nome}
                       </h2>
-                      <p className="text-xs text-slate-500 font-medium">{colab.cargo}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{colab.cargo}</p>
                     </div>
                   </div>
 

@@ -15,11 +15,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-xs",
       secondary:
-        "bg-indigo-50 text-indigo-900 hover:bg-indigo-100 focus:ring-indigo-300",
+        "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 focus:ring-indigo-300",
       outline:
-        "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 focus:ring-indigo-300 shadow-2xs",
+        "border border-slate-300 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-indigo-950/40 hover:text-slate-900 dark:hover:text-white focus:ring-indigo-300 shadow-2xs",
       ghost:
-        "bg-transparent text-slate-600 hover:bg-indigo-50 hover:text-indigo-900 focus:ring-indigo-200",
+        "bg-transparent text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:text-indigo-900 dark:hover:text-white focus:ring-indigo-200",
       danger:
         "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-xs",
     };
