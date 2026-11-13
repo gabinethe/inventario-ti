@@ -17,7 +17,7 @@ export default function ConfiguracoesPage() {
             Configurações
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-            Gerencie os parâmetros globais da aplicação Inventário TI.
+            Gerencie os parâmetros globais da aplicação TI Inventory.
           </p>
         </div>
 
@@ -29,7 +29,7 @@ export default function ConfiguracoesPage() {
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Perfil de Acesso & Identidade
+                Perfil de Acesso e Identidade
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Os dados de exibição do administrador no topo da tela podem ser editados clicando no seu avatar no cabeçalho.
@@ -60,7 +60,7 @@ export default function ConfiguracoesPage() {
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                Persistência & Banco de Dados
+                Persistência e Banco de Dados
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Status da conexão com o PostgreSQL na nuvem (Supabase)

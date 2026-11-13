@@ -140,10 +140,10 @@ export default function NovoResponsavelPage() {
                 <option value="Design de Produto">Design de Produto</option>
                 <option value="Recursos Humanos">Recursos Humanos</option>
                 <option value="Financeiro">Financeiro</option>
-                <option value="Vendas & Comercial">Vendas & Comercial</option>
+                <option value="Vendas e Comercial">Vendas e Comercial</option>
                 <option value="Marketing">Marketing</option>
                 <option value="Tecnologia da Informação">Tecnologia da Informação (TI)</option>
-                <option value="Operações & Jurídico">Operações & Jurídico</option>
+                <option value="Operações e Jurídico">Operações e Jurídico</option>
               </select>
             </div>
 

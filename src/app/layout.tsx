@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ThemeProvider } from "@/context/theme-context";
 
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-nunito",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Inventário TI - Gestão Corporativa de Ativos",
-  description: "Sistema para controle, atribuição e histórico de equipamentos de TI",
+  title: "TI Inventory - Gestão Corporativa de Ativos",
+  description: "Sistema inteligente para controle, governança e histórico de equipamentos de TI",
 };
 
 export default function RootLayout({
@@ -15,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="h-full antialiased" suppressHydrationWarning>
+    <html lang="pt-BR" className={`h-full antialiased ${nunito.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -29,7 +37,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex bg-slate-50 dark:bg-[#070913] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
+      <body className={`${nunito.className} min-h-full flex bg-slate-50 dark:bg-[#070913] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200`}>
         <ThemeProvider>
           <Suspense fallback={<aside className="w-64 flex-shrink-0 bg-slate-900 min-h-screen" />}>
             <Sidebar />

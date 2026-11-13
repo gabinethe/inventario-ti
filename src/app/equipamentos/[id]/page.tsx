@@ -189,7 +189,7 @@ export default function DetalhesEquipamentoPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="rounded-2xl border border-slate-200/80 dark:border-indigo-950/70 bg-white dark:bg-[#0f142b] p-6 shadow-xs">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">
-                Especificações & Detalhes Técnicos
+                Especificações e Detalhes Técnicos
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -259,7 +259,7 @@ export default function DetalhesEquipamentoPage() {
                   <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-[#0b0f19] border border-slate-100 dark:border-indigo-950/70 sm:col-span-2">
                     <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                     <div>
-                      <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Configuração & Recursos</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-bold">Configuração e Recursos</p>
                       <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                         {equipamento.especificacoes}
                       </p>

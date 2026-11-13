@@ -162,8 +162,8 @@ export default function UsuariosPage() {
   return (
     <>
       <Header
-        title="Usuários & Permissões"
-        subtitle="Gerenciamento de contas com acesso administrativo à plataforma Inventário TI"
+        title="Usuários e Permissões"
+        subtitle="Gerenciamento de contas com acesso administrativo à plataforma TI Inventory"
       />
 
       <main className="flex-1 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
@@ -236,7 +236,7 @@ export default function UsuariosPage() {
               <thead className="bg-slate-50 dark:bg-[#0b0f19]/80 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-indigo-950/70">
                 <tr>
                   <th className="px-6 py-3.5">Usuário / Identificação</th>
-                  <th className="px-6 py-3.5">Cargo & Departamento</th>
+                  <th className="px-6 py-3.5">Cargo e Departamento</th>
                   <th className="px-6 py-3.5">Papel / Acesso</th>
                   <th className="px-6 py-3.5">Status</th>
                   <th className="px-6 py-3.5 text-right">Ações</th>
@@ -455,7 +455,7 @@ export default function UsuariosPage() {
 
               <div className="space-y-1.5">
                 <label className="block font-semibold text-slate-700 dark:text-slate-300">
-                  Nível de Permissão & Acesso <span className="text-rose-500">*</span>
+                  Nível de Permissão e Acesso <span className="text-rose-500">*</span>
                 </label>
                 <select
                   name="papel"

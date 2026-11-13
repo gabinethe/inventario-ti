@@ -10,7 +10,6 @@ import {
   Users, 
   Settings,
   ShieldCheck, 
-  Box,
   Monitor,
   Smartphone,
   Headphones,
@@ -21,7 +20,6 @@ import {
   PanelLeftOpen,
   Search,
   X,
-  User,
   ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -63,7 +61,6 @@ export function Sidebar() {
       if (salvo !== null) {
         setIsCollapsed(salvo === "true");
       } else if (window.innerWidth < 1024) {
-        // Em telas menores que 1024px, inicia recolhido para liberar o espaço do painel
         setIsCollapsed(true);
       }
     }
@@ -188,41 +185,35 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex-shrink-0 bg-[#0b0e24] text-indigo-200 flex flex-col justify-between border-r border-indigo-950/80 min-h-screen transition-all duration-300 ease-in-out relative z-30 select-none shadow-lg",
+        "flex-shrink-0 bg-[#0b0e24] text-indigo-200 flex flex-col justify-between border-r border-indigo-950/80 min-h-screen transition-all duration-300 ease-in-out relative z-30 select-none shadow-xl",
         isCollapsed ? "w-[72px]" : "w-64"
       )}
     >
       <div className={cn("overflow-y-auto flex-1 flex flex-col", isCollapsed ? "overflow-x-visible" : "overflow-x-hidden")}>
-        {/* Cabeçalho da Sidebar */}
+        {/* Cabeçalho da Sidebar: Apenas o ícone da caixinha (sem título) + Botão de Toggle */}
         <div
           className={cn(
-            "border-b border-indigo-900/30 bg-[#0e122b]/60 sticky top-0 z-10 transition-all",
+            "border-b border-indigo-900/30 bg-[#0e122b]/70 sticky top-0 z-10 transition-all duration-300 ease-in-out",
             isCollapsed 
-              ? "flex flex-col items-center justify-center py-3 gap-2 px-2" 
-              : "h-16 flex items-center justify-between px-4"
+              ? "py-3 px-2 flex flex-col items-center justify-center gap-2.5" 
+              : "h-16 flex items-center justify-between px-3.5"
           )}
         >
-          {/* Logo e Nome */}
+          {/* Logo da caixinha quadrada sem título conforme solicitado */}
           <Link
             href="/"
             prefetch={true}
-            className={cn("flex items-center gap-2.5 group cursor-pointer", isCollapsed && "justify-center")}
-            title="Inventário TI - Início"
+            className="flex items-center justify-center group cursor-pointer"
+            title="TI Inventory - Início"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 group-hover:scale-105 transition-transform flex-shrink-0">
-              <Box className="h-5 w-5" />
+            <div className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600/30 to-purple-600/20 border border-indigo-500/40 p-1 flex-shrink-0 group-hover:scale-105 group-hover:border-indigo-400 transition-all duration-200 shadow-md shadow-indigo-950/50">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-icon.png"
+                alt="TI Inventory Logo"
+                className="w-full h-full object-contain filter drop-shadow"
+              />
             </div>
-
-            {!isCollapsed && (
-              <div className="overflow-hidden">
-                <h1 className="text-sm font-bold text-white tracking-tight leading-tight truncate">
-                  Inventário TI
-                </h1>
-                <p className="text-[11px] text-indigo-300/70 font-medium truncate">
-                  Gestão Corporativa
-                </p>
-              </div>
-            )}
           </Link>
 
           {/* Botão de Minimizar / Expandir */}
@@ -230,8 +221,8 @@ export function Sidebar() {
             type="button"
             onClick={alternarColapso}
             className={cn(
-              "p-1.5 rounded-lg text-indigo-400 hover:text-white hover:bg-indigo-900/50 transition-colors cursor-pointer flex-shrink-0",
-              isCollapsed && "bg-indigo-950/70 border border-indigo-900/50"
+              "p-2 rounded-xl text-indigo-300 hover:text-white hover:bg-indigo-900/60 transition-colors cursor-pointer flex-shrink-0",
+              isCollapsed && "bg-indigo-950/80 border border-indigo-900/60 p-1.5"
             )}
             title={isCollapsed ? "Expandir barra lateral (Ctrl+B)" : "Recolher barra lateral (Ctrl+B)"}
           >
@@ -244,7 +235,7 @@ export function Sidebar() {
         </div>
 
         {/* Barra de Busca Integrada na Sidebar */}
-        <div ref={buscaRef} className="px-3 pt-3 pb-1 relative">
+        <div ref={buscaRef} className="px-3 pt-3 pb-1 relative transition-all duration-300 ease-in-out">
           {isCollapsed ? (
             <button
               type="button"
@@ -252,7 +243,7 @@ export function Sidebar() {
                 setIsCollapsed(false);
                 setBuscaAtiva(true);
               }}
-              className="w-full flex items-center justify-center p-2.5 rounded-xl text-indigo-400 hover:text-white hover:bg-indigo-950/80 border border-transparent hover:border-indigo-900/50 transition-all cursor-pointer group relative"
+              className="w-10 h-10 mx-auto flex items-center justify-center rounded-xl text-indigo-400 hover:text-white hover:bg-indigo-950/80 border border-transparent hover:border-indigo-900/50 transition-all cursor-pointer group relative"
               title="Pesquisar ativos ou pessoas (Ctrl+K)"
             >
               <Search className="w-4 h-4" />
@@ -318,8 +309,8 @@ export function Sidebar() {
                               <p className="font-semibold text-white truncate">
                                 {eq.marca} {eq.modelo}
                               </p>
-                              <p className="text-[10px] text-indigo-300/70 truncate">
-                                S/N: {eq.numeroSerie || "N/A"}
+                              <p className="text-[10px] text-indigo-300/70 font-mono truncate">
+                                S/N: {eq.numeroSerie} • {eq.tipo}
                               </p>
                             </div>
                             <ExternalLink className="w-3 h-3 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity ml-2 flex-shrink-0" />
@@ -331,7 +322,7 @@ export function Sidebar() {
 
                   {/* Colaboradores encontrados */}
                   {resultadosBusca.colaboradores.length > 0 && (
-                    <div className="pt-1 border-t border-indigo-950">
+                    <div>
                       <p className="px-2 py-1 text-[10px] uppercase font-bold text-indigo-400/70 tracking-wider">
                         Colaboradores
                       </p>
@@ -372,15 +363,15 @@ export function Sidebar() {
           )}
         </div>
 
-        {/* Links de Navegação */}
+        {/* Links de Navegação com Posicionamento Estável dos Ícones */}
         <div className="p-3 space-y-5">
           {/* Seção 1: Geral */}
           <div className="space-y-1">
-            {!isCollapsed && (
-              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-400/60">
+            <div className={cn("overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out px-3", isCollapsed ? "max-w-0 opacity-0 h-0" : "max-w-xs opacity-100 pb-1")}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400/60">
                 Painel Principal
               </p>
-            )}
+            </div>
 
             {/* Dashboard */}
             <Link
@@ -388,19 +379,23 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? "Dashboard" : undefined}
               className={cn(
-                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                isCollapsed
-                  ? "justify-center p-2.5"
-                  : "justify-between px-3.5 py-2",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                 isLinkActive("/")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <LayoutDashboard className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>Dashboard</span>}
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <LayoutDashboard className="h-4 w-4" />
               </div>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
+              >
+                Dashboard
+              </span>
 
               {/* Tooltip no modo colapsado */}
               {isCollapsed && (
@@ -413,63 +408,96 @@ export function Sidebar() {
 
           {/* Seção 2: Inventário de Ativos (Gaveta Retrátil) */}
           <div className="space-y-1">
-            {!isCollapsed ? (
-              <button
-                type="button"
-                onClick={() => setAtivosAberto(!ativosAberto)}
-                className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-indigo-200 hover:text-white bg-indigo-950/40 hover:bg-indigo-950/70 border border-indigo-900/40 rounded-xl transition-all cursor-pointer group shadow-2xs"
-                title="Clique para expandir ou recolher as categorias"
+            <button
+              type="button"
+              onClick={() => {
+                if (isCollapsed) {
+                  setIsCollapsed(false);
+                  setAtivosAberto(true);
+                } else {
+                  setAtivosAberto(!ativosAberto);
+                }
+              }}
+              className={cn(
+                "w-full h-10 flex items-center text-xs font-semibold text-indigo-200 hover:text-white bg-indigo-950/40 hover:bg-indigo-950/70 border border-indigo-900/40 rounded-xl transition-all duration-300 ease-in-out cursor-pointer group shadow-2xs relative",
+                isCollapsed && "justify-center"
+              )}
+              title={isCollapsed ? "Inventário de Ativos" : "Clique para expandir ou recolher as categorias"}
+            >
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <div className="p-1 rounded-lg bg-indigo-800/40 text-indigo-300 group-hover:text-white transition-colors">
+                  <Boxes className="w-4 h-4" />
+                </div>
+              </div>
+
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out font-bold text-xs text-indigo-100 flex-1 text-left",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1 rounded-lg bg-indigo-800/40 text-indigo-300 group-hover:text-white transition-colors">
-                    <Box className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="font-bold text-xs text-indigo-100">Inventário de Ativos</span>
+                Inventário de Ativos
+              </span>
+
+              <div
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out flex items-center gap-1.5 mr-2.5",
+                  isCollapsed ? "max-w-0 opacity-0 pointer-events-none" : "max-w-xs opacity-100"
+                )}
+              >
+                <span className="text-[10px] text-indigo-300 font-mono bg-indigo-950 px-1.5 py-0.5 rounded-md border border-indigo-800/40">
+                  {totais.todos}
+                </span>
+                <div className="p-0.5 text-indigo-400 group-hover:text-white transition-colors">
+                  {ativosAberto ? (
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  )}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] text-indigo-300 font-mono bg-indigo-950 px-1.5 py-0.5 rounded-md border border-indigo-800/40">
-                    {totais.todos}
-                  </span>
-                  <div className="p-0.5 text-indigo-400 group-hover:text-white transition-colors">
-                    {ativosAberto ? (
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    ) : (
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    )}
-                  </div>
+              </div>
+
+              {isCollapsed && (
+                <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
+                  Inventário de Ativos ({totais.todos})
                 </div>
-              </button>
-            ) : (
-              <div className="h-px bg-indigo-900/30 my-2 mx-1" />
-            )}
+              )}
+            </button>
 
             {/* Categorias ordenadas */}
             {(ativosAberto || isCollapsed) && (
-              <div className={cn("space-y-1 pt-1", !isCollapsed && "pl-1")}>
+              <div className="space-y-1 pt-1">
                 {/* 1. Notebooks */}
                 <Link
                   href="/equipamentos?tipo=notebook"
                   prefetch={true}
                   title={isCollapsed ? `Notebooks (${totais.notebook})` : undefined}
                   className={cn(
-                    "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                    isCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-3 py-1.5",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                     isLinkActive("/equipamentos", "notebook")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Laptop className="h-4 w-4 flex-shrink-0" />
-                    {!isCollapsed && <span>Notebooks</span>}
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <Laptop className="h-4 w-4" />
                   </div>
-                  {!isCollapsed && (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                      {totais.notebook}
-                    </span>
-                  )}
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                      isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                    )}
+                  >
+                    Notebooks
+                  </span>
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                      isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                    )}
+                  >
+                    {totais.notebook}
+                  </span>
                   {isCollapsed && (
                     <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                       Notebooks ({totais.notebook})
@@ -483,24 +511,31 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Monitores (${totais.monitor})` : undefined}
                   className={cn(
-                    "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                    isCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-3 py-1.5",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                     isLinkActive("/equipamentos", "monitor")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Monitor className="h-4 w-4 flex-shrink-0" />
-                    {!isCollapsed && <span>Monitores</span>}
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <Monitor className="h-4 w-4" />
                   </div>
-                  {!isCollapsed && (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                      {totais.monitor}
-                    </span>
-                  )}
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                      isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                    )}
+                  >
+                    Monitores
+                  </span>
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                      isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                    )}
+                  >
+                    {totais.monitor}
+                  </span>
                   {isCollapsed && (
                     <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                       Monitores ({totais.monitor})
@@ -514,24 +549,31 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Celulares (${totais.smartphone})` : undefined}
                   className={cn(
-                    "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                    isCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-3 py-1.5",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                     isLinkActive("/equipamentos", "smartphone")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Smartphone className="h-4 w-4 flex-shrink-0" />
-                    {!isCollapsed && <span>Celulares</span>}
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <Smartphone className="h-4 w-4" />
                   </div>
-                  {!isCollapsed && (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                      {totais.smartphone}
-                    </span>
-                  )}
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                      isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                    )}
+                  >
+                    Celulares
+                  </span>
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                      isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                    )}
+                  >
+                    {totais.smartphone}
+                  </span>
                   {isCollapsed && (
                     <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                       Celulares ({totais.smartphone})
@@ -545,24 +587,31 @@ export function Sidebar() {
                   prefetch={true}
                   title={isCollapsed ? `Periféricos (${totais.periferico})` : undefined}
                   className={cn(
-                    "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                    isCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-3 py-1.5",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                     isLinkActive("/equipamentos", "periferico")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                       : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Headphones className="h-4 w-4 flex-shrink-0" />
-                    {!isCollapsed && <span>Periféricos</span>}
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <Headphones className="h-4 w-4" />
                   </div>
-                  {!isCollapsed && (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                      {totais.periferico}
-                    </span>
-                  )}
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                      isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                    )}
+                  >
+                    Periféricos
+                  </span>
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                      isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                    )}
+                  >
+                    {totais.periferico}
+                  </span>
                   {isCollapsed && (
                     <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                       Periféricos ({totais.periferico})
@@ -570,30 +619,37 @@ export function Sidebar() {
                   )}
                 </Link>
 
-                {/* 5. Todos os Ativos (Último item) */}
+                {/* 5. Todos os Ativos */}
                 <Link
                   href="/equipamentos?tipo=todos"
                   prefetch={true}
                   title={isCollapsed ? `Todos os Ativos (${totais.todos})` : undefined}
                   className={cn(
-                    "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative mt-1 pt-1.5 border-t border-indigo-900/30",
-                    isCollapsed
-                      ? "justify-center p-2.5"
-                      : "justify-between px-3 py-1.5",
+                    "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative border-t border-indigo-950/40 pt-1 mt-1",
                     isLinkActive("/equipamentos", "todos")
                       ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
-                      : "text-indigo-300/60 hover:bg-indigo-950/60 hover:text-white"
+                      : "text-indigo-200/70 hover:bg-indigo-950/60 hover:text-white"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Boxes className="h-4 w-4 flex-shrink-0" />
-                    {!isCollapsed && <span className="text-xs">Todos os Ativos</span>}
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <Boxes className="h-4 w-4" />
                   </div>
-                  {!isCollapsed && (
-                    <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                      {totais.todos}
-                    </span>
-                  )}
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                      isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                    )}
+                  >
+                    Todos os Ativos
+                  </span>
+                  <span
+                    className={cn(
+                      "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                      isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                    )}
+                  >
+                    {totais.todos}
+                  </span>
                   {isCollapsed && (
                     <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                       Todos os Ativos ({totais.todos})
@@ -604,13 +660,13 @@ export function Sidebar() {
             )}
           </div>
 
-          {/* Seção 3: Pessoas e Governança */}
+          {/* Seção 3: Governança & Gestão */}
           <div className="space-y-1">
-            {!isCollapsed && (
-              <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-400/60">
-                Governança
+            <div className={cn("overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out px-3", isCollapsed ? "max-w-0 opacity-0 h-0" : "max-w-xs opacity-100 pb-1")}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400/60">
+                Governança e Equipe
               </p>
-            )}
+            </div>
 
             {/* Colaboradores */}
             <Link
@@ -618,24 +674,31 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? `Colaboradores (${totais.colaboradores})` : undefined}
               className={cn(
-                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                isCollapsed
-                  ? "justify-center p-2.5"
-                  : "justify-between px-3.5 py-2",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                 isLinkActive("/responsaveis")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <Users className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>Colaboradores</span>}
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <Users className="h-4 w-4" />
               </div>
-              {!isCollapsed && (
-                <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                  {totais.colaboradores}
-                </span>
-              )}
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
+              >
+                Colaboradores
+              </span>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                  isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                )}
+              >
+                {totais.colaboradores}
+              </span>
               {isCollapsed && (
                 <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                   Colaboradores ({totais.colaboradores})
@@ -649,24 +712,31 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? `Movimentações (${totais.movimentacoes})` : undefined}
               className={cn(
-                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                isCollapsed
-                  ? "justify-center p-2.5"
-                  : "justify-between px-3.5 py-2",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                 isLinkActive("/movimentacoes")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <ArrowLeftRight className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>Movimentações</span>}
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <ArrowLeftRight className="h-4 w-4" />
               </div>
-              {!isCollapsed && (
-                <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40">
-                  {totais.movimentacoes}
-                </span>
-              )}
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
+              >
+                Movimentações
+              </span>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out ml-auto mr-2.5 rounded-full px-2 py-0.5 text-[10px] font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/40",
+                  isCollapsed ? "max-w-0 opacity-0 pointer-events-none p-0 border-0" : "max-w-xs opacity-100"
+                )}
+              >
+                {totais.movimentacoes}
+              </span>
               {isCollapsed && (
                 <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                   Movimentações ({totais.movimentacoes})
@@ -674,28 +744,32 @@ export function Sidebar() {
               )}
             </Link>
 
-            {/* Usuários & Acesso Administrativo */}
+            {/* Usuários e Acesso Administrativo */}
             <Link
               href="/usuarios"
               prefetch={true}
-              title={isCollapsed ? "Usuários & Acesso" : undefined}
+              title={isCollapsed ? "Usuários e Acesso" : undefined}
               className={cn(
-                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                isCollapsed
-                  ? "justify-center p-2.5"
-                  : "justify-between px-3.5 py-2",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                 isLinkActive("/usuarios")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>Usuários & Acesso</span>}
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <ShieldCheck className="h-4 w-4" />
               </div>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
+              >
+                Usuários e Acesso
+              </span>
               {isCollapsed && (
                 <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
-                  Usuários & Acesso
+                  Usuários e Acesso
                 </div>
               )}
             </Link>
@@ -706,19 +780,23 @@ export function Sidebar() {
               prefetch={true}
               title={isCollapsed ? "Configurações" : undefined}
               className={cn(
-                "flex items-center rounded-xl text-sm font-medium transition-all duration-150 group relative",
-                isCollapsed
-                  ? "justify-center p-2.5"
-                  : "justify-between px-3.5 py-2",
+                "w-full h-10 flex items-center rounded-xl text-sm font-medium transition-all duration-300 ease-in-out group relative",
                 isLinkActive("/configuracoes")
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25 font-semibold"
                   : "text-indigo-200/80 hover:bg-indigo-950/60 hover:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <Settings className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span>Configurações</span>}
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                <Settings className="h-4 w-4" />
               </div>
+              <span
+                className={cn(
+                  "overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out text-xs font-semibold",
+                  isCollapsed ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none" : "max-w-xs opacity-100 translate-x-0"
+                )}
+              >
+                Configurações
+              </span>
               {isCollapsed && (
                 <div className="absolute left-[76px] px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
                   Configurações
@@ -729,14 +807,14 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Rodapé da Sidebar: Status do Sistema & Versão (sem duplicação do perfil do Header) */}
-      <div className={cn("border-t border-indigo-900/30 bg-[#0e122b]/50 transition-all", isCollapsed ? "p-2" : "p-3")}>
+      {/* Rodapé da Sidebar: Status do Sistema e Versão */}
+      <div className={cn("border-t border-indigo-900/30 bg-[#0e122b]/50 transition-all duration-300 ease-in-out", isCollapsed ? "p-2" : "p-3")}>
         {!isCollapsed ? (
           <div className="flex items-center justify-between gap-2.5 rounded-xl bg-indigo-950/40 p-2.5 border border-indigo-900/40">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-emerald-500/20 flex-shrink-0 animate-pulse" />
-              <span className="text-[11px] font-semibold text-slate-300">
-                Inventário TI
+              <span className="text-[11px] font-bold text-slate-300">
+                TI Inventory
               </span>
             </div>
             <Link
@@ -744,21 +822,21 @@ export function Sidebar() {
               className="text-[10px] font-mono text-indigo-400 hover:text-indigo-200 bg-indigo-950 px-1.5 py-0.5 rounded border border-indigo-800/40 hover:border-indigo-700 transition-colors"
               title="Gerenciar usuários"
             >
-              v1.2 • Acesso
+              v1.2
             </Link>
           </div>
         ) : (
           <Link
             href="/usuarios"
             className="flex justify-center group relative cursor-pointer"
-            title="Inventário TI v1.2 (Gerenciar Usuários)"
+            title="TI Inventory v1.2 (Gerenciar Usuários)"
           >
-            <div className="h-8 w-8 rounded-lg bg-indigo-950/60 flex items-center justify-center border border-indigo-900/40 text-emerald-400 group-hover:text-white transition-colors">
+            <div className="h-9 w-9 rounded-xl bg-indigo-950/60 flex items-center justify-center border border-indigo-900/40 text-emerald-400 group-hover:text-white transition-colors">
               <ShieldCheck className="w-4 h-4" />
             </div>
             {/* Tooltip flutuante */}
             <div className="absolute left-[76px] bottom-0 px-2.5 py-1 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xl whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 border border-slate-700">
-              Usuários & Acesso (v1.2)
+              TI Inventory (v1.2)
             </div>
           </Link>
         )}

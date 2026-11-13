@@ -142,7 +142,7 @@ export default function MovimentacoesPage() {
   return (
     <>
       <Header
-        title="Histórico de Auditoria & Movimentações"
+        title="Histórico de Auditoria e Movimentações"
         subtitle="Registro em tempo real de atribuições, entradas no estoque, devoluções e colaboradores"
       />
 
@@ -202,7 +202,7 @@ export default function MovimentacoesPage() {
                   : "bg-white dark:bg-[#0f142b] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-slate-50 dark:hover:bg-indigo-950/30"
               }`}
             >
-              Custódia & Devoluções
+              Custódia e Devoluções
             </button>
 
             <button

@@ -88,7 +88,7 @@ export function AcoesDetalhesEquipamento({ equipamento }: AcoesDetalhesEquipamen
             className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
           >
             <CheckCircle2 className="w-4 h-4" />
-            Concluir Manutenção & Retornar ao Estoque
+            Concluir Manutenção e Retornar ao Estoque
           </Button>
         ) : (
           <Button

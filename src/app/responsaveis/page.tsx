@@ -158,7 +158,7 @@ export default function ResponsaveisPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
               <Users className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-              Quadro de Colaboradores & Custódia
+              Quadro de Colaboradores e Custódia
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
               Consulte quem está em posse de cada computador, monitor, celular ou periférico da empresa.

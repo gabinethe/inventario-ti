@@ -55,16 +55,23 @@ export default function LoginPage() {
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50 dark:bg-[#070913] transition-colors">
       <div className="w-full max-w-md space-y-6">
         {/* Logotipo e Cabeçalho */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0b0e24] text-white shadow-md shadow-indigo-950/30 mb-2 border border-indigo-900/40">
-            <Box className="h-6 w-6 text-indigo-400" />
+        <div className="text-center space-y-3 flex flex-col items-center">
+          <div className="relative w-48 sm:w-56 h-28 flex items-center justify-center p-2 rounded-2xl bg-white/50 dark:bg-indigo-950/20 backdrop-blur-xs border border-slate-200/60 dark:border-indigo-900/40 shadow-xs">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="TI Inventory Logo"
+              className="w-full h-full object-contain filter drop-shadow-sm"
+            />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Inventário TI
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            Painel Administrativo • Gestão de Ativos Corporativos
-          </p>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+              TI Inventory
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+              Painel Corporativo • Gestão e Governança de Hardware
+            </p>
+          </div>
         </div>
 
         {/* Card do Formulário */}

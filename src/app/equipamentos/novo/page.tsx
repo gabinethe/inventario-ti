@@ -370,7 +370,7 @@ function NovoEquipamentoForm() {
           {/* 2. Dados de Identificação */}
           <div className="pt-4 border-t border-slate-200 dark:border-indigo-950/70 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              2. Identificação do Fabricante & Modelo
+              2. Identificação do Fabricante e Modelo
             </h3>
 
             <div className={`grid grid-cols-1 ${tipo === "periferico" ? "md:grid-cols-3" : "md:grid-cols-2"} gap-4`}>

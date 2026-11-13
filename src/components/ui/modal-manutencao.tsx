@@ -343,7 +343,7 @@ export function ModalManutencao({
               ) : (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                  Concluir & Retornar ao Estoque
+                  Concluir e Retornar ao Estoque
                 </>
               )}
             </Button>

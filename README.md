@@ -1,4 +1,4 @@
-# 💻 Inventário de TI — Enterprise Asset Management & Hardware Governance
+# 💻 TI Inventory — Enterprise Asset Management & Hardware Governance
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat&logo=next.js)
 ![React](https://img.shields.io/badge/React-19.0-61dafb?style=flat&logo=react)
@@ -8,8 +8,9 @@
 ![Security](https://img.shields.io/badge/Auth-RLS_Protected-emerald?style=flat)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean_Layers-indigo?style=flat)
 ![Theme](https://img.shields.io/badge/Dark%20Mode-Native%20Tailwind-purple?style=flat)
+![Typography](https://img.shields.io/badge/Typography-Nunito-blue?style=flat)
 
-O **Inventário de TI** é uma plataforma corporativa web de alta performance projetada para substituir controles manuais e planilhas vulneráveis por uma gestão centralizada, segura e em tempo real do parque de tecnologia (Notebooks, Monitores, Celulares Corporativos e Periféricos em lote).
+O **TI Inventory** é uma plataforma corporativa web de alta performance projetada para substituir controles manuais e planilhas vulneráveis por uma gestão centralizada, segura e em tempo real do parque de tecnologia (Notebooks, Monitores, Celulares Corporativos e Periféricos em lote).
 
 Construída sob princípios de **Clean Architecture, Governança de TI e Compliance**, a plataforma rastreia o ciclo de vida completo de cada equipamento: desde o recebimento em estoque e controle volumétrico no almoxarifado até a custódia nominal por colaboradores, manutenções técnicas e baixas patrimoniais com trilha de auditoria imutável.
 
@@ -17,26 +18,26 @@ Construída sob princípios de **Clean Architecture, Governança de TI e Complia
 
 ## 📑 Sumário
 
-1. [Diferenciais de Negócio & Problemas Resolvidos](#-diferenciais-de-negócio--problemas-resolvidos)
+1. [Diferenciais de Negócio e Problemas Resolvidos](#-diferenciais-de-negócio-e-problemas-resolvidos)
 2. [Guia Completo de Funcionalidades (O Que Faz, Por Que Existe e Como Funciona)](#-guia-completo-de-funcionalidades)
-   - [1. Dashboard Executivo & Métricas de Saúde do Estoque](#1-dashboard-executivo--métricas-de-saúde-do-estoque)
-   - [2. Gestão do Parque de Ativos & Categorização Especializada](#2-gestão-do-parque-de-ativos--categorização-especializada)
+   - [1. Dashboard Executivo e Métricas de Saúde do Estoque](#1-dashboard-executivo-e-métricas-de-saúde-do-estoque)
+   - [2. Gestão do Parque de Ativos e Categorização Especializada](#2-gestão-do-parque-de-ativos-e-categorização-especializada)
    - [3. Regras de Unicidade e Validação Rigorosa de Dados](#3-regras-de-unicidade-e-validação-rigorosa-de-dados)
    - [4. Roteamento Contextual de Cadastro de Equipamentos](#4-roteamento-contextual-de-cadastro-de-equipamentos)
-   - [5. Módulo de Manutenção Técnica & Assistência](#5-módulo-de-manutenção-técnica--assistência)
+   - [5. Módulo de Manutenção Técnica e Assistência](#5-módulo-de-manutenção-técnica-e-assistência)
    - [6. Barra de Pesquisa Global Inteligente (`Ctrl + K`)](#6-barra-de-pesquisa-global-inteligente-ctrl--k)
-   - [7. Sistema de Temas (Modo Claro & Modo Escuro / Dark Mode)](#7-sistema-de-temas-modo-claro--modo-escuro)
-   - [8. Sidebar Minimizável com Tooltips & Ergonomia Visual](#8-sidebar-minimizável-com-tooltips--ergonomia-visual)
-   - [9. Gestão de Colaboradores & Posse Nominal](#9-gestão-de-colaboradores--posse-nominal)
-   - [10. Gestão de Usuários do Sistema & Supabase Auth Autêntico](#10-gestão-de-usuários-do-sistema--supabase-auth-autêntico)
-   - [11. Trilha Imutável de Auditoria & Sanitização de Dados](#11-trilha-imutável-de-auditoria--sanitização-de-dados)
-   - [12. Design Responsivo & Aproveitamento de Tela](#12-design-responsivo--aproveitamento-de-tela)
+   - [7. Sistema de Temas (Modo Claro e Modo Escuro / Dark Mode)](#7-sistema-de-temas-modo-claro-e-modo-escuro)
+   - [8. Sidebar Minimizável com Tooltips e Ergonomia Visual](#8-sidebar-minimizável-com-tooltips-e-ergonomia-visual)
+   - [9. Gestão de Colaboradores e Posse Nominal](#9-gestão-de-colaboradores-e-posse-nominal)
+   - [10. Gestão de Usuários do Sistema e Supabase Auth Autêntico](#10-gestão-de-usuários-do-sistema-e-supabase-auth-autêntico)
+   - [11. Trilha Imutável de Auditoria e Sanitização de Dados](#11-trilha-imutável-de-auditoria-e-sanitização-de-dados)
+   - [12. Design Responsivo e Aproveitamento de Tela](#12-design-responsivo-e-aproveitamento-de-tela)
 3. [Destaques de Engenharia e Arquitetura](#-destaques-de-engenharia-e-arquitetura)
 4. [Diagramas da Aplicação (Mermaid)](#-diagramas-da-aplicação)
    - [Ciclo de Vida do Ativo](#a-ciclo-de-vida-de-um-ativo)
    - [Arquitetura em Camadas (Clean Architecture)](#b-arquitetura-em-camadas)
    - [Fluxo de Autenticação e Guarda de Rotas](#c-fluxo-de-autenticação-e-guarda-de-rotas)
-5. [Design System & Interface Corporativa](#-design-system--interface-corporativa)
+5. [Design System e Interface Corporativa](#-design-system-e-interface-corporativa)
 6. [Estrutura do Repositório](#-estrutura-do-repositório)
 7. [Camadas de Segurança e Conformidade](#-camadas-de-segurança-e-conformidade)
 8. [Como Executar o Projeto Localmente](#-como-executar-o-projeto-localmente)
@@ -44,7 +45,7 @@ Construída sob princípios de **Clean Architecture, Governança de TI e Complia
 
 ---
 
-## 🎯 Diferenciais de Negócio & Problemas Resolvidos
+## 🎯 Diferenciais de Negócio e Problemas Resolvidos
 
 Em empresas em crescimento, o controle de TI em planilhas ou ferramentas improvisadas traz riscos severos:
 * **Falta de Visão Operacional (Estoque vs Em Uso)**: Dificuldade em responder de imediato quantos notebooks estão livres para novos funcionários e quantos estão alocados.
@@ -53,7 +54,7 @@ Em empresas em crescimento, o controle de TI em planilhas ou ferramentas improvi
 * **Insegurança e Vulnerabilidade de Dados**: Planilhas compartilhadas sem controle de acesso por perfil e sem trilha de auditoria contra adulterações.
 * **Ativos Perdidos em Manutenção**: Dificuldade em controlar quais máquinas foram enviadas para conserto/garantia, o motivo do chamado e o fornecedor responsável.
 
-O **Inventário de TI** soluciona todas essas dores combinando **regras de negócio refinadas** com uma **interface moderna, reativa e ergonômica**.
+O **TI Inventory** soluciona todas essas dores combinando **regras de negócio refinadas** com uma **interface moderna, reativa, tipografia Nunito e ergonomia de uso**.
 
 ---
 
@@ -63,7 +64,7 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 1. Dashboard Executivo & Métricas de Saúde do Estoque
+### 1. Dashboard Executivo e Métricas de Saúde do Estoque
 * **O que faz**: Apresenta uma visão consolidada de alto nível sobre todo o ecossistema tecnológico da empresa, sem atalhos perdidos ou elementos fora de contexto.
 * **Motivo**: Gestores de TI precisam responder instantaneamente: *"Temos notebooks suficientes para as 5 contratações da próxima semana?"* ou *"Qual a taxa de ociosidade dos nossos monitores?"*.
 * **Como funciona**:
@@ -74,13 +75,13 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 2. Gestão do Parque de Ativos & Categorização Especializada
+### 2. Gestão do Parque de Ativos e Categorização Especializada
 * **O que faz**: Centraliza a listagem e o gerenciamento de todos os tipos de equipamentos em abas e filtros contextuais.
 * **Motivo**: Cada tipo de hardware possui atributos vitais distintos (ex: notebook tem processador e RAM; celular tem operadora e chip; periféricos têm volume em lote).
 * **Como funciona**:
   - **Abas Dedicadas**: Notebooks, Monitores, Celulares, Periféricos e aba consolidada "Todos os Ativos" posicionada harmonicamente no final.
   - **Controle de Lotes de Periféricos**: Permite cadastrar lotes volumétricos (ex: 20 mouses ou 15 headsets). Na entrega a um colaborador, o saldo disponível é decrementado automaticamente, com opção de registrar o número de série individual na entrega.
-  - **Filtros Rápidos de Status**: Filtros em um clique para "Todos", "Disponíveis (Estoque)", "Em Uso (Custódia)" e "Em Manutenção".
+  - **Filtros Rápidos de Status**: Filtros em um clique para "Todos", "Disponíveis (Estoque)", "Em Uso (Custódia)" e "Em Manutenção" com botões de alto contraste e fácil leitura.
 
 ---
 
@@ -104,7 +105,7 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 5. Módulo de Manutenção Técnica & Assistência
+### 5. Módulo de Manutenção Técnica e Assistência
 * **O que faz**: Permite registrar o envio de equipamentos com avarias para reparo interno ou assistência técnica autorizada, assim como o seu retorno ao estoque após o conserto.
 * **Motivo**: Máquinas com problemas não podem constar como "Disponíveis" para entrega a novos funcionários e nem devem permanecer atreladas ao colaborador anterior.
 * **Como funciona**:
@@ -123,12 +124,12 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
   - **Busca Omnibox Indexada**: Digitar palavras-chave busca simultaneamente em:
     - **Ativos de TI**: Marca, modelo, número de série, patrimônio e especificações.
     - **Colaboradores**: Nome completo, e-mail corporativo, cargo e departamento.
-    - **Navegação & Módulos**: Atalhos diretos para Dashboard, Equipamentos, Colaboradores, Auditoria e Configurações.
+    - **Navegação e Módulos**: Atalhos diretos para Dashboard, Equipamentos, Colaboradores, Auditoria e Configurações.
   - **Dropdown Flutuante Categorizado**: Apresenta resultados agrupados com badges visuais de status e links diretos para a ficha completa.
 
 ---
 
-### 7. Sistema de Temas (Modo Claro & Modo Escuro / Dark Mode)
+### 7. Sistema de Temas (Modo Claro e Modo Escuro / Dark Mode)
 * **O que faz**: Permite que o usuário alterne livremente entre modo claro e modo escuro através de um botão com ícone interativo de Sol/Lua no cabeçalho.
 * **Motivo**: Proporciona ergonomia visual para longos períodos de operação, reduz fadiga ocular em ambientes de pouca luz e atende à preferência estética dos profissionais de tecnologia.
 * **Como funciona**:
@@ -138,18 +139,18 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 8. Sidebar Minimizável com Tooltips & Ergonomia Visual
-* **O que faz**: Barra lateral retrátil que pode ser recolhida para o modo compacto (apenas ícones) ou expandida para o modo completo com um clique.
+### 8. Sidebar Minimizável com Tooltips e Ergonomia Visual
+* **O que faz**: Barra lateral retrátil que transiciona de forma ultra fluida entre o modo compacto (72px) e o modo expandido (256px).
 * **Motivo**: Libera espaço valioso na tela para visualização de tabelas densas de hardware e auditoria, sem perder a identidade nem a acessibilidade dos menus.
 * **Como funciona**:
-  - **Empilhamento Vertical Inteligente**: Quando minimizada, o logotipo corporativo e o botão de toggle ficam perfeitamente centralizados e alinhados um em cima do outro, eliminando o aperto horizontal anterior.
+  - **Transição Contínua e Sem Pulos**: Os ícones mantêm uma área fixa de 40x40px, ancorados de forma constante em relação à borda esquerda. Os rótulos de texto e contadores usam `max-w-xs` $\leftrightarrow$ `max-w-0` com `overflow-hidden` e `opacity`, desaparecendo e reaparecendo com extrema suavidade sem desmontar bruscamente do DOM.
+  - **Logo em Caixinha Quadrada Minimalista**: No topo da barra lateral, exibe apenas a caixinha quadrada oficial da marca (`/logo-icon.png`), sem poluição de texto ao lado.
   - **Tooltips Flutuantes sem Corte**: A sidebar minimizada utiliza `overflow-x-visible`, permitindo que os tooltips flutuantes (`absolute left-[76px]`) ultrapassem a borda da barra lateral sem serem cortados pelo overflow.
   - **Acessibilidade**: Atributos `title` nativos presentes em todos os links garantem leitura imediata ao passar o mouse.
-  - **Gaveta 100% Clicável**: A caixa do menu "Inventário de Ativos" é totalmente clicável em sua área inteira, e não apenas no pequeno ícone de seta.
 
 ---
 
-### 9. Gestão de Colaboradores & Posse Nominal
+### 9. Gestão de Colaboradores e Posse Nominal
 * **O que faz**: Controla o cadastro de colaboradores da empresa e mapeia nominalmente quais equipamentos estão sob a guarda de cada pessoa.
 * **Motivo**: Evita o sumiço de patrimônio e simplifica processos de desligamento (*offboarding*), sabendo com precisão o que deve ser recolhido.
 * **Como funciona**:
@@ -160,7 +161,7 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 10. Gestão de Usuários do Sistema & Supabase Auth Autêntico
+### 10. Gestão de Usuários do Sistema e Supabase Auth Autêntico
 * **O que faz**: Módulo dedicado (`/usuarios`) para administradores cadastrarem, ativarem, desativarem ou excluírem operadores de TI com acesso ao sistema.
 * **Motivo**: Remove completamente contas fictícias ilustrativas (com domínios `.empresa`), permitindo que a conta real do administrador no Supabase Auth e futuros operadores cadastrados operem e façam login imediatamente no banco de dados.
 * **Como funciona**:
@@ -171,7 +172,7 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 11. Trilha Imutável de Auditoria & Sanitização de Dados
+### 11. Trilha Imutável de Auditoria e Sanitização de Dados
 * **O que faz**: Registra a cronologia detalhada de todas as ações executadas no sistema em uma linha do tempo profissional.
 * **Motivo**: Exigência de conformidade regulatória, compliance fiscal e governança corporativa de TI (ISO 27001 / SOX).
 * **Como funciona**:
@@ -182,7 +183,7 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ---
 
-### 12. Design Responsivo & Aproveitamento de Tela
+### 12. Design Responsivo e Aproveitamento de Tela
 * **O que faz**: O sistema adapta-se organicamente a qualquer resolução de display, desde monitores Ultrawide de 34" até notebooks compactos e smartphones.
 * **Motivo**: Profissionais de infraestrutura e suporte de campo frequentemente acessam o inventário a partir de tablets e celulares no almoxarifado, enquanto gestores analisam relatórios em monitores widescreen de alta densidade.
 * **Como funciona**:
@@ -194,7 +195,8 @@ Esta seção detalha cada funcionalidade implementada no sistema, o **motivo de 
 
 ## 🛠️ Destaques de Engenharia e Arquitetura
 
-* **App Router do Next.js 16 & React 19**: Utilização combinada de Server Components para renderização veloz e Client Components reativos para alta interatividade.
+* **Tipografia Nunito**: Fonte padrão integrada via `next/font/google` com suporte aos pesos 300 até 900.
+* **App Router do Next.js 16 e React 19**: Utilização combinada de Server Components para renderização veloz e Client Components reativos para alta interatividade.
 * **TypeScript Strict Mode**: Zero erros de compilação (`tsc --noEmit`), com tipagem forte para entidades de domínio (`Equipamento`, `Responsável`, `Movimentação`, `TipoEquipamento`, `UsuarioSistema`).
 * **Clean Data Access Layer (DAL)**: Os serviços `equipamentos.service.ts` e `usuarios.service.ts` abstraem chamadas de rede, garantem regras de negócio e mantêm fallback transparente com sincronização por eventos de janela (`CustomEvent`).
 * **Tailwind CSS v4 Design System**: Paleta corporativa customizada com base Índigo e ardósia escuro (*Dark Sidebar* `#0b0e24`, acentos `#4f46e5` e estados em `#10b981`).
@@ -225,19 +227,19 @@ stateDiagram-v2
 ```mermaid
 flowchart TD
     subgraph Presentation ["1. Camada de Apresentação (UI)"]
-        Dashboard["Dashboard & Balanço de Estoque"]
+        Dashboard["Dashboard e Balanço de Estoque"]
         Inventory["Módulos de Hardware (Notebooks, Monitores, Celulares, Periféricos)"]
-        Users["Gestão de Colaboradores & Posse Nominal"]
-        Accounts["Gestão de Usuários & Acessos"]
-        Audit["Trilha de Auditoria & Movimentações"]
-        QuickSearch["Busca Global (Ctrl + K) & Dark Mode"]
+        Users["Gestão de Colaboradores e Posse Nominal"]
+        Accounts["Gestão de Usuários e Acessos"]
+        Audit["Trilha de Auditoria e Movimentações"]
+        QuickSearch["Busca Global (Ctrl + K) e Dark Mode"]
     end
 
     subgraph SecurityGate ["2. Camada de Segurança"]
         MW["Next.js Middleware\n• Sessão JWT\n• Proteção de Rotas\n• Supabase Auth"]
     end
 
-    subgraph BusinessLogic ["3. Camada de Serviços & Domínio"]
+    subgraph BusinessLogic ["3. Camada de Serviços e Domínio"]
         DAL["equipamentos.service.ts & usuarios.service.ts\n• Anti-duplicação de Seriais\n• Controle de Lotes\n• Módulo de Manutenção\n• Sanitização de Histórico"]
     end
 
@@ -276,17 +278,18 @@ sequenceDiagram
 
 ---
 
-## 🎨 Design System & Interface Corporativa
+## 🎨 Design System e Interface Corporativa
 
 | Elemento | Modo Claro (Light Mode) | Modo Escuro (Dark Mode) |
 | :--- | :--- | :--- |
+| **Tipografia** | **Nunito** (Google Fonts) | **Nunito** (Google Fonts) |
 | **Fundo da Página** | `bg-slate-50` (`#f8fafc`) | `dark:bg-[#070913]` |
 | **Superfície dos Cards** | `bg-white` com borda `border-slate-200/80` | `dark:bg-[#0f142b]` com borda `dark:border-indigo-950/70` |
 | **Barra Lateral** | `#0b0e24` com detalhes em índigo | `#0b0e24` com detalhes em índigo |
 | **Tipografia Principal** | `text-slate-900` | `dark:text-slate-100` |
 | **Tipografia Secundária** | `text-slate-500` | `dark:text-slate-400` |
 | **Campos de Entrada** | `bg-white` / `bg-slate-50` | `dark:bg-[#0b0f19]` / `dark:border-indigo-950/70` |
-| **Estados de Ativo** | 🟢 Disponível (`emerald-600`) • 🟣 Em Uso (`indigo-600`) • 🟡 Manutenção (`amber-600`) | Tons adaptados com alto contraste e badges com fundos translúcidos |
+| **Badges de Status** | 🟢 Disponível (`emerald-100/90 text-emerald-900 font-bold`) • 🟣 Em Uso (`indigo-100 text-indigo-950 font-bold`) • 🟡 Manutenção (`amber-100 text-amber-950 font-bold`) | Tons sólidos contrastantes com bordas sutis e alta visibilidade |
 
 ---
 
@@ -294,11 +297,15 @@ sequenceDiagram
 
 ```text
 inventario-ti/
+├── public/                           # Assets públicos da marca
+│   ├── logo.png                      # Logo completa TI Inventory
+│   └── logo-icon.png                 # Ícone da caixinha para o sidebar
+│
 ├── src/
 │   ├── app/                          # Rotas do Next.js (App Router)
-│   │   ├── layout.tsx                # Layout com ThemeProvider, Sidebar e Header
+│   │   ├── layout.tsx                # Layout com Nunito, ThemeProvider, Sidebar e Header
 │   │   ├── page.tsx                  # Dashboard analítico e balanço de estoque
-│   │   ├── login/page.tsx            # Autenticação segura de administradores
+│   │   ├── login/page.tsx            # Autenticação segura com logo oficial TI Inventory
 │   │   ├── equipamentos/             # Módulo de Equipamentos
 │   │   │   ├── page.tsx              # Tabela com abas e filtros contextuais
 │   │   │   ├── novo/page.tsx         # Formulário com suporte a lotes, hardware e serial único
@@ -311,7 +318,7 @@ inventario-ti/
 │   │   └── configuracoes/page.tsx    # Configurações do sistema, perfil e banco de dados
 │   │
 │   ├── components/                   # Componentes modulares
-│   │   ├── layout/                   # Sidebar retrátil, Header e Quick Finder (Ctrl + K)
+│   │   ├── layout/                   # Sidebar retrátil suave, Header e Quick Finder (Ctrl + K)
 │   │   ├── ui/                       # Design System (Button, Input, Modal, Badge, StatCard)
 │   │   └── modules/                  # Vistas do Dashboard, Tabelas e Ações de Detalhe
 │   │
@@ -333,10 +340,10 @@ inventario-ti/
 ## 🛡️ Camadas de Segurança e Conformidade
 
 1. **Repositório Seguro**: Nenhuma chave confidencial ou credencial exposta no código. Arquivos `.env.local` protegidos pelo `.gitignore`.
-2. **Criptografia & Autenticação (Bcrypt + JWT)**: Autenticação gerenciada pelo Supabase Auth com renovação automática de tokens.
+2. **Criptografia e Autenticação (Bcrypt + JWT)**: Autenticação gerenciada pelo Supabase Auth com renovação automática de tokens.
 3. **Row Level Security (RLS)**: Políticas ativas no PostgreSQL garantem isolamento de permissões direto no banco de dados.
 4. **Imutabilidade de Auditoria**: Instruções `DELETE` bloqueadas na tabela de movimentações para conformidade com normas de auditoria e compliance de TI.
-5. **Sanitização & Validação**: Validação estrita de entradas tanto no frontend quanto no serviço de dados, prevenindo seriais duplicados e corrupção de histórico.
+5. **Sanitização e Validação**: Validação estrita de entradas tanto no frontend quanto no serviço de dados, prevenindo seriais duplicados e corrupção de histórico.
 
 ---
 
@@ -378,7 +385,7 @@ http://localhost:3000
 
 ---
 
-## 👩‍💻 Autora & Licença
+## 👩‍💻 Autora e Licença
 
 Projeto desenvolvido por **Gabriela Chagas**.  
 Distribuído sob licença MIT. Sinta-se à vontade para utilizar como referência ou base para novos projetos corporativos.

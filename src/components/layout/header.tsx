@@ -250,19 +250,21 @@ export function Header({ title, subtitle }: HeaderProps) {
       <header className="h-16 border-b border-slate-200/80 dark:border-indigo-950/80 bg-white/95 dark:bg-[#0c1022]/95 backdrop-blur-md sticky top-0 z-20 shadow-xs transition-colors duration-200">
         <div className="w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
-          {/* Título e Subtítulo da Página Atual */}
-          <div className="min-w-0 flex-shrink-0">
-            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight truncate">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate hidden md:block">
-                {subtitle}
-              </p>
-            )}
+          {/* Título e Subtítulo da Página Atual com Identidade TI Inventory */}
+          <div className="min-w-0 flex items-center gap-3 flex-shrink-0">
+            <div className="min-w-0">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight truncate flex items-center gap-2">
+                <span>{title}</span>
+              </h2>
+              {subtitle && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate hidden md:block">
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Barra de Pesquisa Global Inteligente (substituindo o sino sem uso) */}
+          {/* Barra de Pesquisa Global Inteligente */}
           <div ref={searchContainerRef} className="relative flex-1 max-w-md mx-2 sm:mx-4">
             <div className="relative flex items-center">
               <Search className="absolute left-3 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none" />
@@ -302,7 +304,7 @@ export function Header({ title, subtitle }: HeaderProps) {
                 {/* Seção 1: Equipamentos */}
                 <div>
                   <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
-                    <span>Equipamentos & Ativos</span>
+                    <span>Equipamentos e Ativos</span>
                     <span>{resultados?.equipamentos.length || 0} resultado(s)</span>
                   </div>
 
@@ -332,10 +334,10 @@ export function Header({ title, subtitle }: HeaderProps) {
 
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${
                             eq.status === "manutencao"
-                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400 border-amber-200"
+                              ? "bg-amber-100 dark:bg-amber-950/80 text-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-700/80"
                               : eq.status === "em_uso"
-                              ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border-indigo-200"
-                              : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border-emerald-200"
+                              ? "bg-indigo-100 dark:bg-indigo-950/80 text-indigo-950 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700/80"
+                              : "bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700/80"
                           }`}>
                             {eq.status === "manutencao" ? "Manutenção" : eq.status === "em_uso" ? "Em Uso" : "Disponível"}
                           </span>
@@ -352,7 +354,7 @@ export function Header({ title, subtitle }: HeaderProps) {
                 {/* Seção 2: Colaboradores */}
                 <div className="pt-2 border-t border-slate-100 dark:border-indigo-950/60">
                   <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
-                    <span>Colaboradores & Pessoas</span>
+                    <span>Colaboradores e Pessoas</span>
                     <span>{resultados?.colaboradores.length || 0}</span>
                   </div>
 

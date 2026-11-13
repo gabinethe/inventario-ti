@@ -208,7 +208,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "notebook"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
+              : "text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-indigo-950/70 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Laptop className="w-4 h-4" />
@@ -220,7 +220,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "monitor"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
+              : "text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-indigo-950/70 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Monitor className="w-4 h-4" />
@@ -232,7 +232,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "smartphone"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
+              : "text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-indigo-950/70 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Smartphone className="w-4 h-4" />
@@ -244,7 +244,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
             filtroTipo === "periferico"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
+              : "text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-indigo-950/70 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Headphones className="w-4 h-4" />
@@ -256,7 +256,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 ml-auto ${
             filtroTipo === "todos"
               ? "bg-indigo-600 text-white shadow-xs"
-              : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-indigo-950/60"
+              : "text-slate-700 dark:text-slate-200 hover:bg-slate-200/80 dark:hover:bg-indigo-950/70 hover:text-slate-900 dark:hover:text-white"
           }`}
         >
           <Boxes className="w-4 h-4" />
@@ -286,7 +286,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                 filtroStatus === "todos"
                   ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
-                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
+                  : "bg-white dark:bg-[#0e132c] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
               }`}
             >
               Todos ({contadoresStatus.todos})
@@ -294,13 +294,13 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
 
             <button
               onClick={() => setFiltroStatus("disponivel")}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "disponivel"
                   ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-900 dark:hover:text-emerald-400"
+                  : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
               }`}
             >
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               Disponíveis ({contadoresStatus.disponivel})
             </button>
 
@@ -309,10 +309,10 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "em_uso"
                   ? "bg-indigo-700 text-white border-indigo-700 shadow-xs"
-                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-900 dark:hover:text-indigo-400"
+                  : "bg-indigo-50 dark:bg-indigo-950/50 text-indigo-950 dark:text-indigo-200 border-indigo-200 dark:border-indigo-900/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/60"
               }`}
             >
-              <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <UserCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
               Em Uso ({contadoresStatus.em_uso})
             </button>
 
@@ -321,10 +321,10 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer ${
                 filtroStatus === "manutencao"
                   ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-                  : "bg-white dark:bg-[#0e132c] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-indigo-950/70 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-900 dark:hover:text-amber-400"
+                  : "bg-amber-50 dark:bg-amber-950/50 text-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-900/70 hover:bg-amber-100 dark:hover:bg-amber-900/60"
               }`}
             >
-              <Wrench className="w-3.5 h-3.5 text-amber-500" />
+              <Wrench className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               Manutenção ({contadoresStatus.manutencao})
             </button>
           </div>
@@ -348,7 +348,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             <thead className="bg-slate-50/80 dark:bg-[#0a0e20] text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-indigo-950/70">
               <tr>
                 <th className="px-6 py-3.5">Ativo / Identificação</th>
-                <th className="px-6 py-3.5">Categoria & Detalhes</th>
+                <th className="px-6 py-3.5">Categoria e Detalhes</th>
                 <th className="px-6 py-3.5">Status</th>
                 <th className="px-6 py-3.5">Custódia / Responsável</th>
                 <th className="px-6 py-3.5 text-right">Ações</th>
@@ -357,12 +357,12 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
             <tbody className="divide-y divide-slate-100 dark:divide-indigo-950/50">
               {equipamentosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                     <Boxes className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
-                    <p className="font-semibold text-slate-600 text-sm">
+                    <p className="font-semibold text-slate-600 dark:text-slate-300 text-sm">
                       Nenhum ativo encontrado nesta seleção
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                       Tente alterar a categoria, os filtros ou limpar os termos da busca.
                     </p>
                   </td>
@@ -371,25 +371,25 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                 equipamentosFiltrados.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-indigo-50/30 transition-colors"
+                    className="hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition-colors"
                   >
                     {/* Ativo */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+                        <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
                           {getIconeTipo(item.tipo)}
                         </div>
                         <div>
-                          <div className="font-bold text-slate-900">
+                          <div className="font-bold text-slate-900 dark:text-white">
                             {item.marca} {item.modelo}
                           </div>
-                          <div className="text-xs text-slate-500 mt-0.5">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             {item.tipo === "periferico" && item.quantidadeDisponivel !== undefined ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/80">
                                 Estoque: {item.quantidadeDisponivel} unid. disponíveis
                               </span>
                             ) : (
-                              <span className="font-mono text-slate-400 text-[11px]">S/N: {item.numeroSerie}</span>
+                              <span className="font-mono text-slate-500 dark:text-slate-400 text-[11px]">S/N: {item.numeroSerie}</span>
                             )}
                           </div>
                         </div>
@@ -397,11 +397,11 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                     </td>
 
                     {/* Especificações */}
-                    <td className="px-6 py-4 text-xs text-slate-600">
-                      <div className="font-semibold text-slate-800 uppercase text-[11px] tracking-wider text-indigo-600">
+                    <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
+                      <div className="font-bold uppercase text-[11px] tracking-wider text-indigo-600 dark:text-indigo-400">
                         {item.tipo} {item.subtipo ? `• ${item.subtipo}` : ""}
                       </div>
-                      <div className="text-slate-500 line-clamp-1">
+                      <div className="text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                         {item.processador
                           ? `${item.processador} • ${item.memoriaRam || ""}`
                           : item.especificacoes || "Configuração corporativa"}
@@ -416,7 +416,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                     {/* Responsável / Custódia */}
                     <td className="px-6 py-3.5 text-xs">
                       {item.responsavel ? (
-                        <div className="flex items-center gap-2.5 bg-indigo-50/70 border border-indigo-100/90 rounded-xl p-2 max-w-[260px] shadow-2xs">
+                        <div className="flex items-center gap-2.5 bg-indigo-50/70 dark:bg-[#0e132c] border border-indigo-100/90 dark:border-indigo-950/80 rounded-xl p-2 max-w-[260px] shadow-2xs">
                           <div className="h-7 w-7 rounded-lg bg-indigo-600 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 shadow-2xs">
                             {item.responsavel.nome
                               .split(" ")
@@ -425,17 +425,17 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                               .join("")}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-slate-900 text-xs truncate">
+                            <p className="font-bold text-slate-900 dark:text-white text-xs truncate">
                               {item.responsavel.nome}
                             </p>
-                            <p className="text-[11px] text-indigo-700 truncate font-medium">
+                            <p className="text-[11px] text-indigo-700 dark:text-indigo-400 truncate font-semibold">
                               {item.responsavel.departamento}
                             </p>
                           </div>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-emerald-800 font-semibold bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200/80 text-[11px]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="inline-flex items-center gap-1.5 text-emerald-900 dark:text-emerald-300 font-bold bg-emerald-100/90 dark:bg-emerald-950/80 px-2.5 py-1 rounded-xl border border-emerald-300 dark:border-emerald-700/80 text-[11px]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                           Estoque Disponível
                         </span>
                       )}
@@ -450,7 +450,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                             variant="secondary"
                             size="sm"
                             onClick={() => abrirAtribuicao(item)}
-                            className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200"
+                            className="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 font-semibold"
                             title="Atribuir a um colaborador"
                           >
                             <ArrowRightLeft className="w-3.5 h-3.5" />
@@ -461,7 +461,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                             variant="secondary"
                             size="sm"
                             onClick={() => abrirDevolucao(item)}
-                            className="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200"
+                            className="bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 font-semibold"
                             title="Devolver ao estoque de TI"
                           >
                             <Undo2 className="w-3.5 h-3.5" />
@@ -475,7 +475,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                             variant="secondary"
                             size="sm"
                             onClick={() => abrirConclusaoManutencao(item)}
-                            className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200"
+                            className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800 font-semibold"
                             title="Concluir manutenção e retornar ao estoque disponível"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -486,7 +486,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                             variant="secondary"
                             size="sm"
                             onClick={() => abrirEnvioManutencao(item)}
-                            className="bg-slate-100 text-slate-700 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-200 border border-slate-200"
+                            className="bg-slate-100 dark:bg-indigo-950/50 text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/50 hover:text-amber-800 dark:hover:text-amber-300 hover:border-amber-300 dark:hover:border-amber-800/80 border border-slate-200 dark:border-indigo-900/50 font-medium"
                             title="Encaminhar equipamento para manutenção"
                           >
                             <Wrench className="w-3.5 h-3.5" />
@@ -505,7 +505,7 @@ export function TabelaEquipamentos({ equipamentosIniciais }: TabelaEquipamentosP
                           variant="ghost"
                           size="sm"
                           onClick={() => abrirModalExclusao(item)}
-                          className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-2"
+                          className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 p-2"
                           title="Excluir ativo com segurança"
                         >
                           <Trash2 className="w-4 h-4" />
