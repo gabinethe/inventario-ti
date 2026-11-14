@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Boxes } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { equipamentosService } from "@/services/equipamentos.service";
@@ -26,7 +26,9 @@ export default async function EquipamentosPage() {
         </div>
 
         {/* Componente interativo com Abas de Categorias, Busca, Filtros e Botão Contextual Único */}
-        <TabelaEquipamentos equipamentosIniciais={equipamentos} />
+        <Suspense fallback={<div className="p-8 text-center text-slate-400">Carregando inventário de ativos...</div>}>
+          <TabelaEquipamentos equipamentosIniciais={equipamentos} />
+        </Suspense>
       </main>
     </>
   );
