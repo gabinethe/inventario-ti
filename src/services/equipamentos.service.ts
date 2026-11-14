@@ -53,6 +53,37 @@ function salvarMemoria(eq: Equipamento[], resp?: Responsavel[], mov?: Movimentac
   }
 }
 
+const isUUID = (str?: string) =>
+  Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str));
+
+async function sincronizarMovimentacaoSupabase(mov: {
+  equipamentoId?: string;
+  tipo: TipoMovimentacao;
+  responsavelOrigemId?: string;
+  responsavelDestinoId?: string;
+  motivo: string;
+  registradoPor: string;
+  data?: string;
+}) {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  try {
+    const payload: any = {
+      tipo: mov.tipo,
+      motivo: mov.motivo,
+      registrado_por: mov.registradoPor || getAdminNome(),
+      data: mov.data || new Date().toISOString(),
+    };
+    if (isUUID(mov.equipamentoId)) payload.equipamento_id = mov.equipamentoId;
+    if (isUUID(mov.responsavelOrigemId)) payload.responsavel_origem_id = mov.responsavelOrigemId;
+    if (isUUID(mov.responsavelDestinoId)) payload.responsavel_destino_id = mov.responsavelDestinoId;
+
+    await supabase.from("movimentacoes").insert(payload);
+  } catch (err) {
+    console.warn("Aviso ao persistir movimentação no Supabase:", err);
+  }
+}
+
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -368,6 +399,13 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoriaAtualizada.resp, [novaMovimentacao, ...memoriaAtualizada.mov]);
+    sincronizarMovimentacaoSupabase({
+      equipamentoId: novoEquipamento.id,
+      tipo: "entrada",
+      motivo: novaMovimentacao.motivo,
+      registradoPor: novaMovimentacao.registradoPor,
+      data: novaMovimentacao.data,
+    });
     return novoEquipamento;
   },
 
@@ -439,6 +477,14 @@ export const equipamentosService = {
       };
 
       salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+      sincronizarMovimentacaoSupabase({
+        equipamentoId: unidadeEntregue.id,
+        tipo: "atribuicao",
+        responsavelDestinoId: responsavelId,
+        motivo: novaMov.motivo,
+        registradoPor: novaMov.registradoPor,
+        data: novaMov.data,
+      });
       return true;
     }
 
@@ -488,6 +534,14 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      equipamentoId,
+      tipo: "atribuicao",
+      responsavelDestinoId: responsavelId,
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
@@ -543,6 +597,14 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      equipamentoId,
+      tipo: "devolucao",
+      responsavelOrigemId: colaboradorOrigem?.id,
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
@@ -615,6 +677,14 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      equipamentoId,
+      tipo: "manutencao",
+      responsavelOrigemId: colaboradorOrigem?.id,
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
@@ -674,6 +744,13 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      equipamentoId,
+      tipo: "devolucao",
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
@@ -707,6 +784,12 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, memoria.resp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      tipo: "exclusao",
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
@@ -805,6 +888,13 @@ export const equipamentosService = {
     };
 
     salvarMemoria(memoria.eq, novaListaResp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      tipo: "colaborador",
+      responsavelDestinoId: novoResp.id,
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return novoResp;
   },
 
@@ -845,16 +935,65 @@ export const equipamentosService = {
     };
 
     salvarMemoria(novaListaEq, novaListaResp, [novaMov, ...memoria.mov]);
+    sincronizarMovimentacaoSupabase({
+      tipo: "exclusao",
+      responsavelOrigemId: id,
+      motivo: novaMov.motivo,
+      registradoPor: novaMov.registradoPor,
+      data: novaMov.data,
+    });
     return true;
   },
 
   /**
    * Retorna a lista completa de movimentações de auditoria em ordem cronológica decrescente.
+   * Busca no Supabase com sincronização e fallback no armazenamento local.
    * Aplica sanitização automática para eliminar resíduos de IDs de banco ou parênteses vazios.
    */
   async listarMovimentacoes(filtros?: { tipo?: TipoMovimentacao | "todos"; busca?: string }): Promise<Movimentacao[]> {
-    const memoria = getMemoria();
-    let lista = [...memoria.mov].sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    let lista: Movimentacao[] = [];
+
+    // 1. Consulta o histórico oficial gravado no Supabase
+    const supabase = getSupabase();
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from("movimentacoes")
+          .select("*, equipamentos(id, marca, modelo, subtipo, numero_serie, patrimonio), responsavel_destino:responsaveis!movimentacoes_responsavel_destino_id_fkey(nome), responsavel_origem:responsaveis!movimentacoes_responsavel_origem_id_fkey(nome)")
+          .order("data", { ascending: false });
+
+        if (!error && data && data.length > 0) {
+          lista = data.map((item: any) => ({
+            id: item.id,
+            equipamentoId: item.equipamento_id,
+            equipamentoNome: item.equipamentos ? formatarIdentificacaoEquipamento(item.equipamentos) : undefined,
+            tipo: item.tipo as TipoMovimentacao,
+            responsavelDestinoId: item.responsavel_destino_id,
+            responsavelOrigemId: item.responsavel_origem_id,
+            responsavelNome: item.responsavel_destino?.nome || item.responsavel_origem?.nome || undefined,
+            data: item.data || item.criado_em,
+            motivo: limparTextoResidual(item.motivo),
+            registradoPor: item.registrado_por || "Administrador",
+          }));
+
+          // Atualiza o cache local para resposta offline/imediata
+          if (typeof window !== "undefined") {
+            localStorage.setItem(STORAGE_KEY_MOV, JSON.stringify(lista));
+          }
+        }
+      } catch (err) {
+        console.warn("Aviso ao buscar movimentações do Supabase, utilizando fallback local:", err);
+      }
+    }
+
+    // 2. Se o Supabase estiver sem dados ou inacessível, recupera do cache local
+    if (lista.length === 0) {
+      const memoria = getMemoria();
+      lista = [...memoria.mov];
+    }
+
+    // Ordenação garantida por data decrescente
+    lista.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
     // Sanitiza qualquer texto legado para exibição impecável
     lista = lista.map((m) => ({
