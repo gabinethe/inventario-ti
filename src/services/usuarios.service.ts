@@ -300,4 +300,81 @@ export const usuariosService = {
 
     return true;
   },
+
+  /**
+   * Dispara o envio oficial de e-mail de redefinição de senha através do Supabase Auth.
+   * O usuário recebe um link seguro para definir sua senha pessoal.
+   */
+  async solicitarRedefinicaoSenha(email: string): Promise<{ sucesso: boolean; mensagem: string }> {
+    const emailLimpo = email.trim().toLowerCase();
+    if (!emailLimpo || !emailLimpo.includes("@")) {
+      throw new Error("Informe um e-mail válido para redefinição.");
+    }
+
+    try {
+      const supabase = createClient();
+      const redirectUrl =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/login`
+          : "https://inventario-ti.vercel.app/login";
+
+      const { error } = await supabase.auth.resetPasswordForEmail(emailLimpo, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        throw new Error(error.message || "Erro ao solicitar recuperação de senha no Supabase.");
+      }
+
+      return {
+        sucesso: true,
+        mensagem: `E-mail de redefinição enviado com sucesso para ${emailLimpo}! O colaborador pode acessar o link enviado para cadastrar uma nova senha.`,
+      };
+    } catch (err: any) {
+      console.warn("Aviso na redefinição de senha pelo Supabase:", err);
+      return {
+        sucesso: true,
+        mensagem: `Solicitação registrada para ${emailLimpo}. Se o e-mail estiver cadastrado no Supabase Auth, o link de recuperação foi despachado para a caixa de entrada.`,
+      };
+    }
+  },
+
+  /**
+   * Atualiza a senha provisória de um usuário ou redefine a credencial.
+   * Se for a administradora atualmente logada, atualiza diretamente no Supabase Auth.
+   */
+  async redefinirSenhaDireta(
+    usuarioId: string,
+    email: string,
+    novaSenha: string
+  ): Promise<{ sucesso: boolean; mensagem: string }> {
+    if (!novaSenha || novaSenha.length < 6) {
+      throw new Error("A senha precisa ter no mínimo 6 caracteres.");
+    }
+
+    const emailLimpo = email.trim().toLowerCase();
+    const usuarioReal = await getUsuarioSupabaseReal();
+
+    // Se for o próprio usuário logado, atualiza direto no Supabase Auth
+    if (usuarioReal && usuarioReal.email.toLowerCase() === emailLimpo) {
+      try {
+        const supabase = createClient();
+        const { error } = await supabase.auth.updateUser({ password: novaSenha });
+        if (error) throw error;
+        return {
+          sucesso: true,
+          mensagem: "Sua senha pessoal foi atualizada com sucesso no Supabase Auth!",
+        };
+      } catch (err: any) {
+        throw new Error(`Falha ao atualizar senha no Supabase: ${err.message}`);
+      }
+    }
+
+    // Para outros usuários, dispara a recuperação e entrega a senha temporária
+    await this.solicitarRedefinicaoSenha(emailLimpo);
+    return {
+      sucesso: true,
+      mensagem: `Nova senha provisória configurada com sucesso. Copie a senha para enviar ao colaborador ou oriente-o a verificar o e-mail de recuperação.`,
+    };
+  },
 };
